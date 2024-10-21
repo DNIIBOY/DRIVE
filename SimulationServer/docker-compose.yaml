@@ -6,7 +6,7 @@ services:
       - valkey:/data
     ports:
       - 6379:6379
-    restart: always
+    restart: on-failure
     stop_grace_period: 3s
 
 volumes:
