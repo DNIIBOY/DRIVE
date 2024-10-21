@@ -1,7 +1,37 @@
-<p id="sejt">Hello World!</p>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DRIVE</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-900">
+        <h1 class="text-4xl text-center mt-4 font-bold tracking-wider text-red-500">DRIVE</h1>
+        <div id="road" class="flex flex-row justify-center mt-4 gap-2 bg-black py-2">
+        </div>
+    </body>
+ </html>
+
 
 <script>
     // Create WebSocket connection.
+    function updateCars(cars) {
+        let road = document.getElementById("road");
+        road.innerHTML = "";
+        for (let i = 0; i < cars.length; i++) {
+            let car = cars[i];
+            let isTarget = car & 0x8000;
+            let position = car & 0x7FFF;
+            let div = document.createElement("div");
+            div.className = "flex flex-col items-center px-4 py-2 rounded-lg text-gray-100 " + (isTarget ? "bg-red-500" : "bg-green-500");
+            let h1 = document.createElement("h1");
+            h1.className = "text-3xl";
+            h1.innerHTML = position;
+            div.appendChild(h1);
+            road.appendChild(div);
+        }
+    }
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsHost = window.location.host;
     const wsPath = "/ws";
@@ -13,7 +43,8 @@
         let val = event.data;
         val.arrayBuffer().then((buffer) => {
             let vals = new Uint16Array(buffer)
-            p.innerHTML = vals[0];
+            cars = vals;
+            updateCars(cars);
         });
     });
 </script>
