@@ -1,0 +1,13 @@
+services:
+  valkey:
+    image: valkey/valkey:latest
+    container_name: valkey
+    volumes:
+      - valkey:/data
+    ports:
+      - 6379:6379
+    restart: always
+    stop_grace_period: 3s
+
+volumes:
+  valkey:
