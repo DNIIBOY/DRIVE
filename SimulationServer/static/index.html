@@ -2,8 +2,12 @@
 
 <script>
     // Create WebSocket connection.
-    const socket = new WebSocket("ws://localhost:5000/ws");
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsHost = window.location.host;
+    const wsPath = "/ws";
+    const socket = new WebSocket(`${wsProtocol}//${wsHost}${wsPath}`);
     const p = document.getElementById("sejt");
+    socket.binaryType = "arraybuffer";
 
     // Connection opened
     socket.addEventListener("open", (event) => {
@@ -11,7 +15,8 @@
     });
 
     // Listen for messages
-    socket.addEventListener("message", async (event) => {
-        p.innerHTML = await event.data.text();
+    socket.addEventListener("message", (event) => {
+        let val = event.data;
+        p.innerHTML = val;
     });
 </script>

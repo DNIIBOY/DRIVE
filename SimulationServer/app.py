@@ -3,6 +3,7 @@ from valkey import Valkey
 from flask_sock import Sock
 from simple_websocket.ws import Server
 from time import sleep
+import gevent
 
 valkey = Valkey(host="localhost", port=6379, db=0)
 sock = Sock()
@@ -15,15 +16,21 @@ def index():
     return send_from_directory("static", "index.html")
 
 
-@app.route("/set/<name>")
-def set_name(name: str):
-    valkey.set("name", name)
-    return f"<p>Set name to {name}</p>"
+@app.route("/set/<val>")
+def set_name(val: str):
+    try:
+        val = int(val)
+    except ValueError:
+        return "<p>Value must be an integer</p>", 400
+
+    valkey.set("val", val)
+    return f"<p>Set val to {val}</p>"
 
 
 @sock.route("/ws")
 def socket_test(ws: Server):
     while True:
-        name = valkey.get("name")
-        ws.send(name)
-        sleep(0.2)
+        val = valkey.get("val")
+        val = int(val.decode("utf-8"))
+        ws.send(val)
+        gevent.sleep(0.2)
