@@ -1,0 +1,17 @@
+<p id="sejt">Hello World!</p>
+
+<script>
+    // Create WebSocket connection.
+    const socket = new WebSocket("ws://localhost:5000/ws");
+    const p = document.getElementById("sejt");
+
+    // Connection opened
+    socket.addEventListener("open", (event) => {
+        socket.send("Hello Server!");
+    });
+
+    // Listen for messages
+    socket.addEventListener("message", async (event) => {
+        p.innerHTML = await event.data.text();
+    });
+</script>
