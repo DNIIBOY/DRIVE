@@ -7,16 +7,13 @@
     const wsPath = "/ws";
     const socket = new WebSocket(`${wsProtocol}//${wsHost}${wsPath}`);
     const p = document.getElementById("sejt");
-    socket.binaryType = "arraybuffer";
-
-    // Connection opened
-    socket.addEventListener("open", (event) => {
-        socket.send("Hello Server!");
-    });
 
     // Listen for messages
     socket.addEventListener("message", (event) => {
         let val = event.data;
-        p.innerHTML = val;
+        val.arrayBuffer().then((buffer) => {
+            let vals = new Uint16Array(buffer)
+            p.innerHTML = vals[0];
+        });
     });
 </script>

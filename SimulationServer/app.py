@@ -19,18 +19,17 @@ def index():
 @app.route("/set/<val>")
 def set_name(val: str):
     try:
-        val = int(val)
-    except ValueError:
-        return "<p>Value must be an integer</p>", 400
+        val = int(val).to_bytes(length=2, signed=False, byteorder="big")
+    except (ValueError, OverflowError):
+        return "<p>Value must be an 16 bit unsigned integer</p>", 400
 
     valkey.set("val", val)
-    return f"<p>Set val to {val}</p>"
+    return f"<p>Set val to {''.join(f'{byte:08b}' for byte in val)}</p>"
 
 
 @sock.route("/ws")
 def socket_test(ws: Server):
     while True:
         val = valkey.get("val")
-        val = int(val.decode("utf-8"))
-        ws.send(val)
+        ws.send(val[::-1])  # Transmission reverses the byte order
         gevent.sleep(0.2)
