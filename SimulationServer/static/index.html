@@ -36,7 +36,6 @@
     const wsHost = window.location.host;
     const wsPath = "/ws";
     const socket = new WebSocket(`${wsProtocol}//${wsHost}${wsPath}`);
-    const p = document.getElementById("sejt");
 
     // Listen for messages
     socket.addEventListener("message", (event) => {
