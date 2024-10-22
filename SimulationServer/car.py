@@ -12,6 +12,8 @@ class Car:
         self._speed = 0
         self._position = 0
         self._is_target = False
+        self.next = next
+        self.prev = prev
 
     def __bytes__(self) -> bytes:
         rep_int = self._position

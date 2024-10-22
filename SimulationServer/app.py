@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory
+import random
 from valkey import Valkey
 from flask_sock import Sock
 from simple_websocket.ws import Server
@@ -16,17 +17,28 @@ sock.init_app(app)
 
 def simulate_val_update():
     """Simulate updating 'val' in valkey every 0.2 seconds."""
-    cars = [Car() for _ in range(2)]
+    head = Car()
+    tail = head
 
     while True:
-        for car in cars:
-            car._position += 1
+        if tail._position > 500:
+            tail = Car(next=tail)
+            tail.next.prev = tail
 
+        if head._position > 10000:
+            tmp = head.prev
+            del head
+            head = tmp
+
+        car = head
         rep = bytes()
-        for car in cars:
+        while car:
+            car._position += random.randint(1, 25)
             rep += bytes(car)
+            car = car.prev
+
         valkey.set("cars", rep)
-        sleep(0.1)
+        sleep(0.01)
 
 
 # Start the background thread to simulate the value update
@@ -43,4 +55,4 @@ def car_socket(ws: Server):
     while True:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
-        gevent.sleep(0.1)
+        gevent.sleep(0.07)
