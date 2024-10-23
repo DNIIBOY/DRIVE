@@ -6,14 +6,34 @@ class Car:
     def __init__(
         self,
         driver: Driver = None,
-        next: Car = None,
-        prev: Car = None,
     ) -> None:
         self._speed = 0
         self._position = 0
         self._is_target = False
-        self.next = next
-        self.prev = prev
+        self.driver = driver
+
+        self._next: Car = None
+        self._prev: Car = None
+
+    @property
+    def next(self) -> Car:
+        return self._next
+
+    @next.setter
+    def next(self, next_car: Car) -> None:
+        self._next = next_car
+        if next_car:
+            next_car._prev = self
+
+    @property
+    def prev(self) -> Car:
+        return self._prev
+
+    @prev.setter
+    def prev(self, prev_car: Car) -> None:
+        self._prev = prev_car
+        if prev_car:
+            prev_car._next = self
 
     def __bytes__(self) -> bytes:
         rep_int = self._position
