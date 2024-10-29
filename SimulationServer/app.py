@@ -26,6 +26,16 @@ def index():
     return send_from_directory("static", "index.html")
 
 
+@sock.route("/test_ws")
+def test_socket(ws: Server):
+    print("connection")
+    val = 1234
+    while True:
+        ws.send(val.to_bytes(2, "big"))
+        print("sending")
+        gevent.sleep(0.07)
+
+
 @sock.route("/ws")
 def car_socket(ws: Server):
     while True:
