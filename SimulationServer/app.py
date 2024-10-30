@@ -31,7 +31,7 @@ def test_socket(ws: Server):
     print("connection")
     val = 1234
     while True:
-        ws.send(val.to_bytes(2, "big"))
+        ws.send(val.to_bytes(4, "little"))
         print("sending")
         gevent.sleep(0.07)
 
@@ -41,4 +41,4 @@ def car_socket(ws: Server):
     while True:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
-        gevent.sleep(0.07)
+        gevent.idle(0.07)
