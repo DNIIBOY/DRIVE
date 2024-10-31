@@ -32,7 +32,6 @@ def test_socket(ws: Server):
     val = 1234
     while True:
         ws.send(val.to_bytes(4, "little"))
-        print("sending")
         gevent.sleep(0.07)
 
 

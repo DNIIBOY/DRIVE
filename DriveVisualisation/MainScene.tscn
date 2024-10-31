@@ -6,10 +6,9 @@
 script = ExtResource("1_7cvgd")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_left = -191.0
-offset_top = -52.0
-offset_right = 163.0
-offset_bottom = 69.0
+offset_left = -700.0
+offset_right = -346.0
+offset_bottom = 121.0
 text = "AlphaOmega"
 scroll_active = false
 autowrap_mode = 0

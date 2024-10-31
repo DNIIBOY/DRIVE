@@ -13,7 +13,7 @@ signal connection_closed()
 signal message_received(message: Variant)
 
 func _on_message_received(message: Variant) -> void:
-    print("Received message: ", message)
+    $RichTextLabel.set_position(Vector2(message[0]-700, 0))
 
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -74,7 +74,7 @@ func poll() -> void:
 
 func _ready() -> void:
     connect("message_received", Callable(self, "_on_message_received"))
-    connect_to_url("ws://localhost:8000/test_ws")
+    connect_to_url("ws://localhost:5000/ws")
 
-func _process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
     poll()
