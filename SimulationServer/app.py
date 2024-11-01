@@ -26,9 +26,18 @@ def index():
     return send_from_directory("static", "index.html")
 
 
+@sock.route("/test_ws")
+def test_socket(ws: Server):
+    print("connection")
+    val = 1234
+    while True:
+        ws.send(val.to_bytes(4, "little"))
+        gevent.sleep(0.07)
+
+
 @sock.route("/ws")
 def car_socket(ws: Server):
     while True:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
-        gevent.sleep(0.07)
+        gevent.idle(0.07)

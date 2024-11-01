@@ -12,9 +12,34 @@
 
 #include "wifi.h"
 #include "websocket_handler.h"
+#include "i2c_handler.h"
+#include "HD44780.h"
+
+#define LCD_ADDR 0x27
+#define SDA_PIN 4
+#define SCL_PIN 5
+#define LCD_COLS 16
+#define LCD_ROWS 2
 
 #define WEBSOCKET_URI "ws://192.168.1.68:5000/"  // Replace with your Flask server IP and port
 
+void LCD_DemoTask(void *param)
+{
+  while (true)
+  {
+    lcd_cursor_first_line();
+    lcd_write_str("--- 16x2 LCD ---");
+    lcd_set_cursor(0, 1);
+    lcd_write_str("LCD Library Demo");
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    lcd_cursor_first_line();
+    lcd_write_str("----- WOW -----");
+    lcd_set_cursor(0, 1);
+    lcd_write_str("LCD Library Demo");
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+  }
+}
+/*
 void nvs_init(void) {
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -22,9 +47,11 @@ void nvs_init(void) {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-}
-
+}*/
 void app_main(void) {
+    lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
+    xTaskCreate(&LCD_DemoTask, "Demo Task", 2048, NULL, 5, NULL);
+    /* 
     // dette er til at gemme SSID og Password
     nvs_init(); // Initialize NVS
     // dette er til at skabe forbindelse ti netværk
@@ -53,4 +80,6 @@ void app_main(void) {
     // Cleanup
     esp_websocket_client_stop(client);
     esp_websocket_client_destroy(client);
+    */
 }
+

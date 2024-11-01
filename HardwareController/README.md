@@ -27,7 +27,7 @@ Vi bruger lige nu ESP32-C3 hvilket er fint til vores projekt
 
 ### ESP-C3
 
-![](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fdocs.espressif.com%2Fprojects%2Farduino-esp32%2Fen%2Flatest%2F_images%2Fesp32_devkitC_pinlayout.png&f=1&nofb=1&ipt=e9c5d949a16d94e31cc87a6476c2865bbb9818e20aaec7bbb7419bd78a1d4d67&ipo=images)
+![](https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/_images/esp32-c3-devkitc-02-v1-pinout.png)
 
 Her er et billed af ESP32-C3-DevkitC-02 som er det board vi bruger i projektet.
 

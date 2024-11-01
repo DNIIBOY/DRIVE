@@ -1,4 +1,6 @@
 #include "esp_websocket_client.h" // Include WebSocket client library
+#include "driver/gpio.h"
+#include "esp_log.h"
 
 #define LED_PIN2 13
 
@@ -7,7 +9,7 @@
 #define WIFI_FAIL_BIT BIT1
 
 
-static EventGroupHandle_t s_wifi_event_group;
+//static EventGroupHandle_t s_wifi_event_group;
 
 static void websocket_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)                                 
 {

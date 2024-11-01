@@ -14,7 +14,7 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
-
+#include "driver/gpio.h"
 
 #include "wifi.h"
 

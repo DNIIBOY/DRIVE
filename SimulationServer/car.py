@@ -41,7 +41,7 @@ class Car:
             rep_int |= 1 << 15
         else:
             rep_int &= ~(1 << 15)
-        return rep_int.to_bytes(2, byteorder="big")
+        return rep_int.to_bytes(4, byteorder="big")
 
 
 def main():

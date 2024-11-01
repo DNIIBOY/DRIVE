@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs72cx50h6oyv"]
+
+[ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_7cvgd")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = -700.0
+offset_right = -346.0
+offset_bottom = 121.0
+text = "AlphaOmega"
+scroll_active = false
+autowrap_mode = 0
+text_direction = 1
+
+[node name="Camera2D" type="Camera2D" parent="."]
