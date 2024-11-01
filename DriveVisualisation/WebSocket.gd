@@ -12,9 +12,14 @@ signal connected_to_server()
 signal connection_closed()
 signal message_received(message: Variant)
 
-func _on_message_received(message: Variant) -> void:
-    $RichTextLabel.set_position(Vector2(message[0]-700, 0))
+const INV_65535 = 1.0 / 65535.0
 
+func remap_to_path_coord(value) -> float:
+    return value * INV_65535
+
+func _on_message_received(message: Variant) -> void:
+    $Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
     socket.handshake_headers = handshake_headers
