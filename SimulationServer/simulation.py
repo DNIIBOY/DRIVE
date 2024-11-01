@@ -64,10 +64,10 @@ class Simulation:
         # else:
         #     accel = 0.9
 
-        # if not car.next:
-        #     car._speed *= accel
-        #     car._position += int(car._speed * self.config.update_interval)
-        #     return
+        if not car.next:
+             car._speed *= accel
+             car._position += int(car._speed * self.config.update_interval)
+             return
 
         dist = car.next._position - car._position
         # if dist > car.driver.target_distance:
@@ -79,7 +79,7 @@ class Simulation:
         # if dist == 0:
         #     pass
             
-        accel = PidControl.pid_calculator(car.driver.target_distance,dist)
+        accel = PidControl.pid_calculator(car.driver.target_distance,dist) # can shift between 0.1 and 1.9
 
 
 
