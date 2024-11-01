@@ -92,3 +92,33 @@
         </tr>
     </tbody>
 </table>
+
+### Input from hardware
+<table>
+    <thead>
+        <tr>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+            <th>0</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan=8>8 Bit Currently Selected Car ID (0-255)</td>
+            <td colspan=8>8 Bit Current Brake Pressure (0-255)</td>
+        </tr>
+    </tbody>
+</table>
