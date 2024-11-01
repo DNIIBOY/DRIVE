@@ -65,9 +65,10 @@ class Simulation:
         #     accel = 0.9
 
         if not car.next:
-             car._speed *= accel
-             car._position += int(car._speed * self.config.update_interval)
-             return
+            car._speed *= accel
+            print(car._speed)
+            car._position += int(car._speed * self.config.update_interval)
+            return
 
         dist = car.next._position - car._position
         # if dist > car.driver.target_distance:
