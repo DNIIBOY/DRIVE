@@ -32,9 +32,25 @@ class Car:
         Parameters:
         - car_in_front: The car directly ahead of this car.
         """
+
+
+
         if car_in_front and (car_in_front.get_position() - self.x < SAFE_DISTANCE):
-            print(car_in_front.get_position(), self.get_position())
-            self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
+            if car_in_front.get_position() == None:
+                print("actual distance invalid")
+                return
+            if self.get_position() == None:
+                print("self position invalid")
+                return
+
+            #print(car_in_front.get_position(), self.get_position())
+            p_value = 2
+            pid_error =  SAFE_DISTANCE - (car_in_front.get_position() - self.get_position())
+            controloutput = pid_error * p_value  
+            self.accel = 1.0 - 0.0045 * controloutput
+            print(pid_error)
+
+            #self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
 
         else:
             self.accel = 1.1

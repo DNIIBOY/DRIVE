@@ -54,6 +54,7 @@ while running:
         
         # Check for collision with the car in front
         car_in_front = cars[i - 1] if i > 0 else None  # Car in front, if it exists
+        
         car.check_collision_and_slow_down(car_in_front)  # Slow down if too close
         
 
@@ -61,7 +62,7 @@ while running:
         pygame.draw.rect(screen, (255, 0, 0), (car.x, car.y, car.width, car.height))
 
         # Print car's position on a 0–1000 scale for debugging
-        print(f"Car position (0-1000): {car.get_position()}")
+        #print(f"Car position (0-1000): {car.get_position()}")
 
         # Remove (despawn) car if it reaches the end of the road
         if car.get_position() >= 1000:
