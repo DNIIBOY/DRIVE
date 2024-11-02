@@ -56,8 +56,6 @@ while running:
         car_in_front = cars[i - 1] if i > 0 else None  # Car in front, if it exists
         car.check_collision_and_slow_down(car_in_front)  # Slow down if too close
         
-        # Move the car (update its x position)
-        car.move()
 
         # Draw the car as a rectangle on the screen
         pygame.draw.rect(screen, (255, 0, 0), (car.x, car.y, car.width, car.height))

@@ -1,5 +1,4 @@
-# car2.py
-
+from pid_control import PidControl
 SAFE_DISTANCE = 100  # Minimum distance between cars
 
 class Car:
@@ -16,10 +15,12 @@ class Car:
         self.original_speed = speed  # Keep a reference to the car's initial speed
         self.width = 60  # Width of the car
         self.height = 40  # Height of the car
+        self.accel = 1.1
 
-    def move(self):
+    def move(self, speed):
         """Move the car by its speed."""
-        self.x += self.speed
+
+        self.x += speed
 
     def get_position(self):
         """Get the car's current x position."""
@@ -32,6 +33,11 @@ class Car:
         - car_in_front: The car directly ahead of this car.
         """
         if car_in_front and (car_in_front.get_position() - self.x < SAFE_DISTANCE):
-            self.speed = min(self.speed, car_in_front.speed - 1)
+            print(car_in_front.get_position(), self.get_position())
+            self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
+
         else:
-            self.speed = self.original_speed  # Reset speed if there's no car in front
+            self.accel = 1.1
+
+
+        self.move(self.speed * self.accel)
