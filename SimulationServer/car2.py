@@ -47,7 +47,7 @@ class Car:
         if car_in_front:
             distance_to_front_car = car_in_front.get_position() - self.x
             if distance_to_front_car < SAFE_DISTANCE:
-                p_dist = 2.8
+                p_dist = 2.2
                 dist_error = SAFE_DISTANCE - distance_to_front_car
                 control_distance = -dist_error * p_dist * 0.049
 
@@ -58,6 +58,9 @@ class Car:
         # Update speed based on acceleration, ensuring it doesn’t exceed original speed
         self.speed *= self.accel
         self.speed = min(self.speed, self.original_speed)
+        
+        self.speed = max(0.1, self.speed)
+
 
         # Move car by its updated speed
         self.move()
