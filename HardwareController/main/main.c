@@ -23,7 +23,10 @@
 
 #define WEBSOCKET_URI "ws://192.168.1.68:5000/"  // Replace with your Flask server IP and port
 
-void LCD_DemoTask(void *param)
+#define LED_PIN 12 // onboard led
+#define LED_PIN2 13 // onboard led
+
+void lcd_task(void *param)
 {
   while (true)
   {
@@ -39,7 +42,7 @@ void LCD_DemoTask(void *param)
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
-/*
+
 void nvs_init(void) {
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -47,21 +50,18 @@ void nvs_init(void) {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-}*/
+}
+
 void app_main(void) {
+
+    // dette er til at lave i2c linje og lave en lcd_task
     lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
-    xTaskCreate(&LCD_DemoTask, "Demo Task", 2048, NULL, 5, NULL);
-    /* 
+    xTaskCreate(&lcd_task, "Demo Task", 2048, NULL, 5, NULL);
+
     // dette er til at gemme SSID og Password
     nvs_init(); // Initialize NVS
     // dette er til at skabe forbindelse ti netværk
     wifi_init_sta(); // Initialize WiFi
-
-    // Initialize GPIO
-    gpio_reset_pin(LED_PIN);
-    gpio_reset_pin(LED_PIN2);
-    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_direction(LED_PIN2, GPIO_MODE_OUTPUT);
 
     // Initialize WebSocket client
     esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);
@@ -80,6 +80,5 @@ void app_main(void) {
     // Cleanup
     esp_websocket_client_stop(client);
     esp_websocket_client_destroy(client);
-    */
 }
 

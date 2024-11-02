@@ -8,29 +8,6 @@
 #include "rom/ets_sys.h"
 #include "driver/i2c_master.h"
 #include "HD44780.h"
-// LCD module defines
-#define LCD_LINEONE 0x00   // start of line 1
-#define LCD_LINETWO 0x40   // start of line 2
-#define LCD_LINETHREE 0x14 // start of line 3
-#define LCD_LINEFOUR 0x54  // start of line 4
-
-#define LCD_BACKLIGHT 0x08
-#define LCD_ENABLE 0x04
-#define LCD_COMMAND 0x00
-#define LCD_WRITE 0x01
-
-#define LCD_SET_DDRAM_ADDR 0x80
-#define LCD_READ_BF 0x40
-
-// LCD instructions
-#define LCD_CLEAR 0x01             // replace all characters with ASCII 'space'
-#define LCD_HOME 0x02              // return cursor to first position on first line
-#define LCD_ENTRY_MODE 0x06        // shift cursor from left to right on read/write
-#define LCD_DISPLAY_OFF 0x08       // turn display off
-#define LCD_DISPLAY_ON 0x0C        // display on, cursor off, don't blink character
-#define LCD_FUNCTION_RESET 0x30    // reset the LCD
-#define LCD_FUNCTION_SET_4BIT 0x28 // 4-bit data, 2-line display, 5 x 7 font
-#define LCD_SET_CURSOR 0x80        // set cursor position
 
 // Pin mappings
 // P0 -> RS
@@ -95,7 +72,6 @@ void lcd_init(uint8_t addr, uint8_t dataPin, uint8_t clockPin, uint8_t cols, uin
     lcd_write_nibble(LCD_FUNCTION_SET_4BIT, LCD_COMMAND); // Activate 4-bit mode
     ets_delay_us(80);                                    // 40 uS delay (min)
 
-    // --- Busy flag now available ---
     // Function Set instruction
     lcd_write_byte(LCD_FUNCTION_SET_4BIT, LCD_COMMAND); // Set mode, lines, and font
     ets_delay_us(80);
@@ -160,10 +136,10 @@ static void lcd_write_byte(uint8_t data, uint8_t mode)
     lcd_write_nibble((data << 4) & 0xF0, mode);
 }
 
+// this enables the 
 static void lcd_pulse_enable(uint8_t data)
 {
-    uint8_t buf;
-    buf = data | LCD_ENABLE;
+    uint8_t buf = data | LCD_ENABLE;
     i2c_master_transmit(dev_handle, &buf, 1, 2000 / portTICK_PERIOD_MS);
     ets_delay_us(1);
     buf = (data & ~LCD_ENABLE);

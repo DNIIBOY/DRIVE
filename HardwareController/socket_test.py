@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sock import Sock
-
+import time
 app = Flask(__name__)
 sock = Sock(app)
 
@@ -10,8 +10,7 @@ def echo(ws):
     while True:
         data = ws.receive()
         print(data)
-        ws.send(data)
-
+        ws.send(data + " recieved on websocket")
 
 if __name__ == '__main__':
     # To run your Flask + WebSocket server in production you can use Gunicorn:
