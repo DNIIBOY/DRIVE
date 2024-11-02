@@ -1,5 +1,6 @@
 from pid_control import PidControl
-SAFE_DISTANCE = 100  # Minimum distance between cars
+from random import randint as ri
+SAFE_DISTANCE = 50  # Minimum distance between cars
 
 class Car:
     def __init__(self, speed, start_x=0):
@@ -13,9 +14,12 @@ class Car:
         self.y = 0  # Vertical position will be set by main code if needed
         self.speed = speed
         self.original_speed = speed  # Keep a reference to the car's initial speed
-        self.width = 60  # Width of the car
-        self.height = 40  # Height of the car
+        self.width = 30  # Width of the car
+        self.height = 20  # Height of the car
         self.accel = 1.1
+        self.color_r = ri(0, 255)
+        self.color_g = ri(0, 255)
+        self.color_b = ri(0, 255)
 
     def move(self, speed):
         """Move the car by its speed."""
@@ -44,11 +48,11 @@ class Car:
                 return
 
             #print(car_in_front.get_position(), self.get_position())
-            p_value = 2
+            p_value = 8
             pid_error =  SAFE_DISTANCE - (car_in_front.get_position() - self.get_position())
             controloutput = pid_error * p_value  
             self.accel = 1.0 - 0.0045 * controloutput
-            print(pid_error)
+            print(self.accel)
 
             #self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
 

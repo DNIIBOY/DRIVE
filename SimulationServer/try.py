@@ -6,7 +6,7 @@ from car2 import Car  # Import the logic-only Car class
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 1000, 200
+WIDTH, HEIGHT = 1800, 200
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Single-Lane Car Simulation")
 
@@ -17,7 +17,7 @@ GRAY = (50, 50, 50)
 # Road properties
 ROAD_HEIGHT = 100
 ROAD_Y = HEIGHT // 2 - ROAD_HEIGHT // 2  # Center the road vertically
-CAR_SPAWN_DELAY = 1000  # Time in milliseconds between car spawns
+CAR_SPAWN_DELAY = 800  # Time in milliseconds between car spawns
 
 # List to store cars and spawn timer
 cars = []
@@ -42,7 +42,7 @@ while running:
     # Spawn a new car if enough time has passed
     current_time = pygame.time.get_ticks()
     if current_time - last_car_spawn_time > CAR_SPAWN_DELAY:
-        speed = random.randint(2, 5)  # Random speed for each car
+        speed = random.randint(2, 4)  # Random speed for each car
         new_car = Car(speed)  # Create a new Car object (logic only)
         new_car.y = ROAD_Y + ROAD_HEIGHT // 2 - new_car.height // 2  # Set vertical position
         cars.append(new_car)
@@ -59,13 +59,13 @@ while running:
         
 
         # Draw the car as a rectangle on the screen
-        pygame.draw.rect(screen, (255, 0, 0), (car.x, car.y, car.width, car.height))
+        pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b), (car.x, car.y, car.width, car.height))
 
         # Print car's position on a 0–1000 scale for debugging
         #print(f"Car position (0-1000): {car.get_position()}")
 
         # Remove (despawn) car if it reaches the end of the road
-        if car.get_position() >= 1000:
+        if car.get_position() >= WIDTH:
             cars.pop(i)  # Remove car from the list
 
     # Update the screen
