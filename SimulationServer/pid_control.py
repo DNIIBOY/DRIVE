@@ -3,7 +3,8 @@ class PidControl:
         self.p_value = 1
 
 
-    def pid_calculator(self, target_distance,actual_distance):
+    def pid_calculator(self, target_distance, actual_distance):
+
         pid_error =  target_distance - actual_distance
         controloutput = pid_error * self.p_value  
 
