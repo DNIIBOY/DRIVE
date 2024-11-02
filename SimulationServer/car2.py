@@ -1,6 +1,7 @@
 from pid_control import PidControl
 from random import randint as ri
-SAFE_DISTANCE = 50  # Minimum distance between cars
+
+SAFE_DISTANCE = 100  # Minimum distance between cars
 
 class Car:
     def __init__(self, speed, start_x=0):
@@ -13,7 +14,9 @@ class Car:
         self.x = start_x  # Horizontal position on the road
         self.y = 0  # Vertical position will be set by main code if needed
         self.speed = speed
+        self.globalspeedlimit = 6
         self.original_speed = speed  # Keep a reference to the car's initial speed
+        self.optimal_speed = self.globalspeedlimit + ri(-2, 2)
         self.width = 30  # Width of the car
         self.height = 20  # Height of the car
         self.accel = 1.1
@@ -23,7 +26,6 @@ class Car:
 
     def move(self, speed):
         """Move the car by its speed."""
-
         self.x += speed
 
     def get_position(self):
@@ -36,33 +38,28 @@ class Car:
         Parameters:
         - car_in_front: The car directly ahead of this car.
         """
-
-
-
-        if car_in_front and (car_in_front.get_position() - self.x < SAFE_DISTANCE):
-            if car_in_front.get_position() == None:
-                print("actual distance invalid")
-                return
-            if self.get_position() == None:
-                print("self position invalid")
-                return
-
-            #print(car_in_front.get_position(), self.get_position())
-            p_value = 8
-            pid_error =  SAFE_DISTANCE - (car_in_front.get_position() - self.get_position())
-            controloutput = pid_error * p_value  
-            self.accel = 1.0 - 0.0045 * controloutput
-            print(self.accel)
-
-            #self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
-
+        if car_in_front:
+            distance_to_front_car = car_in_front.get_position() - self.x
+            if distance_to_front_car < SAFE_DISTANCE:
+                # Calculate PID control output
+                p_value = 0.55
+                pid_error = SAFE_DISTANCE - distance_to_front_car
+                controloutput = pid_error * p_value
+                self.accel = 1.0 - 0.0049 * controloutput
+            elif distance_to_front_car - SAFE_DISTANCE <= 1:
+                # Close to the safe distance, but no PID control needed
+                self.accel = 1.0
+            else:
+                # Gradually return to normal acceleration
+                self.accel = min(self.accel + 0.01, 1.01)
         else:
-            self.accel = 1.01
+            # Gradually return to normal acceleration if no car in front
+            self.accel = min(self.accel + 0.01, 1.01)
 
-        
-
+        # Apply acceleration and limit speed to original speed
         self.speed *= self.accel
         if self.speed > self.original_speed:
             self.speed = self.original_speed
 
+        # Move car by its updated speed
         self.move(self.speed)
