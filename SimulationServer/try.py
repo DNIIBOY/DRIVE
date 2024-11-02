@@ -17,8 +17,8 @@ GRAY = (50, 50, 50)
 # Road properties
 ROAD_HEIGHT = 100
 ROAD_Y = HEIGHT // 2 - ROAD_HEIGHT // 2  # Center the road vertically
-CAR_SPAWN_DELAY = 800  # Time in milliseconds between car spawns
-SAFE_SPAWN_DISTANCE = 140  # Minimum distance required to spawn a new car
+CAR_SPAWN_DELAY = 300  # Time in milliseconds between car spawns
+SAFE_SPAWN_DISTANCE = 60  # Minimum distance required to spawn a new car
 
 # List to store cars and spawn timer
 cars = []
@@ -42,6 +42,11 @@ while running:
             for car in cars:
                 car_rect = pygame.Rect(car.x, car.y, car.width, car.height)
                 if car_rect.collidepoint(mouse_x, mouse_y):
+                    pressed = pygame.key.get_pressed()
+                    if pressed[pygame.K_w]:
+                        car.original_speed = car.original_speed + 0.5
+                    if pressed[pygame.K_s]:
+                        car.original_speed = car.original_speed - 0.5
                     selected_car = car
                     break  # Stop checking after finding the clicked car
 
@@ -57,7 +62,7 @@ while running:
         # Check if there's enough space at the spawn point
         can_spawn = all(car.x > SAFE_SPAWN_DISTANCE for car in cars)  # No car should be within SAFE_SPAWN_DISTANCE
         if can_spawn:
-            speed = random.uniform(1,2)  # Random speed for each car
+            speed = 1.5  # Random speed for each car
             new_car = Car(speed)  # Create a new Car object (logic only)
             new_car.y = ROAD_Y + ROAD_HEIGHT // 2 - new_car.height // 2  # Set vertical position
             cars.append(new_car)
@@ -69,7 +74,7 @@ while running:
         
         # Check for collision with the car in front
         car_in_front = cars[i - 1] if i > 0 else None  # Car in front, if it exists
-        car.check_collision_and_slow_down(car_in_front)  # Slow down if too close
+        car.check_collision_and_adjust_speed(car_in_front)  # Slow down if too close
 
         # Draw the car as a rectangle on the screen
         pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b), (car.x, car.y, car.width, car.height))
@@ -81,7 +86,7 @@ while running:
     # Display the speed of the selected car
     if selected_car:
         font = pygame.font.Font(None, 36)
-        speed_text = font.render(f"Acceleration{selected_car.accel}", True, (0, 0, 0))
+        speed_text = font.render(f"Speed {selected_car.speed}", True, (0, 0, 0))
         screen.blit(speed_text, (10, 10))
 
     # Update the screen
