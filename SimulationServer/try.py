@@ -18,7 +18,7 @@ GRAY = (50, 50, 50)
 ROAD_HEIGHT = 100
 ROAD_Y = HEIGHT // 2 - ROAD_HEIGHT // 2  # Center the road vertically
 CAR_SPAWN_DELAY = 300  # Time in milliseconds between car spawns
-SAFE_SPAWN_DISTANCE = 120  # Minimum distance required to spawn a new car
+SAFE_SPAWN_DISTANCE = 60  # Minimum distance required to spawn a new car
 
 # List to store cars and spawn timer
 cars = []

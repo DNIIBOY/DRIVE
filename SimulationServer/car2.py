@@ -2,7 +2,7 @@ from pid_control import PidControl
 from random import randint as ri
 from random import uniform as ui
 
-SAFE_DISTANCE = 100  # Minimum distance between cars
+SAFE_DISTANCE = 50  # Minimum distance between cars
 
 class Car:
     def __init__(self, speed, start_x=0):
