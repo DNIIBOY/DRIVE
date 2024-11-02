@@ -69,7 +69,7 @@ while running:
         
         # Check for collision with the car in front
         car_in_front = cars[i - 1] if i > 0 else None  # Car in front, if it exists
-        car.check_collision_and_slow_down(car_in_front)  # Slow down if too close
+        car.check_collision_and_adjust_speed(car_in_front)  # Slow down if too close
 
         # Draw the car as a rectangle on the screen
         pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b), (car.x, car.y, car.width, car.height))
@@ -80,8 +80,9 @@ while running:
 
     # Display the speed of the selected car
     if selected_car:
+        selected_car.original_speed += 0.02
         font = pygame.font.Font(None, 36)
-        speed_text = font.render(f"Acceleration{selected_car.accel}", True, (0, 0, 0))
+        speed_text = font.render(f"Speed {selected_car.speed}", True, (0, 0, 0))
         screen.blit(speed_text, (10, 10))
 
     # Update the screen
