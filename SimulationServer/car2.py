@@ -57,7 +57,12 @@ class Car:
             #self.accel = PidControl.pid_calculator(SAFE_DISTANCE, car_in_front.get_position() - self.get_position())
 
         else:
-            self.accel = 1.1
+            self.accel = 1.01
 
+        
 
-        self.move(self.speed * self.accel)
+        self.speed *= self.accel
+        if self.speed > self.original_speed:
+            self.speed = self.original_speed
+
+        self.move(self.speed)

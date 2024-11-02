@@ -17,7 +17,7 @@ GRAY = (50, 50, 50)
 # Road properties
 ROAD_HEIGHT = 100
 ROAD_Y = HEIGHT // 2 - ROAD_HEIGHT // 2  # Center the road vertically
-CAR_SPAWN_DELAY = 800  # Time in milliseconds between car spawns
+CAR_SPAWN_DELAY = 1500  # Time in milliseconds between car spawns
 
 # List to store cars and spawn timer
 cars = []
@@ -42,7 +42,7 @@ while running:
     # Spawn a new car if enough time has passed
     current_time = pygame.time.get_ticks()
     if current_time - last_car_spawn_time > CAR_SPAWN_DELAY:
-        speed = random.randint(2, 4)  # Random speed for each car
+        speed = random.randint(1, 2)  # Random speed for each car
         new_car = Car(speed)  # Create a new Car object (logic only)
         new_car.y = ROAD_Y + ROAD_HEIGHT // 2 - new_car.height // 2  # Set vertical position
         cars.append(new_car)
