@@ -7,6 +7,7 @@ class Settings:
     car_width: int = 30
     car_height: int = 20
     car_speed: float = 1.5
+    car_speed_variation: float = 0.5 #max car.speed
 
 
 

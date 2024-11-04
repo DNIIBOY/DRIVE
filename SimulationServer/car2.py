@@ -2,7 +2,7 @@ from random import randint as ri
 from random import uniform as ui
 
 from pid_control import PidControl
-from settings import Settings, pick_color
+from settings import Settings
 
 SAFE_DISTANCE = 50  # Minimum distance between cars
 
@@ -19,12 +19,30 @@ class Car:
         self.x = start_x  # Horizontal position on the road
         self.y = 0  # Vertical position will be set by main code if needed
         self.speed = self.settings.car_speed
-        self.original_speed = speed + ui(-1, 1)  # Initial speed reference
+        self.speed_variation = self.settings.car_speed_variation
+        self.original_speed = self.speed + ui(-self.speed_variation, self.speed_variation)  # Initial speed reference
         self.special = special
         self.accel = self.settings.car_accel
         self.width = self.settings.car_width
         self.height = self.settings.car_height
-        self.color_r, self.color_g, self.color_b = pick_color()
+        self.color_r, self.color_g, self.color_b = 0, 255, 0
+
+    def color_gradient(self, speed):
+        # Ensure speed is within the range 0 to 2
+        speed = max(0, min(2, speed))
+
+        if speed <= 1:
+            # Interpolate from red to green
+            red = int(255 * (1 - speed))
+            green = int(255 * speed)
+            blue = 0
+        else:
+            # Interpolate from green to blue
+            speed = speed - 1
+            red = 0
+            green = int(255 * (1 - speed))
+            blue = int(255 * speed)
+        self.color_r, self.color_g, self.color_b = red, green, blue
 
     def move(self):
         """Move the car by its current speed."""
@@ -49,7 +67,7 @@ class Car:
             self.speed = car_in_front.get_speed()
 
         # Speed control to approach optimal speed
-        p_speed = 0.35
+        p_speed = 0.20
         speed_error = self.original_speed - self.speed
         control_speed = speed_error * p_speed
 
@@ -73,6 +91,6 @@ class Car:
         self.speed = min(self.speed, self.original_speed)
 
         self.speed = max(0.1, self.speed)
-
+        self.color_gradient(self.speed)
         # Move car by its updated speed
         self.move()
