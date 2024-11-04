@@ -62,8 +62,7 @@ while running:
         # Check if there's enough space at the spawn point
         can_spawn = all(car.x > SAFE_SPAWN_DISTANCE for car in cars)  # No car should be within SAFE_SPAWN_DISTANCE
         if can_spawn:
-            speed = 1.5  # Random speed for each car
-            new_car = Car(speed)  # Create a new Car object (logic only)
+            new_car = Car()  # Create a new Car object (logic only)
             new_car.y = ROAD_Y + ROAD_HEIGHT // 2 - new_car.height // 2  # Set vertical position
             cars.append(new_car)
             last_car_spawn_time = current_time  # Update the last car spawn time

@@ -3,11 +3,12 @@ from random import uniform as ui
 
 from pid_control import PidControl
 from settings import Settings, pick_color
+
 SAFE_DISTANCE = 50  # Minimum distance between cars
 
 
 class Car:
-    def __init__(self, speed, start_x=0, special=False):
+    def __init__(self, start_x=0, special=False):
         """
         Initialize a car with a starting position and speed.
         Parameters:
@@ -17,14 +18,14 @@ class Car:
         self.settings = Settings()
         self.x = start_x  # Horizontal position on the road
         self.y = 0  # Vertical position will be set by main code if needed
-        self.speed = speed
-        self.original_speed = speed + ui(-0.1, 1.5)  # Initial speed reference
+        self.speed = self.settings.car_speed
+        self.original_speed = speed + ui(-1, 1)  # Initial speed reference
         self.special = special
         self.accel = self.settings.car_accel
         self.width = self.settings.car_width
         self.height = self.settings.car_height
-        self.color_r, self.color_g, self.color_b = pick_color() 
-        
+        self.color_r, self.color_g, self.color_b = pick_color()
+
     def move(self):
         """Move the car by its current speed."""
         self.x += self.speed
@@ -44,7 +45,7 @@ class Car:
         - car_in_front: The car directly ahead of this car.
         """
         if self.special and car_in_front:
-            #Mere logic skal ind!!!############################################################
+            # Mere logic skal ind!!!############################################################
             self.speed = car_in_front.get_speed()
 
         # Speed control to approach optimal speed
