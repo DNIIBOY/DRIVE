@@ -7,7 +7,7 @@ SAFE_DISTANCE = 50  # Minimum distance between cars
 
 
 class Car:
-    def __init__(self, speed, start_x=0, special=True):
+    def __init__(self, speed, start_x=0, special=False):
         """
         Initialize a car with a starting position and speed.
         Parameters:
