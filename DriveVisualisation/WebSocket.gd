@@ -16,10 +16,19 @@ signal message_received(message: Variant)
 
 const INV_65535 = 1.0 / 65535.0
 
+var focusedCar = 0
+var isFocusing = false
 func _input(event):
     if event.is_action_pressed("focus"):
-            #$Camera2D.Toggle_Focus()
-            pass
+            if isFocusing == false:
+                isFocusing = true
+                $Camera2D.pan_reset()
+                $Camera2D.zoom_set(Vector2(2,2))
+            else:
+                isFocusing = false
+                $Camera2D.global_position = Vector2(0,0)
+                $Camera2D.pan_reset()
+                $Camera2D.zoom_reset()
 
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
@@ -35,11 +44,15 @@ func _on_message_received(message: Variant) -> void:
         var is_focused_2 = items & (1 << 17)
         
         if is_focused_1 and is_focused_2:
-            cars[car_id].modulate(Color.PURPLE)
+            cars[car_id].modulate = Color.PURPLE
+            focusedCar = car_id
         elif is_focused_1:
-            cars[car_id].modulate(Color.GREEN)
+            cars[car_id].modulate = Color.SKY_BLUE
+            focusedCar = car_id
         elif is_focused_2:
-            cars[car_id].modulate(Color.RED)
+            cars[car_id].modulate = Color.RED
+        else:
+            cars[car_id].modulate = Color.GREEN
         
         cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
     
@@ -109,10 +122,12 @@ func _ready() -> void:
         $Path2D.add_child(cars[i])
         
     connect("message_received", Callable(self, "_on_message_received"))
-    connect_to_url("ws://localhost:5000/ws")
+    connect_to_url("ws://localhost:5000/ws/vis")
 
 func _physics_process(_delta: float) -> void:
     poll()
+    if(isFocusing):
+        $Camera2D.global_position = cars[focusedCar].global_position
     
 func CreateVisualLine(resolution: int):
     var line := $Line2D
