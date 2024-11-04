@@ -4,9 +4,9 @@ var pan_value = 3
 
 func _input(event):
     if event.is_action("zoom_in"):
-        zoom(0.1)
+        zoom_add(0.1)
     elif event.is_action("zoom_out"):
-        zoom(-0.1)
+        zoom_add(-0.1)
     
     if event.is_action("pan_right"):
         pan_horizontal(pan_value)
