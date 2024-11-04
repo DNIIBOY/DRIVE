@@ -94,7 +94,7 @@ class Simulation:
         deviation = self.config.speed_limit_deviation
         driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
         car = Car(driver=driver, id=self._id)
-        self._id += 1
+        self._id = (self._id + 1) % 1024
         car._speed = 10
         if not self.head:
             self.head = car
