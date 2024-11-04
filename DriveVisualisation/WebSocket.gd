@@ -23,7 +23,6 @@ func _on_message_received(message: Variant) -> void:
     #$Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
     for items in message:
         var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
-        car_id = car_id & 0x3FF # mask the first 10 bits
         
         var car_position = items & 0xFFFF
         

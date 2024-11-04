@@ -1,39 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=3 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
-[ext_resource type="Texture2D" uid="uid://ho030fkahysd" path="res://Textures/car.png" id="2_1m50r"]
 
 [sub_resource type="Curve2D" id="Curve2D_1frpa"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, -153, 108, -49.2094, 25.3984, 49.2094, -25.3984, 108, 66, 0, 0, 0, 0, 108, 66, 55.9626, 50.8611, -55.9626, -50.8611, 152, -78, 0, 0, 0, 0, 152, -78, 107.943, 7.937, -107.943, -7.937, -71, -156, 0, 0, 0, 0, -71, -156, 50.7968, -100.006, -50.7968, 100.006, -327, -44, 0, 0, 0, 0, -327, -44, -125.405, -134.929, 125.405, 134.929, -207, 227, 0, 0, 0, 0, -207, 227, -184.139, 114.293, 184.139, -114.293, 215, 236, 0, 0, 0, 0, 215, 236, 116.363, 208.31, -116.363, -208.31, 346, -151, 0, 0, 0, 0, 346, -151, 333.354, -74.6078, -333.354, 74.6078, -66, -225, 0, 0, 0, 0, -66, -225)
+"points": PackedVector2Array(0, 0, 0, 0, -488, -287, -4.26019, -104.954, 4.26019, 104.954, 465, -230, -1.49831, -112.373, 1.49831, 112.373, -479, -152, 0.525234, -128.936, -0.525234, 128.936, 448, -71, 0, -143.837, 0, 143.837, -464, 73, 0.0648823, -132.904, -0.0648823, 132.904, 435, 145, 0, 0, 0, 0, -430, 239)
 }
-point_count = 17
+point_count = 7
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_7cvgd")
-
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_left = -700.0
-offset_right = -346.0
-offset_bottom = 121.0
-text = "AlphaOmega"
-scroll_active = false
-autowrap_mode = 0
-text_direction = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(-2, 1)
 
 [node name="Path2D" type="Path2D" parent="."]
+position = Vector2(-6, 31)
 curve = SubResource("Curve2D_1frpa")
-
-[node name="CarTest" type="PathFollow2D" parent="Path2D"]
-position = Vector2(164.176, -14.1655)
-rotation = -1.23461
-progress = 363.835
-cubic_interp = false
-
-[node name="Sprite2D" type="Sprite2D" parent="Path2D/CarTest"]
-texture_filter = 1
-texture = ExtResource("2_1m50r")
-flip_h = true
