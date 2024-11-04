@@ -8,12 +8,12 @@ from time import sleep, time
 
 @dataclass
 class SimulationConfig:
-    speed_limit: int = 200
+    speed_limit: int = 500
     spawn_distance: int = 200
     kill_distance: int = 65535
 
     target_distance: int = 200
-    speed_limit_deviation: int = 10
+    speed_limit_deviation: int = 100
 
     update_interval: float = 0.05
 
@@ -59,14 +59,16 @@ class Simulation:
 
     def update_car(self, car: Car) -> None:
         accel = 1.0
-        if car._speed < self.config.speed_limit + car.driver.speed_limit_diff:
+        if car.speed < self.config.speed_limit + car.driver.speed_limit_diff:
             accel = 1.1
+            if car.speed < 2:
+                car.speed = 2
         else:
             accel = 0.9
 
         if not car.next:
-            car._speed *= accel
-            car.position += int(car._speed * self.config.update_interval)
+            car.speed *= accel
+            car.position += int(car.speed * self.config.update_interval)
             return
 
         dist = car.next.position - car.position
@@ -79,8 +81,8 @@ class Simulation:
         if dist == 0:
             pass
 
-        car._speed *= accel
-        car.position += int(car._speed * self.config.update_interval)
+        car.speed *= accel
+        car.position += int(car.speed * self.config.update_interval)
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -95,7 +97,7 @@ class Simulation:
         driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
         car = Car(driver=driver, id=self._id)
         self._id = (self._id + 1) % 1024
-        car._speed = 10
+        car.speed = 10
         if not self.head:
             self.head = car
 
