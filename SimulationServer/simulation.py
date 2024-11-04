@@ -10,7 +10,7 @@ from time import sleep, time
 class SimulationConfig:
     speed_limit: int = 200
     spawn_distance: int = 200
-    kill_distance: int = 10000
+    kill_distance: int = 65535
 
     target_distance: int = 200
     speed_limit_deviation: int = 10
@@ -24,6 +24,7 @@ class Simulation:
         self.head: Car = None
         self.tail: Car = None
         self.config = self._read_config()
+        self._id = 0
         self.create_car()
 
     def _read_config(self) -> SimulationConfig:
@@ -45,7 +46,7 @@ class Simulation:
     def update_cars(self) -> None:
         car = self.head
         while car:
-            if car._position > self.config.kill_distance:
+            if car.position > self.config.kill_distance:
                 self.destroy_car(car)
                 car = car.prev
                 continue
@@ -53,7 +54,7 @@ class Simulation:
             self.update_car(car)
             car = car.prev
 
-        if self.tail._position > self.config.spawn_distance:
+        if self.tail.position > self.config.spawn_distance:
             self.create_car()
 
     def update_car(self, car: Car) -> None:
@@ -65,10 +66,10 @@ class Simulation:
 
         if not car.next:
             car._speed *= accel
-            car._position += int(car._speed * self.config.update_interval)
+            car.position += int(car._speed * self.config.update_interval)
             return
 
-        dist = car.next._position - car._position
+        dist = car.next.position - car.position
         if dist > car.driver.target_distance:
             pass
 
@@ -78,7 +79,8 @@ class Simulation:
         if dist == 0:
             pass
 
-        car._position += int(car._speed * self.config.update_interval)
+        car._speed *= accel
+        car.position += int(car._speed * self.config.update_interval)
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -91,7 +93,8 @@ class Simulation:
     def create_car(self) -> Car:
         deviation = self.config.speed_limit_deviation
         driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
-        car = Car(driver=driver)
+        car = Car(driver=driver, id=self._id)
+        self._id += 1
         car._speed = 10
         if not self.head:
             self.head = car

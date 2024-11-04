@@ -39,7 +39,7 @@
     socket.addEventListener("message", (event) => {
         let val = event.data;
         val.arrayBuffer().then((buffer) => {
-            let vals = new Uint16Array(buffer)
+            let vals = new Uint32Array(buffer)
             cars = vals;
             updateCars(cars);
         });
