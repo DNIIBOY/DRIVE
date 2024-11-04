@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=5 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
+[ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
+[ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
 
 [sub_resource type="Curve2D" id="Curve2D_1frpa"]
 _data = {
@@ -12,8 +14,12 @@ point_count = 7
 script = ExtResource("1_7cvgd")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-2, 1)
+script = ExtResource("2_dtk33")
 
 [node name="Path2D" type="Path2D" parent="."]
-position = Vector2(-6, 31)
 curve = SubResource("Curve2D_1frpa")
+
+[node name="Line2D" type="Line2D" parent="."]
+show_behind_parent = true
+texture = ExtResource("2_w8alh")
+texture_mode = 1

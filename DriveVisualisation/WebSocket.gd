@@ -16,6 +16,11 @@ signal message_received(message: Variant)
 
 const INV_65535 = 1.0 / 65535.0
 
+func _input(event):
+    if event.is_action_pressed("focus"):
+            #$Camera2D.Toggle_Focus()
+            pass
+
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
 
@@ -25,6 +30,16 @@ func _on_message_received(message: Variant) -> void:
         var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
         
         var car_position = items & 0xFFFF
+        
+        var is_focused_1 = items & (1 << 16)
+        var is_focused_2 = items & (1 << 17)
+        
+        if is_focused_1 and is_focused_2:
+            cars[car_id].modulate(Color.PURPLE)
+        elif is_focused_1:
+            cars[car_id].modulate(Color.GREEN)
+        elif is_focused_2:
+            cars[car_id].modulate(Color.RED)
         
         cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
     
@@ -87,6 +102,7 @@ func poll() -> void:
 var car_scene = load("res://Nodes/Car.tscn")
 
 func _ready() -> void:
+    CreateVisualLine(20)
     cars.resize(1024)
     for i in range(1024):
         cars[i] = car_scene.instantiate()
@@ -97,3 +113,21 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
     poll()
+    
+func CreateVisualLine(resolution: int):
+    var line := $Line2D
+    #add_child(line)
+    line.default_color = Color.DIM_GRAY
+    line.width = 20
+    var samplePoint = 0.0
+    
+    var inverted_resolution = 1.0 / resolution
+    line.add_point($Path2D.curve.sample(0, 0))
+    for point in range($Path2D.curve.get_baked_points().size()):
+        samplePoint = 0.0
+        for subpoint in range(resolution):
+            samplePoint += inverted_resolution
+            line.add_point($Path2D.curve.sample(point, samplePoint))
+            
+            
+            
