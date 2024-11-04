@@ -1,6 +1,6 @@
 import pygame
 import random
-from car2 import Car  # Import the logic-only Car class
+from car3 import Car  # Import the logic-only Car class
 
 # Initialize Pygame
 pygame.init()
@@ -46,10 +46,12 @@ while running:
                     if pressed[pygame.K_w]:
                         car.original_speed = car.original_speed + 0.5
                     if pressed[pygame.K_s]:
-                        car.original_speed = car.original_speed - 0.5
+                        if car.braking == False:
+                            car.brake(True,0.005)
+                        else:
+                            car.brake(False,0.005)
                     selected_car = car
                     break  # Stop checking after finding the clicked car
-
     # Fill background with white color
     screen.fill(WHITE)
 
@@ -85,7 +87,7 @@ while running:
     # Display the speed of the selected car
     if selected_car:
         font = pygame.font.Font(None, 36)
-        speed_text = font.render(f"Speed {selected_car.speed}", True, (0, 0, 0))
+        speed_text = font.render(f"Speed {selected_car.reference_speed}", True, (0, 0, 0))
         screen.blit(speed_text, (10, 10))
 
     # Update the screen
