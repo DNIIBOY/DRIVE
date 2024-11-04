@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://claqtaj33f7cp"]
+
+[ext_resource type="Texture2D" uid="uid://ho030fkahysd" path="res://Textures/car.png" id="1_gfci3"]
+
+[node name="Car" type="PathFollow2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_gfci3")
+flip_h = true

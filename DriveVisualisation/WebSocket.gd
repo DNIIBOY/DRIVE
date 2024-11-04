@@ -8,6 +8,8 @@ var tls_options: TLSOptions = null
 var socket := WebSocketPeer.new()
 var last_state := WebSocketPeer.STATE_CLOSED
 
+var cars = []
+
 signal connected_to_server()
 signal connection_closed()
 signal message_received(message: Variant)
@@ -18,7 +20,14 @@ func remap_to_path_coord(value) -> float:
     return value * INV_65535
 
 func _on_message_received(message: Variant) -> void:
-    $Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    #$Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    for items in message:
+        var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
+        car_id = car_id & 0x3FF # mask the first 10 bits
+        
+        var car_position = items & 0xFFFF
+        
+        cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
     
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -76,10 +85,16 @@ func poll() -> void:
     while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
         message_received.emit(get_message())
 
+var car_scene = load("res://Nodes/Car.tscn")
 
 func _ready() -> void:
+    cars.resize(1024)
+    for i in range(1024):
+        cars[i] = car_scene.instantiate()
+        $Path2D.add_child(cars[i])
+        
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws")
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     poll()
