@@ -42,7 +42,9 @@
     <tbody>
         <tr>
             <td colspan=10>10 Bit Car ID (0-1023)</td>
-            <td colspan=6>6 Bit Other stuff</td>
+            <td colspan=4>4 Bit Other stuff</td>
+            <td colspan=1>HW2 Select</td>
+            <td colspan=1>HW1 Select</td>
             <td colspan=16>First 16 bits are for position, as an int (0-65535), meassured in dm</td>
         </tr>
     </tbody>
