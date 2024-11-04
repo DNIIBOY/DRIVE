@@ -2,7 +2,7 @@ from random import randint as ri
 from random import uniform as ui
 
 from pid_control import PidControl
-from settings import Settings
+from settings import Settings, pick_color
 SAFE_DISTANCE = 50  # Minimum distance between cars
 
 
@@ -23,8 +23,7 @@ class Car:
         self.accel = self.settings.car_accel
         self.width = self.settings.car_width
         self.height = self.settings.car_height
-        self.color_r, self.color_g, self.color_b = self.settings.car_color_r, self.settings.car_color_g, self.settings.car_color_b
-
+        self.color_r, self.color_g, self.color_b = pick_color() 
         
     def move(self):
         """Move the car by its current speed."""
