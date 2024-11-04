@@ -19,12 +19,6 @@ class Car:
         self._next: Car = None
         self._prev: Car = None
 
-        if self.id == 5:
-            self.hw1_target = True
-
-        if self.id == 10:
-            self.hw2_target = True
-
     @property
     def next(self) -> Car:
         return self._next

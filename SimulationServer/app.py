@@ -5,6 +5,7 @@ from simple_websocket.ws import Server
 import gevent
 from threading import Thread
 from simulation import Simulation
+from hardware import decode_hw_packet
 
 valkey = Valkey(host="localhost", port=6379, db=0)
 sock = Sock()
@@ -26,18 +27,23 @@ def index():
     return send_from_directory("static", "index.html")
 
 
-@sock.route("/test_ws")
-def test_socket(ws: Server):
-    print("connection")
-    val = 1234
-    while True:
-        ws.send(val.to_bytes(4, "little"))
-        gevent.sleep(0.07)
-
-
-@sock.route("/ws")
-def car_socket(ws: Server):
+@sock.route("/ws/vis")
+def visulation_socket(ws: Server):
     while True:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
+        gevent.sleep(0.07)
+
+
+@sock.route("/ws/hw/<int:hw_id>")
+def hardware_socket(ws: Server, hw_id: int):
+    print("Connected to hardware:", hw_id)
+    while True:
+        in_val = ws.receive(timeout=0)
+        if in_val:
+            car_id, brake_pressure = decode_hw_packet(in_val)
+            valkey.set(f"hw{hw_id}_car", car_id)
+            valkey.set(f"hw{hw_id}_brake", brake_pressure)
+            continue
+
         gevent.sleep(0.07)

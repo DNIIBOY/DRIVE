@@ -45,6 +45,12 @@ class Simulation:
 
     def update_cars(self) -> None:
         car = self.head
+        hw1_car = self.valkey.get("hw1_car")
+        hw2_car = self.valkey.get("hw2_car")
+
+        hw1_car = int(hw1_car.decode()) if hw1_car else None
+        hw2_car = int(hw2_car.decode()) if hw2_car else None
+
         while car:
             if car.position > self.config.kill_distance:
                 self.destroy_car(car)
@@ -52,6 +58,16 @@ class Simulation:
                 continue
 
             self.update_car(car)
+
+            if car.id == hw1_car:
+                car.hw1_target = True
+            else:
+                car.hw1_target = False
+            if car.id == hw2_car:
+                car.hw2_target = True
+            else:
+                car.hw2_target = False
+
             car = car.prev
 
         if self.tail.position > self.config.spawn_distance:
