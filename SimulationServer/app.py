@@ -40,4 +40,4 @@ def car_socket(ws: Server):
     while True:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
-        gevent.idle(0.07)
+        gevent.sleep(0.07)

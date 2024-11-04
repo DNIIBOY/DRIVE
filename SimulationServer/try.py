@@ -1,5 +1,4 @@
 import pygame
-import random
 from car2 import Car  # Import the logic-only Car class
 
 # Initialize Pygame
@@ -60,7 +59,8 @@ while running:
     current_time = pygame.time.get_ticks()
     if current_time - last_car_spawn_time > CAR_SPAWN_DELAY:
         # Check if there's enough space at the spawn point
-        can_spawn = all(car.x > SAFE_SPAWN_DISTANCE for car in cars)  # No car should be within SAFE_SPAWN_DISTANCE
+        # No car should be within SAFE_SPAWN_DISTANCE
+        can_spawn = all(car.x > SAFE_SPAWN_DISTANCE for car in cars)
         if can_spawn:
             speed = 1.5  # Random speed for each car
             new_car = Car(speed)  # Create a new Car object (logic only)
@@ -71,13 +71,14 @@ while running:
     # Move, check collision, and draw each car
     for i in range(len(cars) - 1, -1, -1):  # Loop backwards to safely remove cars
         car = cars[i]
-        
+
         # Check for collision with the car in front
         car_in_front = cars[i - 1] if i > 0 else None  # Car in front, if it exists
         car.check_collision_and_adjust_speed(car_in_front)  # Slow down if too close
 
         # Draw the car as a rectangle on the screen
-        pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b), (car.x, car.y, car.width, car.height))
+        pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b),
+                         (car.x, car.y, car.width, car.height))
 
         # Remove (despawn) car if it reaches the end of the road
         if car.get_position() >= WIDTH:

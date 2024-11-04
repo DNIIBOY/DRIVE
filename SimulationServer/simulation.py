@@ -4,7 +4,6 @@ from valkey import Valkey
 from car import Car
 from driver import Driver
 from time import sleep, time
-from pid_control import PidControl
 
 
 @dataclass
@@ -59,33 +58,26 @@ class Simulation:
 
     def update_car(self, car: Car) -> None:
         accel = 1.0
-        # if car._speed < self.config.speed_limit + car.driver.speed_limit_diff:
-        #     accel = 1.1
-        # else:
-        #     accel = 0.9
+        if car._speed < self.config.speed_limit + car.driver.speed_limit_diff:
+            accel = 1.1
+        else:
+            accel = 0.9
 
         if not car.next:
             car._speed *= accel
-            print(car._speed)
             car._position += int(car._speed * self.config.update_interval)
             return
 
         dist = car.next._position - car._position
-        # if dist > car.driver.target_distance:
-        #     pass
+        if dist > car.driver.target_distance:
+            pass
 
-        # elif dist < car.driver.target_distance:
-        #     accel = 0.9
+        elif dist < car.driver.target_distance:
+            accel = 0.9
 
-        # if dist == 0:
-        #     pass
-            
-        accel = PidControl.pid_calculator(car.driver.target_distance,dist) # can shift between 0.1 and 1.9
+        if dist == 0:
+            pass
 
-
-
-
-        car._speed *= accel
         car._position += int(car._speed * self.config.update_interval)
 
     def serialize_cars(self) -> bytes:

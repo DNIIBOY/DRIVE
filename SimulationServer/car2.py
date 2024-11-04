@@ -1,8 +1,8 @@
-from pid_control import PidControl
 from random import randint as ri
 from random import uniform as ui
 
 SAFE_DISTANCE = 50  # Minimum distance between cars
+
 
 class Car:
     def __init__(self, speed, start_x=0):
@@ -15,7 +15,7 @@ class Car:
         self.x = start_x  # Horizontal position on the road
         self.y = 0  # Vertical position will be set by main code if needed
         self.speed = speed
-        self.original_speed = speed + ui(-0.1,1.5)  # Initial speed reference
+        self.original_speed = speed + ui(-0.1, 1.5)  # Initial speed reference
         self.accel = 1.0
         self.width = 30
         self.height = 20
@@ -36,7 +36,7 @@ class Car:
         Parameters:
         - car_in_front: The car directly ahead of this car.
         """
-        
+
         # Speed control to approach optimal speed
         p_speed = 0.35
         speed_error = self.original_speed - self.speed
@@ -58,9 +58,8 @@ class Car:
         # Update speed based on acceleration, ensuring it doesn’t exceed original speed
         self.speed *= self.accel
         self.speed = min(self.speed, self.original_speed)
-        
-        self.speed = max(0.1, self.speed)
 
+        self.speed = max(0.1, self.speed)
 
         # Move car by its updated speed
         self.move()
