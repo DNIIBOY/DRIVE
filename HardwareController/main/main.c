@@ -48,27 +48,23 @@ void nvs_init(void) {
     ESP_ERROR_CHECK(ret);
 }
 
-void app_main(void) {
-
-adc1_config_width(ADC_WIDTH_BIT_12);
-adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
-adc1_config_channel_atten(ADC1_CHANNEL_1, ADC_ATTEN_DB_11);
-
-while (1) {
-  adc_value_x = adc1_get_raw(ADC1_CHANNEL_0);
-  adc_value_y = adc1_get_raw(ADC1_CHANNEL_1);
-  int brake_pressure = (sqrt(pow(adc_value_x - 2360, 2) + pow(adc_value_y - 2393, 2)));
-
-  ESP_LOGI("main: ", "x: %d, y: %d, brake_pressure: %d", adc_value_x, adc_value_y, brake_pressure);
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
+void lcd_task(void *param) {
+  while (true) {
+    lcd_cursor_first_line();
+    lcd_write_str("Hello World");
+    lcd_set_cursor(0, 1);
+    lcd_write_str("Hello world pt2");
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    lcd_cursor_first_line();
+    lcd_write_str("WOW");
+    lcd_set_cursor(0, 1);
+    lcd_write_str("Hello");
+  }
 }
 
-  /*
-  //Rotary encoder
-  gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT); 
-  gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
-  int last_CLK_lvl = gpio_get_level(ENCODER_CLK);
-  while (1) {
+void encoder_task(void *param) {
+    int last_CLK_lvl = gpio_get_level(ENCODER_CLK);
+while (1) {
     CLK_lvl = gpio_get_level(ENCODER_CLK);
     DT_lvl = gpio_get_level(ENCODER_DT);
 
@@ -85,12 +81,51 @@ while (1) {
     last_CLK_lvl = CLK_lvl;
     vTaskDelay(5 / portTICK_PERIOD_MS);
   }
-  */
+}
 
-  /*
+void joystick_task(void *param) {
+  while (1) {
+    adc_value_x = adc1_get_raw(ADC1_CHANNEL_0);
+    adc_value_y = adc1_get_raw(ADC1_CHANNEL_1);
+    int brake_pressure = (sqrt(pow(adc_value_x - 2360, 2) + pow(adc_value_y - 2393, 2)));
+
+    ESP_LOGI("main: ", "x: %d, y: %d, brake_pressure: %d", adc_value_x, adc_value_y, brake_pressure);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+  }
+}
+
+void app_main(void) {
+
+//Joystick:
+adc1_config_width(ADC_WIDTH_BIT_12);
+adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
+adc1_config_channel_atten(ADC1_CHANNEL_1, ADC_ATTEN_DB_11);
+adc1_config_channel_atten(ADC1_CHANNEL_2, ADC_ATTEN_DB_11);
+
+while (1) {
+  int pressure_value = adc1_get_raw(ADC1_CHANNEL_2);
+  ESP_LOGI("main: ", "Touchsensor pressure: %d", pressure_value);
+  vTaskDelay(200 / portTICK_PERIOD_MS);
+}
+
+
+  //Rotary encoder
+  gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT); 
+  gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
+
+
+  
+  
+
+
+
     // dette er til at lave i2c linje og lave en lcd_task
-    lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
-    xTaskCreate(&lcd_task, "Demo Task", 2048, NULL, 5, NULL);
+
+    //lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
+    //xTaskCreate(&lcd_task, "Demo Task", 2048, NULL, 5, NULL);
+
+    xTaskCreate(&encoder_task, "Demo Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&joystick_task, "Demo Task", 2048, NULL, 4, NULL);
 
     // dette er til at gemme SSID og Password
     nvs_init(); // Initialize NVS
@@ -114,6 +149,6 @@ while (1) {
     // Cleanup
     esp_websocket_client_stop(client);
     esp_websocket_client_destroy(client);
-    */
+
 }
 
