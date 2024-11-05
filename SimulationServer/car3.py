@@ -207,7 +207,7 @@ class Car:
                 p_dist = 2.2
                 dist_error = SAFE_DISTANCE - distance_to_front_car
                 control_distance = -dist_error * p_dist * 0.049
-
+    
         # Combine speed and distance controls into acceleration factor
         self.accel = 1.0 + control_speed + control_distance
         self.accel = max(0.3, min(self.accel, 1.1))  # Clamp accel to avoid extreme values

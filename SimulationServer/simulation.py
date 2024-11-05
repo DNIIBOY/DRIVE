@@ -59,7 +59,7 @@ class Simulation:
             self.create_car()
 
     def update_car(self, car: Car) -> None:
-        car.check_collision_and_adjust_speed(car.next)
+        car.check_collision_and_adjust_speed()
         
 
     def serialize_cars(self) -> bytes:
@@ -74,7 +74,6 @@ class Simulation:
         deviation = self.config.speed_limit_deviation
         driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
         car = Car(0)
-        car._speed = 10
         if not self.head:
             self.head = car
 
