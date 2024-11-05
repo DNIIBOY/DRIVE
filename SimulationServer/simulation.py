@@ -4,6 +4,7 @@ from car import Car
 from time import sleep, time
 from config import SimulationConfig
 from pid_control import pid_calculator
+from idm import idm
 
 
 class Simulation:
@@ -57,7 +58,8 @@ class Simulation:
                     car.reference_speed + car.max_ref_inc
                 )
 
-        car.accel = pid_calculator(car, self.config)
+        #car.accel = pid_calculator(car, self.config)
+        car.accel = idm(car, self.config)
         car.speed *= car.accel
         car.speed = min(car.speed, car.target_speed)
         car.speed = max(0.1, car.speed)
