@@ -47,7 +47,6 @@ class Simulation:
         car = self.head
         hw1_car = self.valkey.get("hw1_car")
         hw2_car = self.valkey.get("hw2_car")
-
         hw1_car = int(hw1_car.decode()) if hw1_car else None
         hw2_car = int(hw2_car.decode()) if hw2_car else None
 
@@ -57,23 +56,31 @@ class Simulation:
                 car = car.prev
                 continue
 
-            self.update_car(car)
-
             if car.id == hw1_car:
                 car.hw1_target = True
             else:
                 car.hw1_target = False
+
             if car.id == hw2_car:
                 car.hw2_target = True
             else:
                 car.hw2_target = False
 
+            self.update_car(car)
             car = car.prev
 
         if self.tail.position > self.config.spawn_distance:
             self.create_car()
 
     def update_car(self, car: Car) -> None:
+        brake = 0
+        if car.hw1_target and car.hw2_target:
+            brake = max(self.valkey.get("hw1_brake"), self.valkey.get("hw2_brake"))
+        elif car.hw1_target:
+            brake = self.valkey.get("hw1_brake")
+        elif car.hw2_target:
+            brake = self.valkey.get("hw2_brake")
+
         accel = 1.0
         if car.speed < self.config.speed_limit + car.driver.speed_limit_diff:
             accel = 1.1
@@ -81,6 +88,9 @@ class Simulation:
                 car.speed = 2
         else:
             accel = 0.9
+
+        if brake:
+            accel = 0.5
 
         if not car.next:
             car.speed *= accel
@@ -98,6 +108,10 @@ class Simulation:
             pass
 
         car.speed *= accel
+        if car.hw1_target:
+            self.valkey.set("hw1_speed", car.speed)
+        if car.hw2_target:
+            self.valkey.set("hw2_speed", car.speed)
         car.position += int(car.speed * self.config.update_interval)
 
     def serialize_cars(self) -> bytes:
