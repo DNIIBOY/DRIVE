@@ -40,11 +40,29 @@ func _on_message_received(message: Variant) -> void:
         
         var car_position = items & 0xFFFF
         var car_coord = remap_to_path_coord(car_position) 
-        if 0.0 < car_coord:
-            cars[car_id].active = true
         
+        if 0.0 < car_coord and car_coord < 1.0:
+            var is_focused_1 = items & (1 << 16)
+            var is_focused_2 = items & (1 << 17)
+            
+            if is_focused_1 and is_focused_2:
+                cars[car_id].modulate = Color.PURPLE
+                focusedCar = car_id
+            elif is_focused_1:
+                cars[car_id].modulate = Color.SKY_BLUE
+                focusedCar = car_id
+            elif is_focused_2:
+                cars[car_id].modulate = Color.RED
+            else:
+                cars[car_id].modulate = Color.GREEN
+            
+            #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+            cars[car_id].set_new_target(car_coord) #
+        else:
+            cars[car_id].set_inactive()
+    
         
-        var is_focused_1 = items & (1 << 16)
+        """var is_focused_1 = items & (1 << 16)
         var is_focused_2 = items & (1 << 17)
         
         if is_focused_1 and is_focused_2:
@@ -59,7 +77,7 @@ func _on_message_received(message: Variant) -> void:
             cars[car_id].modulate = Color.GREEN
         
         #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
-        cars[car_id].set_new_target(car_coord) #
+        cars[car_id].set_new_target(car_coord) #"""
     
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -126,11 +144,14 @@ func _ready() -> void:
         cars[i] = car_scene.instantiate()
         $GeneratedPath.add_child(cars[i])
         
+        
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
 
 func _physics_process(_delta: float) -> void:
     poll()
+
+func _process(_delta: float) -> void:
     if(isFocusing):
         $Camera2D.global_position = cars[focusedCar].global_position
         $Camera2D.offset = Vector2(0,0)
