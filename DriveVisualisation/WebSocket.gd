@@ -115,11 +115,11 @@ func poll() -> void:
 var car_scene = load("res://Nodes/Car.tscn")
 
 func _ready() -> void:
-    CreateVisualLine(20)
+    CreateVisualLine()
     cars.resize(1024)
     for i in range(1024):
         cars[i] = car_scene.instantiate()
-        $Path2D.add_child(cars[i])
+        $GeneratedPath.add_child(cars[i])
         
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
@@ -129,13 +129,15 @@ func _physics_process(_delta: float) -> void:
     if(isFocusing):
         $Camera2D.global_position = cars[focusedCar].global_position
     
-func CreateVisualLine(resolution: int):
+func CreateVisualLine():
+    var resolution = 30
     var line := $Line2D
     #add_child(line)
     line.default_color = Color.DIM_GRAY
-    line.width = 20
+    line.width = 35
     var samplePoint = 0.0
     
+    """ #Code beneath is for the old path
     var inverted_resolution = 1.0 / resolution
     line.add_point($Path2D.curve.sample(0, 0))
     for point in range($Path2D.curve.get_baked_points().size()):
@@ -143,6 +145,14 @@ func CreateVisualLine(resolution: int):
         for subpoint in range(resolution):
             samplePoint += inverted_resolution
             line.add_point($Path2D.curve.sample(point, samplePoint))
+    """
+    var inverted_resolution = 1.0 / resolution
+    line.add_point($GeneratedPath.curve.sample(0, 0))
+    for point in range($GeneratedPath.curve.get_baked_points().size()):
+        samplePoint = 0.0
+        for subpoint in range(resolution):
+            samplePoint += inverted_resolution
+            line.add_point($GeneratedPath.curve.sample(point, samplePoint))
             
             
             

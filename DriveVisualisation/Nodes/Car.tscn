@@ -4,6 +4,7 @@
 
 [node name="Car" type="PathFollow2D"]
 physics_interpolation_mode = 2
+v_offset = 7.0
 loop = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
