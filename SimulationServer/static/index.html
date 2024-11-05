@@ -23,8 +23,7 @@
         road.innerHTML = "";
         for (let i = 0; i < cars.length; i++) {
             let car = cars[i];
-            let isTarget = car & 0x8000;
-            let position = car & 0x7FFF;
+            let position = car & 0xFFFF;
             let div = document.createElement("div");
             div.className = "absolute w-fit px-3 py-2 rounded-lg text-gray-100 " + (isTarget ? "bg-red-500" : "bg-green-500") + " left-" + `[${position/100}%]`
             road.appendChild(div);
@@ -39,7 +38,7 @@
     socket.addEventListener("message", (event) => {
         let val = event.data;
         val.arrayBuffer().then((buffer) => {
-            let vals = new Uint16Array(buffer)
+            let vals = new Uint32Array(buffer)
             cars = vals;
             updateCars(cars);
         });

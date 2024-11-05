@@ -41,9 +41,11 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan=8>8 Bit Car ID (0-255)</td>
-            <td colspan=8>8 Bit Other stuff</td>
-            <td colspan=16>First 16 bits are for position, as an int (0-65535)</td>
+            <td colspan=10>10 Bit Car ID (0-1023)</td>
+            <td colspan=4>4 Bit Other stuff</td>
+            <td colspan=1>HW2 Select</td>
+            <td colspan=1>HW1 Select</td>
+            <td colspan=16>First 16 bits are for position, as an int (0-65535), meassured in dm</td>
         </tr>
     </tbody>
 </table>
@@ -86,9 +88,9 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan=8>8 Bit Currently Selected Car ID (0-255)</td>
-            <td colspan=12>12 Bit for warning data</td>
-            <td colspan=12>First 12 bits are for current speed, as an int (0-4095)</td>
+            <td colspan=10>10 Bit Currently Selected Car ID (0-1023)</td>
+            <td colspan=10>10 Bit for warning data</td>
+            <td colspan=12>First 12 bits are for current speed, as an int (0-4095), measured in dm/s</td>
         </tr>
     </tbody>
 </table>
@@ -117,8 +119,8 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan=8>8 Bit Currently Selected Car ID (0-255)</td>
-            <td colspan=8>8 Bit Current Brake Pressure (0-255)</td>
+            <td colspan=10>10 Bit Currently Selected Car ID (0-1023)</td>
+            <td colspan=6>6 Bit Current Brake Pressure (0-63)</td>
         </tr>
     </tbody>
 </table>

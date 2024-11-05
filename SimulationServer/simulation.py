@@ -4,17 +4,16 @@ from valkey import Valkey
 from car3 import Car
 from driver import Driver
 from time import sleep, time
-from pid_control import PidControl
 
 
 @dataclass
 class SimulationConfig:
-    speed_limit: int = 200
+    speed_limit: int = 500
     spawn_distance: int = 200
-    kill_distance: int = 10000
+    kill_distance: int = 65535
 
     target_distance: int = 200
-    speed_limit_deviation: int = 10
+    speed_limit_deviation: int = 100
 
     update_interval: float = 0.05
 
@@ -25,6 +24,7 @@ class Simulation:
         self.head: Car = None
         self.tail: Car = None
         self.config = self._read_config()
+        self._id = 0
         self.create_car()
 
     def _read_config(self) -> SimulationConfig:
@@ -45,48 +45,74 @@ class Simulation:
 
     def update_cars(self) -> None:
         car = self.head
+        hw1_car = self.valkey.get("hw1_car")
+        hw2_car = self.valkey.get("hw2_car")
+        hw1_car = int(hw1_car.decode()) if hw1_car else None
+        hw2_car = int(hw2_car.decode()) if hw2_car else None
+
         while car:
-            if car._position > self.config.kill_distance:
+            if car.position > self.config.kill_distance:
                 self.destroy_car(car)
                 car = car.prev
                 continue
 
+            if car.id == hw1_car:
+                car.hw1_target = True
+            else:
+                car.hw1_target = False
+
+            if car.id == hw2_car:
+                car.hw2_target = True
+            else:
+                car.hw2_target = False
+
             self.update_car(car)
             car = car.prev
 
-        if self.tail._position > self.config.spawn_distance:
+        if self.tail.position > self.config.spawn_distance:
             self.create_car()
 
     def update_car(self, car: Car) -> None:
+        brake = 0
+        if car.hw1_target and car.hw2_target:
+            brake = max(self.valkey.get("hw1_brake"), self.valkey.get("hw2_brake"))
+        elif car.hw1_target:
+            brake = self.valkey.get("hw1_brake")
+        elif car.hw2_target:
+            brake = self.valkey.get("hw2_brake")
+
         accel = 1.0
-        # if car._speed < self.config.speed_limit + car.driver.speed_limit_diff:
-        #     accel = 1.1
-        # else:
-        #     accel = 0.9
+        if car.speed < self.config.speed_limit + car.driver.speed_limit_diff:
+            accel = 1.1
+            if car.speed < 2:
+                car.speed = 2
+        else:
+            accel = 0.9
+
+        if brake:
+            accel = 0.5
 
         if not car.next:
-            car._speed *= accel
-            print(car._speed)
-            car._position += int(car._speed * self.config.update_interval)
+            car.speed *= accel
+            car.position += int(car.speed * self.config.update_interval)
             return
 
-        dist = car.next._position - car._position
-        # if dist > car.driver.target_distance:
-        #     pass
+        dist = car.next.position - car.position
+        if dist > car.driver.target_distance:
+            pass
 
-        # elif dist < car.driver.target_distance:
-        #     accel = 0.9
+        elif dist < car.driver.target_distance:
+            accel = 0.9
 
-        # if dist == 0:
-        #     pass
-            
-        accel = PidControl.pid_calculator(car.driver.target_distance,dist) # can shift between 0.1 and 1.9
+        if dist == 0:
+            pass
 
-
-
-
-        car._speed *= accel
-        car._position += int(car._speed * self.config.update_interval)
+        car.speed *= accel
+        if car.hw1_target:
+            self.valkey.set("hw1_speed", car.speed)
+        if car.hw2_target:
+            self.valkey.set("hw2_speed", car.speed)
+        car.position += int(car.speed * self.config.update_interval)
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -99,8 +125,9 @@ class Simulation:
     def create_car(self) -> Car:
         deviation = self.config.speed_limit_deviation
         driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
-        car = Car(driver=driver)
-        car._speed = 10
+        car = Car(driver=driver, id=self._id)
+        self._id = (self._id + 1) % 1024
+        car.speed = 10
         if not self.head:
             self.head = car
 

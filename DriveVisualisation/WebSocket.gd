@@ -8,17 +8,53 @@ var tls_options: TLSOptions = null
 var socket := WebSocketPeer.new()
 var last_state := WebSocketPeer.STATE_CLOSED
 
+var cars = []
+
 signal connected_to_server()
 signal connection_closed()
 signal message_received(message: Variant)
 
 const INV_65535 = 1.0 / 65535.0
 
+var focusedCar = 0
+var isFocusing = false
+func _input(event):
+    if event.is_action_pressed("focus"):
+            if isFocusing == false:
+                isFocusing = true
+                $Camera2D.pan_reset()
+                $Camera2D.zoom_set(Vector2(2,2))
+            else:
+                isFocusing = false
+                $Camera2D.global_position = Vector2(0,0)
+                $Camera2D.pan_reset()
+                $Camera2D.zoom_reset()
+
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
 
 func _on_message_received(message: Variant) -> void:
-    $Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    #$Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    for items in message:
+        var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
+        
+        var car_position = items & 0xFFFF
+        
+        var is_focused_1 = items & (1 << 16)
+        var is_focused_2 = items & (1 << 17)
+        
+        if is_focused_1 and is_focused_2:
+            cars[car_id].modulate = Color.PURPLE
+            focusedCar = car_id
+        elif is_focused_1:
+            cars[car_id].modulate = Color.SKY_BLUE
+            focusedCar = car_id
+        elif is_focused_2:
+            cars[car_id].modulate = Color.RED
+        else:
+            cars[car_id].modulate = Color.GREEN
+        
+        cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
     
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -76,10 +112,37 @@ func poll() -> void:
     while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
         message_received.emit(get_message())
 
+var car_scene = load("res://Nodes/Car.tscn")
 
 func _ready() -> void:
+    CreateVisualLine(20)
+    cars.resize(1024)
+    for i in range(1024):
+        cars[i] = car_scene.instantiate()
+        $Path2D.add_child(cars[i])
+        
     connect("message_received", Callable(self, "_on_message_received"))
-    connect_to_url("ws://localhost:5000/ws")
+    connect_to_url("ws://localhost:5000/ws/vis")
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     poll()
+    if(isFocusing):
+        $Camera2D.global_position = cars[focusedCar].global_position
+    
+func CreateVisualLine(resolution: int):
+    var line := $Line2D
+    #add_child(line)
+    line.default_color = Color.DIM_GRAY
+    line.width = 20
+    var samplePoint = 0.0
+    
+    var inverted_resolution = 1.0 / resolution
+    line.add_point($Path2D.curve.sample(0, 0))
+    for point in range($Path2D.curve.get_baked_points().size()):
+        samplePoint = 0.0
+        for subpoint in range(resolution):
+            samplePoint += inverted_resolution
+            line.add_point($Path2D.curve.sample(point, samplePoint))
+            
+            
+            
