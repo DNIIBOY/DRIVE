@@ -1,10 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://claqtaj33f7cp"]
+[gd_scene load_steps=3 format=3 uid="uid://claqtaj33f7cp"]
 
 [ext_resource type="Texture2D" uid="uid://dctu01gxq8msy" path="res://Textures/CarSimple.png" id="1_53oc8"]
+[ext_resource type="Script" path="res://Nodes/car_interpolate.gd" id="1_pdam6"]
 
 [node name="Car" type="PathFollow2D"]
 physics_interpolation_mode = 2
 loop = false
+script = ExtResource("1_pdam6")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.04, 0.04)

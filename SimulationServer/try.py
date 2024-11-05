@@ -1,5 +1,6 @@
 import pygame
-from car2 import Car  # Import the logic-only Car class
+import random
+from car3 import Car  # Import the logic-only Car class
 
 # Initialize Pygame
 pygame.init()
@@ -39,16 +40,18 @@ while running:
             # Check if any car was clicked
             mouse_x, mouse_y = pygame.mouse.get_pos()
             for car in cars:
-                car_rect = pygame.Rect(car.x, car.y, car.width, car.height)
+                car_rect = pygame.Rect(car._position, car.y, car.width, car.height)
                 if car_rect.collidepoint(mouse_x, mouse_y):
                     pressed = pygame.key.get_pressed()
                     if pressed[pygame.K_w]:
                         car.original_speed = car.original_speed + 0.5
                     if pressed[pygame.K_s]:
-                        car.original_speed = car.original_speed - 0.5
+                        if car.braking == False:
+                            car.brake(True,0.005)
+                        else:
+                            car.brake(False,0.005)
                     selected_car = car
                     break  # Stop checking after finding the clicked car
-
     # Fill background with white color
     screen.fill(WHITE)
 
@@ -60,10 +63,9 @@ while running:
     if current_time - last_car_spawn_time > CAR_SPAWN_DELAY:
         # Check if there's enough space at the spawn point
         # No car should be within SAFE_SPAWN_DISTANCE
-        can_spawn = all(car.x > SAFE_SPAWN_DISTANCE for car in cars)
+        can_spawn = all(car._position > SAFE_SPAWN_DISTANCE for car in cars)
         if can_spawn:
-            speed = 1.5  # Random speed for each car
-            new_car = Car(speed)  # Create a new Car object (logic only)
+            new_car = Car()  # Create a new Car object (logic only)
             new_car.y = ROAD_Y + ROAD_HEIGHT // 2 - new_car.height // 2  # Set vertical position
             cars.append(new_car)
             last_car_spawn_time = current_time  # Update the last car spawn time
@@ -78,16 +80,16 @@ while running:
 
         # Draw the car as a rectangle on the screen
         pygame.draw.rect(screen, (car.color_r, car.color_g, car.color_b),
-                         (car.x, car.y, car.width, car.height))
+                         (car._position, car.y, car.width, car.height))
 
         # Remove (despawn) car if it reaches the end of the road
-        if car.get_position() >= WIDTH:
+        if car._position >= WIDTH:
             cars.pop(i)  # Remove car from the list
 
     # Display the speed of the selected car
     if selected_car:
         font = pygame.font.Font(None, 36)
-        speed_text = font.render(f"Speed {selected_car.speed}", True, (0, 0, 0))
+        speed_text = font.render(f"Speed {selected_car.reference_speed}", True, (0, 0, 0))
         screen.blit(speed_text, (10, 10))
 
     # Update the screen

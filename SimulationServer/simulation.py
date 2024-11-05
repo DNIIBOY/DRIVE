@@ -1,21 +1,10 @@
-from dataclasses import dataclass
 import random
 from valkey import Valkey
 from car import Car
-from driver import Driver
 from time import sleep, time
-
-
-@dataclass
-class SimulationConfig:
-    speed_limit: int = 500
-    spawn_distance: int = 200
-    kill_distance: int = 65535
-
-    target_distance: int = 200
-    speed_limit_deviation: int = 100
-
-    update_interval: float = 0.05
+from config import SimulationConfig
+from pid_control import pid_calculator
+from idm import idm
 
 
 class Simulation:
@@ -45,13 +34,14 @@ class Simulation:
 
     def update_cars(self) -> None:
         car = self.head
+
         hw1_car = self.valkey.get("hw1_car")
         hw2_car = self.valkey.get("hw2_car")
         hw1_car = int(hw1_car.decode()) if hw1_car else None
         hw2_car = int(hw2_car.decode()) if hw2_car else None
 
         while car:
-            if car.position > self.config.kill_distance:
+            if car.position >= self.config.kill_distance:
                 self.destroy_car(car)
                 car = car.prev
                 continue
@@ -72,47 +62,27 @@ class Simulation:
         if self.tail.position > self.config.spawn_distance:
             self.create_car()
 
+        self.valkey.set("head", self.head.id)
+        self.valkey.set("tail", self.tail.id)
+
     def update_car(self, car: Car) -> None:
-        brake = 0
-        if car.hw1_target and car.hw2_target:
-            brake = max(self.valkey.get("hw1_brake"), self.valkey.get("hw2_brake"))
-        elif car.hw1_target:
-            brake = self.valkey.get("hw1_brake")
-        elif car.hw2_target:
-            brake = self.valkey.get("hw2_brake")
-
-        accel = 1.0
-        if car.speed < self.config.speed_limit + car.driver.speed_limit_diff:
-            accel = 1.1
-            if car.speed < 2:
-                car.speed = 2
+        if car.brake_amount:
+            # Decrease reference speed by brake_amount, but not below 0
+            car.reference_speed = max(0, car.reference_speed - car.brake_amount)
         else:
-            accel = 0.9
+            # Gradually restore reference speed up to original speed
+            if car.reference_speed < car.target_speed:
+                car.reference_speed = min(
+                    car.original_speed,
+                    car.reference_speed + car.max_ref_inc
+                )
 
-        if brake:
-            accel = 0.5
-
-        if not car.next:
-            car.speed *= accel
-            car.position += int(car.speed * self.config.update_interval)
-            return
-
-        dist = car.next.position - car.position
-        if dist > car.driver.target_distance:
-            pass
-
-        elif dist < car.driver.target_distance:
-            accel = 0.9
-
-        if dist == 0:
-            pass
-
-        car.speed *= accel
-        if car.hw1_target:
-            self.valkey.set("hw1_speed", car.speed)
-        if car.hw2_target:
-            self.valkey.set("hw2_speed", car.speed)
-        car.position += int(car.speed * self.config.update_interval)
+        #car.accel = pid_calculator(car, self.config)
+        car.accel = idm(car, self.config)
+        car.speed *= car.accel
+        car.speed = min(car.speed, car.target_speed)
+        car.speed = max(0.1, car.speed)
+        car.position += car.speed
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -123,11 +93,8 @@ class Simulation:
         return rep
 
     def create_car(self) -> Car:
-        deviation = self.config.speed_limit_deviation
-        driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
-        car = Car(driver=driver, id=self._id)
-        self._id = (self._id + 1) % 1024
-        car.speed = 10
+        car = Car(config=self.config, id=self._id)
+        self._id += 1
         if not self.head:
             self.head = car
 

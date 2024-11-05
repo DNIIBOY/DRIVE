@@ -15,6 +15,7 @@ signal connection_closed()
 signal message_received(message: Variant)
 
 const INV_65535 = 1.0 / 65535.0
+const INV_16 = 1.0 / 16
 
 var focusedCar = 0
 var isFocusing = false
@@ -39,8 +40,32 @@ func _on_message_received(message: Variant) -> void:
         var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
         
         var car_position = items & 0xFFFF
+        var car_coord = remap_to_path_coord(car_position) 
         
-        var is_focused_1 = items & (1 << 16)
+        if 0.0 < car_coord and car_coord < 1.0:
+            var is_focused_1 = items & (1 << 16)
+            var is_focused_2 = items & (1 << 17)
+            
+            if is_focused_1 and is_focused_2:
+                cars[car_id].modulate = Color.PURPLE
+                focusedCar = car_id
+            elif is_focused_1:
+                cars[car_id].modulate = Color.SKY_BLUE
+                focusedCar = car_id
+            elif is_focused_2:
+                cars[car_id].modulate = Color.RED
+            else:
+                var color = items >> 18
+                color = color & 0xF
+                cars[car_id].modulate = gradient.sample(color * INV_16)
+            
+            #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+            cars[car_id].set_new_target(car_coord) #
+        else:
+            cars[car_id].set_inactive()
+    
+        
+        """var is_focused_1 = items & (1 << 16)
         var is_focused_2 = items & (1 << 17)
         
         if is_focused_1 and is_focused_2:
@@ -54,7 +79,8 @@ func _on_message_received(message: Variant) -> void:
         else:
             cars[car_id].modulate = Color.GREEN
         
-        cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+        #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+        cars[car_id].set_new_target(car_coord) #"""
     
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -114,28 +140,41 @@ func poll() -> void:
 
 var car_scene = load("res://Nodes/Car.tscn")
 
+var gradient = Gradient.new()
 func _ready() -> void:
-    CreateVisualLine(20)
+    
+    gradient.set_color(0.0, Color(1,0,0,1))
+    gradient.set_color(1.0, Color.BLUE)
+    gradient.add_point(0.5, Color(0,1,0,1))
+    print(gradient.get_point_count())
+        
+    CreateVisualLine()
     cars.resize(1024)
     for i in range(1024):
         cars[i] = car_scene.instantiate()
-        $Path2D.add_child(cars[i])
+        $GeneratedPath.add_child(cars[i])
+        
         
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
 
 func _physics_process(_delta: float) -> void:
     poll()
+
+func _process(_delta: float) -> void:
     if(isFocusing):
         $Camera2D.global_position = cars[focusedCar].global_position
+        $Camera2D.offset = Vector2(0,0)
     
-func CreateVisualLine(resolution: int):
+func CreateVisualLine():
+    var resolution = 30
     var line := $Line2D
     #add_child(line)
     line.default_color = Color.DIM_GRAY
-    line.width = 20
+    line.width = 35
     var samplePoint = 0.0
     
+    """ #Code beneath is for the old path
     var inverted_resolution = 1.0 / resolution
     line.add_point($Path2D.curve.sample(0, 0))
     for point in range($Path2D.curve.get_baked_points().size()):
@@ -143,6 +182,14 @@ func CreateVisualLine(resolution: int):
         for subpoint in range(resolution):
             samplePoint += inverted_resolution
             line.add_point($Path2D.curve.sample(point, samplePoint))
+    """
+    var inverted_resolution = 1.0 / resolution
+    line.add_point($GeneratedPath.curve.sample(0, 0))
+    for point in range($GeneratedPath.curve.get_baked_points().size()):
+        samplePoint = 0.0
+        for subpoint in range(resolution):
+            samplePoint += inverted_resolution
+            line.add_point($GeneratedPath.curve.sample(point, samplePoint))
             
             
             

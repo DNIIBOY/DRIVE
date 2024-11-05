@@ -1,14 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=7 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
 [ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
 [ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
+[ext_resource type="Script" path="res://generated_path.gd" id="4_faryb"]
 
 [sub_resource type="Curve2D" id="Curve2D_1frpa"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, -488, -287, -4.26019, -104.954, 4.26019, 104.954, 465, -230, -1.49831, -112.373, 1.49831, 112.373, -479, -152, 0.525234, -128.936, -0.525234, 128.936, 448, -71, 0, -143.837, 0, 143.837, -464, 73, 0.0648823, -132.904, -0.0648823, 132.904, 435, 145, 0, 0, 0, 0, -430, 239)
 }
 point_count = 7
+
+[sub_resource type="Curve2D" id="Curve2D_pyq3i"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_7cvgd")
@@ -23,3 +26,8 @@ curve = SubResource("Curve2D_1frpa")
 show_behind_parent = true
 texture = ExtResource("2_w8alh")
 texture_mode = 1
+
+[node name="GeneratedPath" type="Path2D" parent="."]
+position = Vector2(0, 1)
+curve = SubResource("Curve2D_pyq3i")
+script = ExtResource("4_faryb")

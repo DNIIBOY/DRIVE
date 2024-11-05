@@ -15,6 +15,10 @@ run/main_scene="res://MainScene.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[display]
+
+window/stretch/mode="viewport"
+
 [input]
 
 zoom_in={
@@ -61,7 +65,13 @@ focus={
 ]
 }
 
+[physics]
+
+common/physics_ticks_per_second=24
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.273873, 0.273873, 0.273873, 1)
+anti_aliasing/quality/screen_space_aa=1
