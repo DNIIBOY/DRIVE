@@ -30,6 +30,7 @@ func pan_reset() -> void:
         (roadwidth + roadradius*2) * 0.5,
         (roadturns * roadradius*2)
     )
+    global_position = Vector2(0,0)
 
 func zoom_reset() -> void:
     set_zoom(Vector2(1,1))

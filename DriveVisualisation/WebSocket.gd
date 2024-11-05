@@ -39,6 +39,10 @@ func _on_message_received(message: Variant) -> void:
         var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
         
         var car_position = items & 0xFFFF
+        var car_coord = remap_to_path_coord(car_position) 
+        if 0.0 < car_coord:
+            cars[car_id].active = true
+        
         
         var is_focused_1 = items & (1 << 16)
         var is_focused_2 = items & (1 << 17)
@@ -54,7 +58,8 @@ func _on_message_received(message: Variant) -> void:
         else:
             cars[car_id].modulate = Color.GREEN
         
-        cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+        #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
+        cars[car_id].set_new_target(car_coord) #
     
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
@@ -128,6 +133,7 @@ func _physics_process(_delta: float) -> void:
     poll()
     if(isFocusing):
         $Camera2D.global_position = cars[focusedCar].global_position
+        $Camera2D.offset = Vector2(0,0)
     
 func CreateVisualLine():
     var resolution = 30
