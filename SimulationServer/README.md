@@ -37,6 +37,8 @@
             <th>0</th>
             <th>0</th>
             <th>0</th>
+            <th>0</th>
+            <th>0</th>
         </tr>
     </thead>
     <tbody>
@@ -54,6 +56,8 @@
 <table>
     <thead>
         <tr>
+            <th>0</th>
+            <th>0</th>
             <th>0</th>
             <th>0</th>
             <th>0</th>
