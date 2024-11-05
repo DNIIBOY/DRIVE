@@ -1,23 +1,9 @@
-from dataclasses import dataclass
 import random
 from valkey import Valkey
-from car3 import Car
-from settings import Settings
-from driver import Driver
+from car import Car
 from time import sleep, time
-from pid_control import PidControl
-
-
-@dataclass
-class SimulationConfig:
-    speed_limit: int = 200
-    spawn_distance: int = 200
-    kill_distance: int = 10000
-
-    target_distance: int = 200
-    speed_limit_deviation: int = 10
-
-    update_interval: float = 0.05
+from config import SimulationConfig
+from pid_control import pid_calculator
 
 
 class Simulation:
@@ -26,6 +12,7 @@ class Simulation:
         self.head: Car = None
         self.tail: Car = None
         self.config = self._read_config()
+        self._id = 0
         self.create_car()
 
     def _read_config(self) -> SimulationConfig:
@@ -47,7 +34,7 @@ class Simulation:
     def update_cars(self) -> None:
         car = self.head
         while car:
-            if car._position > self.config.kill_distance:
+            if car.position > self.config.kill_distance:
                 self.destroy_car(car)
                 car = car.prev
                 continue
@@ -55,12 +42,26 @@ class Simulation:
             self.update_car(car)
             car = car.prev
 
-        if self.tail._position > self.config.spawn_distance:
+        if self.tail.position > self.config.spawn_distance:
             self.create_car()
 
     def update_car(self, car: Car) -> None:
-        car.check_collision_and_adjust_speed()
-        
+        if car.brake_amount:
+            # Decrease reference speed by brake_amount, but not below 0
+            car.reference_speed = max(0, car.reference_speed - car.brake_amount)
+        else:
+            # Gradually restore reference speed up to original speed
+            if car.reference_speed < car.target_speed:
+                car.reference_speed = min(
+                    car.original_speed,
+                    car.reference_speed + car.max_ref_inc
+                )
+
+        car.accel = pid_calculator(car, self.config)
+        car.speed *= car.accel
+        car.speed = min(car.speed, car.target_speed)
+        car.speed = max(0.1, car.speed)
+        car.position += car.speed
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -71,9 +72,8 @@ class Simulation:
         return rep
 
     def create_car(self) -> Car:
-        deviation = self.config.speed_limit_deviation
-        driver = Driver(speed_limit_diff=random.randint(-deviation, deviation))
-        car = Car(0)
+        car = Car(config=self.config, id=self._id)
+        self._id += 1
         if not self.head:
             self.head = car
 

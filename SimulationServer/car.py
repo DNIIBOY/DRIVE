@@ -1,23 +1,40 @@
 from __future__ import annotations
-from driver import Driver
+from config import SimulationConfig
+import random
 
 
 class Car:
     def __init__(
         self,
+        config: SimulationConfig,
         id: int | None = None,
-        driver: Driver = None,
     ) -> None:
         self.id: int = id % 1024 if id is not None else 0
         self.speed = 0
         self.position = 0
-        self.driver = driver
 
         self.hw1_target = False
         self.hw2_target = False
 
         self._next: Car = None
         self._prev: Car = None
+
+        self.config = config
+
+        self.accel = 1
+        self.brake_amount = 0
+        self.position = 0
+        self.speed = self.config.initial_speed
+
+        self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation, self.config.speed_limit_deviation)
+        self.reference_speed = self.target_speed
+
+        self.length = self.config.car_length
+        self.max_ref_inc = self.config.car_max_accel
+
+    @property
+    def target_speed(self) -> int:
+        return self.config.speed_limit + self.speed_limit_diff
 
     @property
     def next(self) -> Car:
@@ -40,7 +57,7 @@ class Car:
             prev_car._next = self
 
     def __bytes__(self) -> bytes:
-        rep_int = self.position
+        rep_int = int(self.position)
         rep_int &= (0xFFFF)  # Clear the upper 16 bits
         rep_int |= (self.id << 22)  # Set the id in the upper 10 bits
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit
