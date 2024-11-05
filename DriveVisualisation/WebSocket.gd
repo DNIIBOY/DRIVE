@@ -15,6 +15,7 @@ signal connection_closed()
 signal message_received(message: Variant)
 
 const INV_65535 = 1.0 / 65535.0
+const INV_16 = 1.0 / 16
 
 var focusedCar = 0
 var isFocusing = false
@@ -54,7 +55,9 @@ func _on_message_received(message: Variant) -> void:
             elif is_focused_2:
                 cars[car_id].modulate = Color.RED
             else:
-                cars[car_id].modulate = Color.GREEN
+                var color = items >> 18
+                color = color & 0xF
+                cars[car_id].modulate = gradient.sample(color * INV_16)
             
             #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
             cars[car_id].set_new_target(car_coord) #
@@ -137,7 +140,14 @@ func poll() -> void:
 
 var car_scene = load("res://Nodes/Car.tscn")
 
+var gradient = Gradient.new()
 func _ready() -> void:
+    
+    gradient.set_color(0.0, Color(1,0,0,1))
+    gradient.set_color(1.0, Color.BLUE)
+    gradient.add_point(0.5, Color(0,1,0,1))
+    print(gradient.get_point_count())
+        
     CreateVisualLine()
     cars.resize(1024)
     for i in range(1024):

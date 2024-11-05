@@ -21,14 +21,21 @@ class Car:
 
         self.accel = 1
         self.brake_amount = 0
-        self.position = 0
+        self._position = 0
         self.speed = self.config.initial_speed
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation, self.config.speed_limit_deviation)
         self.reference_speed = self.target_speed
 
-        self.length = self.config.car_length
         self.max_ref_inc = self.config.car_max_accel
+
+    @property
+    def position(self) -> float:
+        return self._position
+
+    @position.setter
+    def position(self, value: float) -> None:
+        self._position = min(value, self.config.kill_distance)
 
     @property
     def target_speed(self) -> int:
@@ -68,7 +75,7 @@ def main():
         # Convert each byte in the bytes object to its binary representation
         return "".join(f"{byte:08b}" for byte in byte_data)
 
-    cars = [Car() for _ in range(1)]
+    cars = [Car(i, SimulationConfig()) for i in range(1)]
     cars[0].position = 65535
     cars[0].id = 1023
     cars[0].hw2_target = True

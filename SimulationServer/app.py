@@ -5,7 +5,6 @@ from simple_websocket.ws import Server
 import gevent
 from threading import Thread
 from simulation import Simulation
-from hardware import decode_hw_packet
 
 valkey = Valkey(host="localhost", port=6379, db=0)
 sock = Sock()
@@ -29,7 +28,7 @@ def index():
 
 @sock.route("/ws/vis")
 def visulation_socket(ws: Server):
-    while True:
+    while ws.connected:
         val = valkey.get("cars")
         ws.send(val[::-1])  # Transmission reverses the byte order
         gevent.sleep(0.07)
@@ -38,18 +37,36 @@ def visulation_socket(ws: Server):
 @sock.route("/ws/hw/<int:hw_id>")
 def hardware_socket(ws: Server, hw_id: int):
     print("Connected to hardware:", hw_id)
-    while True:
+    while ws.connected:
         in_val = ws.receive(timeout=0)
         if in_val:
-            car_id, brake_pressure = decode_hw_packet(in_val)
-            valkey.set(f"hw{hw_id}_car", car_id)
+            val = int.from_bytes(in_val, byteorder="big")
+            incr = val & (1 << 15)
+            decr = val & (1 << 14)
+            brake_pressure = val & 0xFFF
+
+            if incr and not decr:
+                valkey.incr(f"hw{hw_id}_car")
+            elif decr and not incr:
+                valkey.decr(f"hw{hw_id}_car")
+
             valkey.set(f"hw{hw_id}_brake", brake_pressure)
             continue
 
+        head = valkey.get("head")
+        tail = valkey.get("tail")
         car_id = valkey.get(f"hw{hw_id}_car")
         car_speed = valkey.get(f"hw{hw_id}_speed")
+
+        head = int(head.decode()) if head else 0
+        tail = int(tail.decode()) if tail else 0
         car_id = int(car_id.decode()) if car_id else 0
         car_speed = int(car_speed.decode()) if car_speed else 0
+
+        if car_id < head or car_id > tail:
+            car_id = tail
+            valkey.set(f"hw{hw_id}_car", car_id)
+
         val = (car_id << 22) | car_speed
         ws.send(val.to_bytes(4, byteorder="big"))
         gevent.sleep(0.07)
