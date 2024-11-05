@@ -1,5 +1,5 @@
 from random import uniform as ui
-
+import time
 from settings import Settings
 
 SAFE_DISTANCE = 50  # Minimum distance between cars
@@ -46,33 +46,8 @@ class Car:
         self.height = self.settings.car_height
         self.color_r, self.color_g, self.color_b = 0, 255, 0
         self.braking = False  # Braking statusimport time
+        self.max_speed_increase_per_second = 0.005
 
-class Car:
-    def __init__(self, start_x=0, special=False):
-        # Initialize as before
-        self.settings = Settings()
-        self.x = start_x
-        self.y = 0
-        self.speed = self.settings.car_speed
-        self.speed_variation = self.settings.car_speed_variation
-        self.original_speed = self.speed + ui(-self.speed_variation, self.speed_variation)
-        self.accel = self.settings.car_accel
-        self.desired_speed = 30 + ui(-2, 2)
-        self.headway = 50 + ui(-0.2, 0.2)
-        self.min_distance = 2 + ui(-0.5, 0.5)
-        self.max_accel = 1.0
-        self.breaking_amount = 0.5
-        self.misjudgement_factor = ui(0.3, 1.8)
-        self.special = special
-        self.width = self.settings.car_width
-        self.height = self.settings.car_height
-        self.color_r, self.color_g, self.color_b = 0, 255, 0
-
-        # Reaction time variables
-        self.reaction_time = ui(0.5, 1.5)  # Reaction time between 0.5 and 1.5 seconds
-        self.last_reaction_time = time.time()
-        self.perceived_distance = None
-        self.perceived_speed = None
 
     def color_gradient(self, speed):
         # Same color_gradient logic as before
@@ -94,7 +69,7 @@ class Car:
 
     def get_position(self):
         """Get the car's current x position."""
-        return self.x
+        return self._position
 
     def get_speed(self):
         return self.speed
