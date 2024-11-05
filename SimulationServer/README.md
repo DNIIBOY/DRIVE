@@ -123,8 +123,10 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan=10>10 Bit Currently Selected Car ID (0-1023)</td>
-            <td colspan=6>6 Bit Current Brake Pressure (0-63)</td>
+            <td colspan=1>Incr Car ID</td>
+            <td colspan=1>Decr Car ID</td>
+            <td colspan=4>Other Stuff</td>
+            <td colspan=10>10 Bit Current Brake Pressure (0-1023)</td>
         </tr>
     </tbody>
 </table>
