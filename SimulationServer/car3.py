@@ -1,9 +1,28 @@
 from random import uniform as ui
 
-from pid_control import PidControl
 from settings import Settings
 
 SAFE_DISTANCE = 50  # Minimum distance between cars
+
+def pid_calculator(car,target_distance,car_position, car_in_front):
+        acceleration = 0
+        # Speed control to approach reference speed
+        p_speed = 0.20
+        speed_error = car.reference_speed - car._speed
+        control_speed = speed_error * p_speed
+
+        # Distance control to avoid collision
+        control_distance = 0
+        if car_in_front:
+            distance_to_front_car = car_in_front._position - car_position
+            if distance_to_front_car < target_distance:
+                p_dist = 2.2
+                dist_error = target_distance - distance_to_front_car
+                control_distance = -dist_error * p_dist * 0.049
+        
+        acceleration = 1.0 + control_speed + control_distance
+        acceleration = max(0.3, min(acceleration, 1.1))
+        return acceleration
 
 
 class Car:
@@ -194,23 +213,29 @@ class Car:
             # Set speed to match the car in front
             self._speed = car_in_front.get_speed()
 
-        # Speed control to approach reference speed
-        p_speed = 0.20
-        speed_error = self.reference_speed - self._speed
-        control_speed = speed_error * p_speed
+        if not car_in_front:
+            car_in_front = False
+        self.accel = pid_calculator(self,SAFE_DISTANCE,self._position,car_in_front)
 
-        # Distance control to avoid collision
-        control_distance = 0
-        if car_in_front:
-            distance_to_front_car = car_in_front.get_position() - self._position
-            if distance_to_front_car < SAFE_DISTANCE:
-                p_dist = 2.2
-                dist_error = SAFE_DISTANCE - distance_to_front_car
-                control_distance = -dist_error * p_dist * 0.049
+        # # Speed control to approach reference speed
+        # p_speed = 0.20
+        # speed_error = self.reference_speed - self._speed
+        # control_speed = speed_error * p_speed
+
+        # # Distance control to avoid collision
+        # control_distance = 0
+        # if car_in_front:
+        #     distance_to_front_car = car_in_front._position - self._position
+        #     if distance_to_front_car < SAFE_DISTANCE:
+        #         p_dist = 2.2
+        #         dist_error = SAFE_DISTANCE - distance_to_front_car
+        #         control_distance = -dist_error * p_dist * 0.049
+
+        
 
         # Combine speed and distance controls into acceleration factor
-        self.accel = 1.0 + control_speed + control_distance
-        self.accel = max(0.3, min(self.accel, 1.1))  # Clamp accel to avoid extreme values
+        #self.accel = 1.0 + control_speed + control_distance
+        #self.accel = max(0.3, min(self.accel, 1.1))  # Clamp accel to avoid extreme values
 
         # Update speed based on acceleration, ensuring it doesn’t exceed original speed
         self._speed *= self.accel
