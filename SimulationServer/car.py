@@ -10,8 +10,6 @@ class Car:
         id: int | None = None,
     ) -> None:
         self.id: int = id % 1024 if id is not None else 0
-        self.speed = 0
-        self.position = 0
 
         self.hw1_target = False
         self.hw2_target = False
