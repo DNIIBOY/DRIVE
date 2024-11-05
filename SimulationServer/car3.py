@@ -15,11 +15,11 @@ class Car:
         - start_x: The initial x-coordinate of the car.
         """
         self.settings = Settings()
-        self.x = start_x  # Horizontal position on the road
+        self._position = start_x  # Horizontal position on the road
         self.y = 0  # Vertical position will be set by main code if needed
-        self.speed = self.settings.car_speed
+        self._speed = self.settings.car_speed
         self.speed_variation = self.settings.car_speed_variation
-        self.original_speed = self.speed + ui(-self.speed_variation, self.speed_variation)  # Initial speed reference
+        self.original_speed = self._speed + ui(-self.speed_variation, self.speed_variation)  # Initial speed reference
         self.reference_speed = self.original_speed  # Target speed for P-controller to achieve
         self.special = special
         self.accel = self.settings.car_accel
@@ -29,6 +29,7 @@ class Car:
         self.braking = False  # Braking status
         self.brake_amount = 0  # Brake amount to reduce reference speed by each update
         self.max_speed_increase_per_second = 0.004  # Max speed increase per second when releasing brake
+        
 
     def color_gradient(self, speed):
         # Ensure speed is within the range 0 to 2
@@ -49,14 +50,8 @@ class Car:
 
     def move(self):
         """Move the car by its current speed."""
-        self.x += self.speed
+        self._position += self._speed
 
-    def get_position(self):
-        """Get the car's current x position."""
-        return self.x
-
-    def get_speed(self):
-        return self.speed
 
     def brake(self, brake, brake_amount=0):
         """
@@ -93,17 +88,17 @@ class Car:
 
         if self.special and car_in_front:
             # Set speed to match the car in front
-            self.speed = car_in_front.get_speed()
+            self._speed = car_in_front.get_speed()
 
         # Speed control to approach reference speed
         p_speed = 0.20
-        speed_error = self.reference_speed - self.speed
+        speed_error = self.reference_speed - self._speed
         control_speed = speed_error * p_speed
 
         # Distance control to avoid collision
         control_distance = 0
         if car_in_front:
-            distance_to_front_car = car_in_front.get_position() - self.x
+            distance_to_front_car = car_in_front.get_position() - self._position
             if distance_to_front_car < SAFE_DISTANCE:
                 p_dist = 2.2
                 dist_error = SAFE_DISTANCE - distance_to_front_car
@@ -114,14 +109,14 @@ class Car:
         self.accel = max(0.3, min(self.accel, 1.1))  # Clamp accel to avoid extreme values
 
         # Update speed based on acceleration, ensuring it doesn’t exceed original speed
-        self.speed *= self.accel
-        self.speed = min(self.speed, self.original_speed)
+        self._speed *= self.accel
+        self._speed = min(self._speed, self.original_speed)
 
         # Ensure speed is not below a minimum value
-        self.speed = max(0.1, self.speed)
+        self._speed = max(0.1, self._speed)
 
         # Update color based on current speed
-        self.color_gradient(self.speed)
+        self.color_gradient(self._speed)
 
         # Move car by its updated speed
         self.move()

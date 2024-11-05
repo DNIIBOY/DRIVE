@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import random
 from valkey import Valkey
-from car import Car
+from car3 import Car
 from driver import Driver
 from time import sleep, time
 from pid_control import PidControl
