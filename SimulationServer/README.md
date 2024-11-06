@@ -125,8 +125,8 @@
         <tr>
             <td colspan=1>Incr Car ID</td>
             <td colspan=1>Decr Car ID</td>
-            <td colspan=6>Other Stuff</td>
-            <td colspan=8>8 Bit Current Brake Pressure (0-1023)</td>
+            <td colspan=6>6 Bit Other Stuff</td>
+            <td colspan=8>8 Bit Current Brake Pressure (0-255)</td>
         </tr>
     </tbody>
 </table>
