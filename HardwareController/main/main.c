@@ -79,44 +79,40 @@ while (1) {
       vTaskDelay(20 / portTICK_PERIOD_MS);
     }
     last_CLK_lvl = CLK_lvl;
-    vTaskDelay(5 / portTICK_PERIOD_MS);
+    vTaskDelay(8 / portTICK_PERIOD_MS);
   }
 }
 
-void joystick_task(void *param) {
+void braker_task(void *param) {
+  int pressure_value = adc1_get_raw(ADC1_CHANNEL_0);
+  int brake_pressure_return_value = 0;
   while (1) {
-    adc_value_x = adc1_get_raw(ADC1_CHANNEL_0);
-    adc_value_y = adc1_get_raw(ADC1_CHANNEL_1);
-    int brake_pressure = (sqrt(pow(adc_value_x - 2360, 2) + pow(adc_value_y - 2393, 2)));
-
-    ESP_LOGI("main: ", "x: %d, y: %d, brake_pressure: %d", adc_value_x, adc_value_y, brake_pressure);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    pressure_value = adc1_get_raw(ADC1_CHANNEL_0);
+    if (pressure_value <= 2000) {
+      float temp = ((float)pressure_value - 500) / 1500;
+      if (temp < 0) {
+        temp = 0;
+      }
+      brake_pressure_return_value = (int)fabs(temp * 255 - 255);
+      ESP_LOGI("main: ", "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100 / 255));
+    } else {
+      brake_pressure_return_value = 0;
+    }
+    vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
+
+
 
 void app_main(void) {
 
 //Joystick:
 adc1_config_width(ADC_WIDTH_BIT_12);
 adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
-adc1_config_channel_atten(ADC1_CHANNEL_1, ADC_ATTEN_DB_11);
-adc1_config_channel_atten(ADC1_CHANNEL_2, ADC_ATTEN_DB_11);
-
-while (1) {
-  int pressure_value = adc1_get_raw(ADC1_CHANNEL_2);
-  ESP_LOGI("main: ", "Touchsensor pressure: %d", pressure_value);
-  vTaskDelay(200 / portTICK_PERIOD_MS);
-}
-
 
   //Rotary encoder
   gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT); 
   gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
-
-
-  
-  
-
 
 
     // dette er til at lave i2c linje og lave en lcd_task
@@ -125,7 +121,7 @@ while (1) {
     //xTaskCreate(&lcd_task, "Demo Task", 2048, NULL, 5, NULL);
 
     xTaskCreate(&encoder_task, "Demo Task", 2048, NULL, 4, NULL);
-    xTaskCreate(&joystick_task, "Demo Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&braker_task, "Demo Task", 2048, NULL, 4, NULL);
 
     // dette er til at gemme SSID og Password
     nvs_init(); // Initialize NVS
