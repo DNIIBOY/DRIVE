@@ -48,7 +48,6 @@ class Car:
         self.braking = False  # Braking statusimport time
         self.max_speed_increase_per_second = 0.005
 
-
     def color_gradient(self, speed):
         # Same color_gradient logic as before
         speed = max(0, min(2, speed))
