@@ -48,11 +48,13 @@ class Simulation:
 
             if car.id == hw1_car:
                 car.hw1_target = True
+                self.valkey.set("hw1_speed", int(car.speed))
             else:
                 car.hw1_target = False
 
             if car.id == hw2_car:
                 car.hw2_target = True
+                self.valkey.set("hw2_speed", int(car.speed))
             else:
                 car.hw2_target = False
 
