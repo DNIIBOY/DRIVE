@@ -14,7 +14,7 @@ def main():
         pack = None
         latest = pack
         while True:
-            command = input("(I)ncrement | (D)ecrement: ").casefold()
+            command = input("(I)ncrement | (D)ecrement | (B)rake: ").casefold()
 
             try:
                 while True:
@@ -30,6 +30,8 @@ def main():
                 val = 1 << 15
             elif command == "d":
                 val = 1 << 14
+            elif command == "b":
+                val = int(input("Brake pressure: ")) & 0xFF
             else:
                 show_packet(latest)
 
