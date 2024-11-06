@@ -48,13 +48,22 @@ class Simulation:
 
             if car.id == hw1_car:
                 car.hw1_target = True
+                hw1_brake = self.valkey.get("hw1_brake")
+                car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
+                self.valkey.set("hw1_speed", int(car.speed))
             else:
                 car.hw1_target = False
 
             if car.id == hw2_car:
                 car.hw2_target = True
+                hw2_brake = self.valkey.get("hw2_brake")
+                car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
+                self.valkey.set("hw2_speed", int(car.speed))
             else:
                 car.hw2_target = False
+
+            if car.id not in (hw1_car, hw2_car):
+                car.brake_amount = 0
 
             self.update_car(car)
             car = car.prev
@@ -73,11 +82,11 @@ class Simulation:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
                 car.reference_speed = min(
-                    car.original_speed,
-                    car.reference_speed + car.max_ref_inc
+                    self.config.initial_speed,
+                    car.target_speed + car.max_ref_inc
                 )
 
-        #car.accel = pid_calculator(car, self.config)
+        # car.accel = pid_calculator(car, self.config)
         car.accel = idm(car, self.config)
         car.speed *= car.accel
         car.speed = min(car.speed, car.target_speed)

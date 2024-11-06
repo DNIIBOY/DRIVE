@@ -11,15 +11,29 @@ def show_packet(packet: bytes) -> None:
 
 def main():
     with connect("ws://localhost:5000/ws/hw/1") as ws:
+        pack = None
+        latest = pack
         while True:
-            command = input("(I)ncrement | (D)ecrement: ").casefold()
+            command = input("(I)ncrement | (D)ecrement | (B)rake: ").casefold()
+
+            try:
+                while True:
+                    pack = ws.recv(0.01)
+                    if pack is None:
+                        latest = pack
+                        break
+            except TimeoutError:
+                latest = pack
+
             val = 0
             if command == "i":
                 val = 1 << 15
             elif command == "d":
                 val = 1 << 14
+            elif command == "b":
+                val = int(input("Brake pressure: ")) & 0xFF
             else:
-                show_packet(ws.recv(0))
+                show_packet(latest)
 
             ws.send(val.to_bytes(2, byteorder="big"))
 

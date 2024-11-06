@@ -92,8 +92,8 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan=10>10 Bit Currently Selected Car ID (0-1023)</td>
-            <td colspan=10>10 Bit for warning data</td>
+            <td colspan=8>8 Bit warning data</td>
+            <td colspan=12>12 Bit for recommended speed (0-4095) in dm/s</td>
             <td colspan=12>First 12 bits are for current speed, as an int (0-4095), measured in dm/s</td>
         </tr>
     </tbody>
@@ -125,8 +125,8 @@
         <tr>
             <td colspan=1>Incr Car ID</td>
             <td colspan=1>Decr Car ID</td>
-            <td colspan=4>Other Stuff</td>
-            <td colspan=10>10 Bit Current Brake Pressure (0-1023)</td>
+            <td colspan=6>6 Bit Other Stuff</td>
+            <td colspan=8>8 Bit Current Brake Pressure (0-255)</td>
         </tr>
     </tbody>
 </table>
