@@ -82,7 +82,7 @@ class Simulation:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
                 car.reference_speed = min(
-                    car.original_speed,
+                    self.config.initial_speed,
                     car.target_speed + car.max_ref_inc
                 )
 
