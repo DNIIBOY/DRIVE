@@ -10,8 +10,8 @@ def idm(car: Car, config: SimulationConfig):
 
     if car.next:
         v = car.speed
-        v0 = car.target_speed
-        s0 = config.target_distance + uniform(10, 10)
+        v0 = car.target_speed + uniform(-5, 5) 
+        s0 = config.target_distance + uniform(-10, 10)
         s = car.next.position - car.position + uniform(-10, 10)
         T = 2 + uniform(-1, 1)
         a_max = 1.5

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class SimulationConfig:
     initial_speed: int = 50
     speed_limit: int = 50
-    spawn_distance: int = 1000
+    spawn_distance: int = 500
     kill_distance: int = 65565
 
     target_distance: int = 200
