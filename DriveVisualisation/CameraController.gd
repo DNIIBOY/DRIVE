@@ -47,4 +47,7 @@ func pan_vertical(value: float) -> void:
 
 func zoom_add(value: float):
     var currentZoom = get_zoom()
-    set_zoom(currentZoom + Vector2(value, value))
+    var targetZoom = currentZoom + Vector2(value, value)
+    if targetZoom.length() <= 0:
+        return
+    set_zoom(targetZoom)

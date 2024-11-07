@@ -34,38 +34,19 @@ func _input(event):
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
 
+
+var active_cars = {}
 func _on_message_received(message: Variant) -> void:
     #$Path2D/CarTest.progress_ratio = remap_to_path_coord(message[0])
+    var new_active_cars = {}
     for items in message:
         var car_id = items >> 22 # Shift bits 22 times to the right (Car id to least sig)
+        new_active_cars[car_id] = true
         
         var car_position = items & 0xFFFF
         var car_coord = remap_to_path_coord(car_position) 
-        
-        if 0.0 < car_coord and car_coord < 1.0:
-            var is_focused_1 = items & (1 << 16)
-            var is_focused_2 = items & (1 << 17)
-            
-            if is_focused_1 and is_focused_2:
-                cars[car_id].modulate = Color.PURPLE
-                focusedCar = car_id
-            elif is_focused_1:
-                cars[car_id].modulate = Color.SKY_BLUE
-                focusedCar = car_id
-            elif is_focused_2:
-                cars[car_id].modulate = Color.RED
-            else:
-                var color = items >> 18
-                color = color & 0xF
-                cars[car_id].modulate = gradient.sample(color * INV_16)
-            
-            #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
-            cars[car_id].set_new_target(car_coord) #
-        else:
-            cars[car_id].set_inactive()
-    
-        
-        """var is_focused_1 = items & (1 << 16)
+
+        var is_focused_1 = items & (1 << 16)
         var is_focused_2 = items & (1 << 17)
         
         if is_focused_1 and is_focused_2:
@@ -77,11 +58,19 @@ func _on_message_received(message: Variant) -> void:
         elif is_focused_2:
             cars[car_id].modulate = Color.RED
         else:
-            cars[car_id].modulate = Color.GREEN
+            var color = items >> 18
+            color = color & 0xF
+            cars[car_id].modulate = gradient.sample(color * INV_16)
         
         #cars[car_id].progress_ratio = remap_to_path_coord(car_position) #
-        cars[car_id].set_new_target(car_coord) #"""
-    
+        cars[car_id].set_new_target(car_coord) #
+
+    for car_ids in active_cars:
+        if not new_active_cars.has(car_ids):
+            cars[car_ids].set_inactive()
+            
+    active_cars = new_active_cars
+        
 func connect_to_url(url: String) -> int:
     socket.supported_protocols = supported_protocols
     socket.handshake_headers = handshake_headers
@@ -143,10 +132,9 @@ var car_scene = load("res://Nodes/Car.tscn")
 var gradient = Gradient.new()
 func _ready() -> void:
     
-    gradient.set_color(0.0, Color(1,0,0,1))
-    gradient.set_color(1.0, Color.BLUE)
+    gradient.set_color(0, Color(1,0,0,1))
+    gradient.set_color(1, Color.BLUE)
     gradient.add_point(0.5, Color(0,1,0,1))
-    print(gradient.get_point_count())
         
     CreateVisualLine()
     cars.resize(1024)
