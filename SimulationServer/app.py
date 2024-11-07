@@ -56,17 +56,19 @@ def hardware_socket(ws: Server, hw_id: int):
         head = valkey.get("head")
         tail = valkey.get("tail")
         car_id = valkey.get(f"hw{hw_id}_car")
+        rec_speed = valkey.get(f"hw{hw_id}_rec_speed")
         car_speed = valkey.get(f"hw{hw_id}_speed")
 
         head = int(head.decode()) if head else 0
         tail = int(tail.decode()) if tail else 0
         car_id = int(car_id.decode()) if car_id else 0
+        rec_speed = int(rec_speed.decode()) if rec_speed else 0
         car_speed = int(car_speed.decode()) if car_speed else 0
 
         if car_id < head or car_id > tail:
             car_id = tail
             valkey.set(f"hw{hw_id}_car", car_id)
 
-        val = (car_id << 22) | car_speed
+        val = (rec_speed << 12) | car_speed
         ws.send(val.to_bytes(4, byteorder="big"))
         gevent.sleep(0.07)
