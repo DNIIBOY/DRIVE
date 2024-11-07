@@ -19,17 +19,24 @@ const INV_16 = 1.0 / 16
 
 var focusedCar = 0
 var isFocusing = false
+@onready var camera = $Camera2D
+
 func _input(event):
     if event.is_action_pressed("focus"):
-            if isFocusing == false:
+            if isFocusing == false and active_cars.has(focusedCar):
                 isFocusing = true
-                $Camera2D.pan_reset()
-                $Camera2D.zoom_set(Vector2(2,2))
+                self.remove_child(camera)
+                camera.set_position(Vector2(0,0))
+                cars[focusedCar].add_child(camera)
+                camera.offset = Vector2(0,0)
+                camera.zoom_set(Vector2(2,2))
             else:
                 isFocusing = false
-                $Camera2D.global_position = Vector2(0,0)
-                $Camera2D.pan_reset()
-                $Camera2D.zoom_reset()
+                camera.get_parent().remove_child(camera)
+                self.add_child(camera)
+                camera.set_position(Vector2(0,0))
+                camera.pan_reset()
+                camera.zoom_reset()
 
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
@@ -149,10 +156,10 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
     poll()
 
-func _process(_delta: float) -> void:
-    if(isFocusing):
-        $Camera2D.global_position = cars[focusedCar].global_position
-        $Camera2D.offset = Vector2(0,0)
+#func _process(_delta: float) -> void:
+    #if(isFocusing):
+    #    $Camera2D.global_position = cars[focusedCar].global_position
+    #    $Camera2D.offset = Vector2(0,0)
     
 func CreateVisualLine():
     var resolution = 30
