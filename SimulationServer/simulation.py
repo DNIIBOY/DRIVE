@@ -1,10 +1,11 @@
 import random
-from valkey import Valkey
-from car import Car
 from time import sleep, time
+
+from car import Car
 from config import SimulationConfig
-from pid_control import pid_calculator
 from idm import idm
+from pid_control import pid_calculator
+from valkey import Valkey
 
 
 class Simulation:
@@ -73,21 +74,24 @@ class Simulation:
 
         self.valkey.set("head", self.head.id)
         self.valkey.set("tail", self.tail.id)
+        # Vi skal have lavet noget logik der sørger for at biler ikke kan køre ind i hinanden
+
 
     def update_car(self, car: Car) -> None:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
             car.reference_speed = max(0, car.reference_speed - car.brake_amount)
+            car.accel = 0.7
         else:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
                 car.reference_speed = min(
-                    self.config.initial_speed,
-                    car.target_speed + car.max_ref_inc
+                    self.config.initial_speed, car.target_speed + car.max_ref_inc
                 )
 
-        # car.accel = pid_calculator(car, self.config)
-        car.accel = idm(car, self.config)
+            car.accel = idm(car, self.config)
+            # car.accel = pid_calculator(car, self.config)
+
         car.speed *= car.accel
         car.speed = min(car.speed, car.target_speed)
         car.speed = max(0.1, car.speed)
