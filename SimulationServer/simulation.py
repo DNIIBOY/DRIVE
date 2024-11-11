@@ -74,14 +74,13 @@ class Simulation:
 
         self.valkey.set("head", self.head.id)
         self.valkey.set("tail", self.tail.id)
-        # Vi skal have lavet noget logik der sørger for at biler ikke kan køre ind i hinanden
 
 
     def update_car(self, car: Car) -> None:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
             car.reference_speed = max(0, car.reference_speed - car.brake_amount)
-            car.accel = 1 -  (car.brake_amount / 255)
+            car.accel = 1 - (car.brake_amount / 255)
         else:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
