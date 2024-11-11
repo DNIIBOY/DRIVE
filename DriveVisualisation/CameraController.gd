@@ -1,6 +1,7 @@
 extends Camera2D
 
 var pan_value = 3
+@onready var generated_path = $"../GeneratedPath"
 
 func _ready() -> void:
     zoom_reset()
@@ -23,9 +24,9 @@ func _input(event):
         pan_vertical(pan_value)
 
 func pan_reset() -> void:
-    var roadwidth = $"../GeneratedPath".road_width
-    var roadradius = $"../GeneratedPath".road_turn_radius
-    var roadturns = $"../GeneratedPath".road_turns
+    var roadwidth = generated_path.road_width
+    var roadradius = generated_path.road_turn_radius
+    var roadturns = generated_path.road_turns
     offset = Vector2(
         (roadwidth + roadradius*2) * 0.5,
         (roadturns * roadradius*2)
@@ -47,4 +48,7 @@ func pan_vertical(value: float) -> void:
 
 func zoom_add(value: float):
     var currentZoom = get_zoom()
-    set_zoom(currentZoom + Vector2(value, value))
+    var targetZoom = currentZoom + Vector2(value, value)
+    if targetZoom.length() <= 0:
+        return
+    set_zoom(targetZoom)

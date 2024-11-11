@@ -53,11 +53,3 @@ func _ready() -> void:
     
     # The final straight line, going left to right
     curve.add_point(Vector2(road_width + road_turn_diameter, road_turn_diameter * (road_turns*2)))
-
-        
-    
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    pass

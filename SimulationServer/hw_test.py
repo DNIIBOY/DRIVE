@@ -3,9 +3,9 @@ from websockets.sync.client import connect
 
 def show_packet(packet: bytes) -> None:
     val = int.from_bytes(packet, byteorder="big")
-    car_id = val >> 22
+    rec_speed = val >> 12
     speed = val & 0xFFF
-    print("Car ID:", car_id)
+    print("Recommended speed:", rec_speed)
     print("Speed:", speed)
 
 

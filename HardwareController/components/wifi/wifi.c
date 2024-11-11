@@ -20,8 +20,8 @@
 
 const char *TAG = "example";  // Define TAG here for use in this file
 
-#define WIFI_SSID "Python"
-#define WIFI_PASS "Drainpipe-Dilute-Mollusk9"
+#define WIFI_SSID "Waffleteam_wifi"
+#define WIFI_PASS "12345678"
 
 #define LED_PIN 12
 

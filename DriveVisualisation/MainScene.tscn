@@ -28,6 +28,5 @@ texture = ExtResource("2_w8alh")
 texture_mode = 1
 
 [node name="GeneratedPath" type="Path2D" parent="."]
-position = Vector2(0, 1)
 curve = SubResource("Curve2D_pyq3i")
 script = ExtResource("4_faryb")

@@ -5,7 +5,6 @@
 
 [node name="Car" type="PathFollow2D"]
 physics_interpolation_mode = 2
-loop = false
 script = ExtResource("1_pdam6")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
