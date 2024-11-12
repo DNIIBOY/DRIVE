@@ -69,7 +69,7 @@ class Simulation:
             self.update_car(car)
             car = car.prev
 
-        if self.tail.position > self.config.spawn_distance:
+        if (self.tail.position + self.config.car_length) > self.config.spawn_distance:
             self.create_car()
 
         self.valkey.set("head", self.head.id)
@@ -79,7 +79,7 @@ class Simulation:
     def update_car(self, car: Car) -> None:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
-            car.reference_speed = max(0, car.reference_speed - car.brake_amount)
+            car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
             #car.accel = 1 - (car.brake_amount / 255)
         else:
             # Gradually restore reference speed up to original speed
@@ -88,8 +88,8 @@ class Simulation:
                     self.config.initial_speed, car.target_speed + car.max_ref_inc
                 )
 
-            #car.accel = idm(car, self.config)
-            car.accel = pid_calculator(car, self.config)
+        car.accel = idm(car, self.config)
+        #car.accel = pid_calculator(car, self.config)
 
         car.speed *= car.accel
         car.speed = min(car.speed, car.target_speed)

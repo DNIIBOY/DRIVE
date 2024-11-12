@@ -1,6 +1,7 @@
 from __future__ import annotations
 from config import SimulationConfig
 import random
+from time import time
 
 
 class Car:
@@ -25,9 +26,10 @@ class Car:
         self.speed = self.config.initial_speed
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation, self.config.speed_limit_deviation)
-        self.reference_speed = self.target_speed
+        self.reference_speed = self.target_speed + self.speed_limit_diff
 
         self.max_ref_inc = self.config.car_max_accel
+        self.time_to_next_reaction = time()
 
     @property
     def position(self) -> float:
