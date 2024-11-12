@@ -70,33 +70,43 @@ void encoder_task(void *param) {
 }
 
 // Brake Task using legacy ADC driver
+//
 void braker_task(void *param) {
     int pressure_value;
+    int last_brake_pressure_return_value = -1;  // Store the previous pressure value to detect changes
     int brake_pressure_return_value = 0;
 
-    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
+    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t)param;
 
     while (1) {
         // Get raw ADC value from ADC1 channel 0 (GPIO36)
         pressure_value = adc1_get_raw(ADC_CHANNEL);
-        ESP_LOGI(TAG, "Pressure Value: %d", pressure_value);
 
+        // Check if pressure is within the threshold to process further
         if (pressure_value <= 2000) {
-            float temp = ((float)pressure_value - 500) / 1500;
+            // Calculate the brake pressure as an integer instead of float for efficiency
+            int temp = pressure_value - 500;
             temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative
+            brake_pressure_return_value = 255 - ((temp * 255) / 1500);  // Scale between 0 and 255
 
-            brake_pressure_return_value = (int)fabs(temp * 255 - 255);
-            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100 / 255));
+            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
         } else {
             brake_pressure_return_value = 0;
         }
-        
-        uint8_t brake_value = brake_pressure_return_value;
-        buffer[0] = brake_value;
-        esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
+
+        // Only send data if there is a change in the brake pressure value
+        if (brake_pressure_return_value != last_brake_pressure_return_value) {
+            uint8_t brake_value = brake_pressure_return_value;
+            buffer[0] = brake_value;
+            esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
+            last_brake_pressure_return_value = brake_pressure_return_value;
+        }
+
+        // Adjust delay as needed to prevent excessive polling
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
+
 
 // Main application
 void app_main(void) {
