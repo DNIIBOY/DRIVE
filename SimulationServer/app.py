@@ -56,6 +56,7 @@ def visulation_socket(ws: Server):
 @sock.route("/ws/hw/<int:hw_id>")
 def hardware_socket(ws: Server, hw_id: int):
     print("Connected to hardware:", hw_id)
+    get = 0
     while ws.connected:
         in_val = ws.receive(timeout=0)
         if in_val:
@@ -69,6 +70,8 @@ def hardware_socket(ws: Server, hw_id: int):
             decr = val & (1 << 14)
             brake_pressure = val & 0xFFF
 
+            print(str(get) + ":", end="")
+            get += 1
             if incr and not decr:
                 valkey.incr(f"hw{hw_id}_car")
             elif decr and not incr:
