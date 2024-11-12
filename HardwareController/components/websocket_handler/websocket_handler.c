@@ -25,7 +25,7 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
             gpio_set_level(LED_PIN2, 0);
             break;
         case WEBSOCKET_EVENT_DATA:
-            ESP_LOGI("WebSocket_handler", "Data received: %.*s", event->data_len, (char *)event->data_ptr);
+            ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0b%lu", event->data_len, (uint32_t)event->data_ptr);
             break;
         default:
             break;
