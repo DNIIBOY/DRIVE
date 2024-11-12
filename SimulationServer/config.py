@@ -24,7 +24,7 @@ class SimulationConfig:
             val = valkey.get(key)
 
             if val is not None:
-                setattr(self, key, value)
+                setattr(self, key, type(value)(val.decode()))
 
     def save(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():
