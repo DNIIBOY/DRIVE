@@ -2,7 +2,7 @@ dependencies:
   esp_websocket_client:
     dependencies: []
     source:
-      path: C:\Users\rasse\Documents\GitHub\DRIVE\HardwareController\components\esp_websocket_client
+      path: /home/user/Github/DRIVE/HardwareController/components/esp_websocket_client
       type: local
     version: 1.2.3
   idf:

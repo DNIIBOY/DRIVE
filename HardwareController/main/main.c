@@ -2,39 +2,47 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
+#include "freertos/queue.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
 #include "esp_err.h"
 #include "nvs_flash.h"
-#include "esp_websocket_client.h" // Include WebSocket client library
+#include "esp_websocket_client.h"
 #include "math.h"
 
 #include "wifi.h"
 #include "websocket_handler.h"
 #include "i2c_handler.h"
 #include "HD44780.h"
-
-#include "driver/adc.h"
+#include "driver/adc.h"  // Legacy ADC include
 
 #define LCD_ADDR 0x27
 #define SDA_PIN 7
 #define SCL_PIN 6
 #define LCD_COLS 16
 #define LCD_ROWS 2
-
-#define WEBSOCKET_URI "ws://192.168.4.5:5000/ws/hw/1"  // Replace with your Flask server IP and port
+#define WEBSOCKET_URI "ws://192.168.4.4:5000/ws/hw/1"  // Flask server IP and port
 
 #define ENCODER_DT 19
 #define ENCODER_CLK 18
 
-int CLK_lvl;
-int DT_lvl;
+static QueueHandle_t gpio_evt_queue = NULL;  // Updated to QueueHandle_t
+static const char *TAG = "main";
 
-uint16_t value;
 uint8_t buffer[2];
 
+// ADC Channel
+#define ADC_CHANNEL ADC1_CHANNEL_0
+
+// Interrupt service routine (ISR) for encoder rotation
+static void IRAM_ATTR encoder_isr_handler(void *arg) {
+    int dt_lvl = gpio_get_level(ENCODER_DT);
+    uint16_t direction = (dt_lvl == 0) ? (1 << 15) : (1 << 14);  // Determine rotation direction
+    xQueueSendFromISR(gpio_evt_queue, &direction, NULL);          // Send direction to queue
+}
+
+// Initialize NVS
 void nvs_init(void) {
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -44,97 +52,78 @@ void nvs_init(void) {
     ESP_ERROR_CHECK(ret);
 }
 
-void lcd_task(void *param) {
-  while (true) {
-    lcd_cursor_first_line();
-    lcd_write_str("Hello World");
-    lcd_set_cursor(0, 1);
-    lcd_write_str("Hello world pt2");
-    vTaskDelay(2000 / portTICK_PERIOD_MS);
-    lcd_cursor_first_line();
-    lcd_write_str("WOW");
-    lcd_set_cursor(0, 1);
-    lcd_write_str("Hello");
-  }
+// Encoder Task
+void encoder_task(void *param) {
+    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
+    uint16_t direction;
+
+    while (true) {
+        // Wait for an event from the ISR
+        if (xQueueReceive(gpio_evt_queue, &direction, portMAX_DELAY)) {
+            buffer[0] = (direction >> 8) & 0xFF;  // High byte
+            buffer[1] = direction & 0xFF;         // Low byte
+
+            esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
+            ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
+        }
+    }
 }
 
-void encoder_task(void *param) {
-    int last_CLK_lvl = gpio_get_level(ENCODER_CLK);
+// Brake Task using legacy ADC driver
+void braker_task(void *param) {
+    int pressure_value;
+    int brake_pressure_return_value = 0;
+
     esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
 
     while (1) {
-        CLK_lvl = gpio_get_level(ENCODER_CLK);
-        DT_lvl = gpio_get_level(ENCODER_DT);
+        // Get raw ADC value from ADC1 channel 0 (GPIO36)
+        pressure_value = adc1_get_raw(ADC_CHANNEL);
+        ESP_LOGI(TAG, "Pressure Value: %d", pressure_value);
 
-        if (last_CLK_lvl == 0 && CLK_lvl == 1) {
-            if (DT_lvl == 0) {
-                value = (1<<15);
-            } else {
-                value = (1<<14);
-            }
+        if (pressure_value <= 2000) {
+            float temp = ((float)pressure_value - 500) / 1500;
+            temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative
 
-            buffer[0] = (value >> 8) & 0xFF;  // High byte
-            buffer[1] = value & 0xFF;         // Low byte
-
-            esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
-            vTaskDelay(20 / portTICK_PERIOD_MS);
+            brake_pressure_return_value = (int)fabs(temp * 255 - 255);
+            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100 / 255));
+        } else {
+            brake_pressure_return_value = 0;
         }
-        last_CLK_lvl = CLK_lvl;
-        vTaskDelay(8 / portTICK_PERIOD_MS);
+        
+        uint8_t brake_value = brake_pressure_return_value;
+        buffer[0] = brake_value;
+        esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
-
-void braker_task(void *param) {
-  int pressure_value;
-  int brake_pressure_return_value = 0;
-
-  esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
-  
-  while (1) {
-    pressure_value = adc1_get_raw(ADC1_CHANNEL_0);
-    ESP_LOGI("main: ", "Value: %d", pressure_value);
-    if (pressure_value <= 2000) {
-      float temp = ((float)pressure_value - 500) / 1500;
-      if (temp < 0) {
-        temp = 0;
-      }
-      brake_pressure_return_value = (int)fabs(temp * 255 - 255);
-      ESP_LOGI("main: ", "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100 / 255));
-    } else {
-      brake_pressure_return_value = 0;
-    }
-    value = brake_pressure_return_value;
-    buffer[0] = value; 
-    esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-  }
-}
-
-
-
+// Main application
 void app_main(void) {
+    // Rotary encoder pin configuration
+    gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT);
+    gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
 
-  //Rotary encoder
-  gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT); 
-  gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
+    // Enable interrupt on rising edge for CLK pin
+    gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_POSEDGE);
 
+    // Create a queue to handle encoder events
+    gpio_evt_queue = xQueueCreate(10, sizeof(uint16_t));
 
-    // dette er til at lave i2c linje og lave en lcd_task
+    // Install ISR service and attach encoder ISR handler
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(ENCODER_CLK, encoder_isr_handler, NULL);
 
-    //lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
-    //xTaskCreate(&lcd_task, "Demo Task", 2048, NULL, 5, NULL);
+    // Initialize NVS, Wi-Fi, and WebSocket
+    nvs_init();               // Initialize NVS
+    wifi_init_sta();          // Initialize WiFi
+    esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);  // WebSocket client
 
-    // dette er til at gemme SSID og Password
-    nvs_init(); // Initialize NVS
-    // dette er til at skabe forbindelse ti netværk
-    wifi_init_sta(); // Initialize WiFi
+    // Configure ADC for legacy driver
+    adc1_config_width(ADC_WIDTH_BIT_12);  // Set ADC resolution to 12 bits
+    adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_0);  // Set ADC attenuation
 
-    // Initialize WebSocket client
-    esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);
-
-    // Send a test message
+    // Create tasks
     xTaskCreate(&encoder_task, "Encoder Task", 4096, (void *) client, 4, NULL);
-    xTaskCreate(&braker_task, "Demo Task", 2048, (void *) client, 4, NULL);
+    xTaskCreate(&braker_task, "Brake Task", 2048, (void *) client, 4, NULL);
 }
-
