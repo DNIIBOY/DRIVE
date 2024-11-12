@@ -42,7 +42,7 @@ def config():
                 setattr(conf, key, value)
             conf.save(valkey)
         case "DELETE":
-            for key, value in conf.__dict__:
+            for key, value in conf.__dict__.items():
                 if key.startswith("_"):
                     continue
                 valkey.set(key, value)
