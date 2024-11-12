@@ -53,3 +53,5 @@ func _ready() -> void:
     
     # The final straight line, going left to right
     curve.add_point(Vector2(road_width + road_turn_diameter, road_turn_diameter * (road_turns*2)))
+
+    print(curve.get_baked_length())

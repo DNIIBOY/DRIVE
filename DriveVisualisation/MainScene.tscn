@@ -1,26 +1,87 @@
-[gd_scene load_steps=7 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=8 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
 [ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
+[ext_resource type="Script" path="res://http_request.gd" id="2_h8mqm"]
 [ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
+[ext_resource type="PackedScene" uid="uid://cm1sbrfpvt18u" path="res://Nodes/http_setting.tscn" id="3_u0ngf"]
 [ext_resource type="Script" path="res://generated_path.gd" id="4_faryb"]
-
-[sub_resource type="Curve2D" id="Curve2D_1frpa"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, -488, -287, -4.26019, -104.954, 4.26019, 104.954, 465, -230, -1.49831, -112.373, 1.49831, 112.373, -479, -152, 0.525234, -128.936, -0.525234, 128.936, 448, -71, 0, -143.837, 0, 143.837, -464, 73, 0.0648823, -132.904, -0.0648823, 132.904, 435, 145, 0, 0, 0, 0, -430, 239)
-}
-point_count = 7
 
 [sub_resource type="Curve2D" id="Curve2D_pyq3i"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_7cvgd")
 
+[node name="HTTP_Manager" type="Node" parent="."]
+script = ExtResource("2_h8mqm")
+
+[node name="HTTPGet" type="HTTPRequest" parent="HTTP_Manager"]
+
+[node name="HTTPSend" type="HTTPRequest" parent="HTTP_Manager"]
+
+[node name="HTTPRetrieveDefault" type="HTTPRequest" parent="HTTP_Manager"]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_dtk33")
 
-[node name="Path2D" type="Path2D" parent="."]
-curve = SubResource("Curve2D_1frpa")
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
+layer = 2
+
+[node name="Control" type="Control" parent="Camera2D/CanvasLayer"]
+light_mask = 0
+visibility_layer = 2
+custom_minimum_size = Vector2(1152, 648)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="SettingsMenu" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 11.0
+offset_top = 10.0
+offset_right = -11.0
+offset_bottom = 105.0
+grow_horizontal = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Camera2D/CanvasLayer/Control/SettingsMenu"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+
+[node name="HTTP_Settings" type="HBoxContainer" parent="Camera2D/CanvasLayer/Control/SettingsMenu/ScrollContainer"]
+layout_mode = 2
+
+[node name="HTTP_Setting" parent="Camera2D/CanvasLayer/Control/SettingsMenu/ScrollContainer/HTTP_Settings" instance=ExtResource("3_u0ngf")]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera2D/CanvasLayer/Control/SettingsMenu"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button_Post" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.26
+text = "Patch Changes"
+
+[node name="Button_Set_Default" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Retrieve Default"
+
+[node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -41.0
+offset_right = 99.0
+offset_bottom = -10.0
+grow_vertical = 0
+text = "Reconnect"
 
 [node name="Line2D" type="Line2D" parent="."]
 show_behind_parent = true

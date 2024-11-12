@@ -4,18 +4,18 @@ from valkey import Valkey
 
 @dataclass
 class SimulationConfig:
-    initial_speed: int = 333
+    visual_speed_factor: int = 10
+    initial_speed: int = 300
     speed_limit: int = 333
-    spawn_distance: int = 10
-    visual_speed_factor: int = 4
-    base_kill_distance: int = 65565
+    base_kill_distance: int = 65535
 
-    target_distance: int = 200
-    speed_limit_deviation: int = 10
+    spawn_distance: int = 250
+    target_distance: int = 100
+    speed_limit_deviation: int = 0
 
     update_interval: float = 0.05
     car_length: int = 300
-    car_max_accel: float = 0.1
+    car_max_accel: float = 0.01
 
     def read(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():
@@ -24,7 +24,7 @@ class SimulationConfig:
             val = valkey.get(key)
 
             if val is not None:
-                setattr(self, key, value)
+                setattr(self, key, type(value)(val.decode()))
 
     def save(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():

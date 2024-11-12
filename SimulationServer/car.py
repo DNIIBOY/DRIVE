@@ -1,6 +1,7 @@
 from __future__ import annotations
 from config import SimulationConfig
 import random
+from time import time
 
 
 class Car:
@@ -25,9 +26,10 @@ class Car:
         self.speed = self.config.initial_speed
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation, self.config.speed_limit_deviation)
-        self.reference_speed = self.target_speed
+        self.reference_speed = self.target_speed + self.speed_limit_diff
 
         self.max_ref_inc = self.config.car_max_accel
+        self.time_to_next_reaction = time()
 
     @property
     def position(self) -> float:
@@ -62,7 +64,7 @@ class Car:
             prev_car._next = self
 
     def __bytes__(self) -> bytes:
-        rep_int = int(self.position/self.config.visual_speed_factor)
+        rep_int = int(self.position)
         rep_int &= (0xFFFF)  # Clear the upper 16 bits
         rep_int |= (self.id << 22)  # Set the id in the upper 10 bits
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit

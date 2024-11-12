@@ -20,6 +20,9 @@ const INV_16 = 1.0 / 16
 var focusedCar = 0
 var isFocusing = false
 @onready var camera = $Camera2D
+@onready var http_manager = $HTTP_Manager
+
+
 
 func _input(event):
     if event.is_action_pressed("focus"):
@@ -122,6 +125,7 @@ func get_socket() -> WebSocketPeer:
 func poll() -> void:
     if socket.get_ready_state() != socket.STATE_CLOSED:
         socket.poll()
+        
 
     var state := socket.get_ready_state()
 
@@ -137,8 +141,10 @@ func poll() -> void:
 var car_scene = load("res://Nodes/Car.tscn")
 
 var gradient = Gradient.new()
+@onready var reconnect_button = $Camera2D/CanvasLayer/Control/ReconnectButton
 func _ready() -> void:
     
+    reconnect_button.pressed.connect(self._reconnect)
     gradient.set_color(0, Color(1,0,0,1))
     gradient.set_color(1, Color.BLUE)
     gradient.add_point(0.5, Color(0,1,0,1))
@@ -152,6 +158,12 @@ func _ready() -> void:
         
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
+
+func _reconnect() -> void:
+    for car in cars:
+        car.set_inactive()
+    connect_to_url("ws://localhost:5000/ws/vis")
+    http_manager.get_config()
 
 func _physics_process(_delta: float) -> void:
     poll()
@@ -169,15 +181,6 @@ func CreateVisualLine():
     line.width = 35
     var samplePoint = 0.0
     
-    """ #Code beneath is for the old path
-    var inverted_resolution = 1.0 / resolution
-    line.add_point($Path2D.curve.sample(0, 0))
-    for point in range($Path2D.curve.get_baked_points().size()):
-        samplePoint = 0.0
-        for subpoint in range(resolution):
-            samplePoint += inverted_resolution
-            line.add_point($Path2D.curve.sample(point, samplePoint))
-    """
     var inverted_resolution = 1.0 / resolution
     line.add_point($GeneratedPath.curve.sample(0, 0))
     for point in range($GeneratedPath.curve.get_baked_points().size()):
@@ -185,6 +188,5 @@ func CreateVisualLine():
         for subpoint in range(resolution):
             samplePoint += inverted_resolution
             line.add_point($GeneratedPath.curve.sample(point, samplePoint))
-            
             
             

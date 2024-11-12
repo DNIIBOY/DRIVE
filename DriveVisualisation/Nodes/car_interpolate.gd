@@ -20,7 +20,7 @@ func set_new_target(target: float) -> void:
         active = true
         current_progress_ratio = target
         $Sprite2D.visible = true
-    target_progress_ratio = target
+    target_progress_ratio = clamp(target, 0.0, 1)
     interpolate = 0
         
 func _process(delta: float) -> void:
