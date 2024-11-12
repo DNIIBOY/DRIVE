@@ -16,3 +16,25 @@ class SimulationConfig:
     update_interval: float = 0.05
     car_length: int = 300
     car_max_accel: float = 0.01
+
+    def read(self, valkey: Valkey) -> None:
+        for key, value in self.__dict__.items():
+            if key.startswith("_"):
+                continue
+            val = valkey.get(key)
+
+            if val is not None:
+                setattr(self, key, value)
+
+    def save(self, valkey: Valkey) -> None:
+        for key, value in self.__dict__.items():
+            if key.startswith("_"):
+                continue
+            valkey.set(key, value)
+
+    @property
+    def kill_distance(self) -> int:
+        return self.base_kill_distance * self.visual_speed_factor
+
+    def to_dict(self) -> dict:
+        return {key: value for key, value in self.__dict__.items() if not key.startswith("_")}
