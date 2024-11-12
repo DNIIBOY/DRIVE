@@ -45,6 +45,7 @@ offset_top = 10.0
 offset_right = -11.0
 offset_bottom = 105.0
 grow_horizontal = 2
+focus_mode = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Camera2D/CanvasLayer/Control/SettingsMenu"]
 custom_minimum_size = Vector2(0, 70)

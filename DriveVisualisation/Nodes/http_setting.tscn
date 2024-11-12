@@ -24,4 +24,12 @@ theme_override_font_sizes/font_size = 15
 text = "Speed"
 
 [node name="SettingInputField" type="LineEdit" parent="."]
+visible = false
 layout_mode = 2
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 2
+mouse_filter = 1
+step = 0.01
+allow_greater = true
+allow_lesser = true

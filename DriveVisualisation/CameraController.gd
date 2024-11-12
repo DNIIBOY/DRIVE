@@ -7,7 +7,7 @@ func _ready() -> void:
     zoom_reset()
     pan_reset()
     
-func _input(event):
+func _input(event: InputEvent) -> void:
     if event.is_action("zoom_in"):
         zoom_add(0.1)
     elif event.is_action("zoom_out"):
@@ -49,6 +49,6 @@ func pan_vertical(value: float) -> void:
 func zoom_add(value: float):
     var currentZoom = get_zoom()
     var targetZoom = currentZoom + Vector2(value, value)
-    if targetZoom.y > 0:
+    if targetZoom.y >= 0.5 and targetZoom.x >= 0.5:
         set_zoom(targetZoom)
     
