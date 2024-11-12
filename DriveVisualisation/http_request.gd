@@ -17,8 +17,11 @@ func _ready():
     http_get.request_completed.connect(_on_get_request_completed)
     http_send.request_completed.connect(_on_send_request_completed)
     
+    get_config()
+    
+func get_config():
     http_get.request("http://127.0.0.1:5000/config")
-
+    
 func _on_get_request_completed(_result, response_code, _headers, body):
     if response_code == 200:
         settings_json = JSON.parse_string(body.get_string_from_utf8())

@@ -58,6 +58,18 @@ layout_mode = 2
 layout_mode = 2
 text = "Patch Changes"
 
+[node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -41.0
+offset_right = 99.0
+offset_bottom = -10.0
+grow_vertical = 0
+text = "Reconnect"
+
 [node name="Line2D" type="Line2D" parent="."]
 show_behind_parent = true
 texture = ExtResource("2_w8alh")

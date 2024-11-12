@@ -20,6 +20,7 @@ const INV_16 = 1.0 / 16
 var focusedCar = 0
 var isFocusing = false
 @onready var camera = $Camera2D
+@onready var http_manager = $HTTP_Manager
 
 
 
@@ -139,8 +140,9 @@ func poll() -> void:
 var car_scene = load("res://Nodes/Car.tscn")
 
 var gradient = Gradient.new()
+@onready var reconnect_button = $Camera2D/CanvasLayer/Control/ReconnectButton
 func _ready() -> void:
-    
+    reconnect_button.pressed.connect(self._reconnect)
     gradient.set_color(0, Color(1,0,0,1))
     gradient.set_color(1, Color.BLUE)
     gradient.add_point(0.5, Color(0,1,0,1))
@@ -154,6 +156,11 @@ func _ready() -> void:
         
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
+
+func _reconnect() -> void:
+    connect_to_url("ws://localhost:5000/ws/vis")
+    
+    http_manager.get_config()
 
 func _physics_process(_delta: float) -> void:
     poll()
