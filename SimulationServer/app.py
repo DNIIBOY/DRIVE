@@ -27,20 +27,26 @@ def index():
     return send_from_directory("static", "index.html")
 
 
-@app.route("/config", methods=["GET", "PATCH"])
+@app.route("/config", methods=["GET", "PATCH", "DELETE"])
 def config():
     conf = SimulationConfig()
 
-    if request.method == "GET":
-        conf.read(valkey)
-
-    elif request.method == "PATCH":
-        data = request.json
-        for key, value in data.items():
-            if key.startswith("_"):
-                continue
-            setattr(conf, key, value)
-        conf.save(valkey)
+    match request.method:
+        case "GET":
+            conf.read(valkey)
+        case "PATCH":
+            data = request.json
+            for key, value in data.items():
+                if key.startswith("_"):
+                    continue
+                setattr(conf, key, value)
+            conf.save(valkey)
+        case "DELETE":
+            for key, value in conf.__dict__:
+                if key.startswith("_"):
+                    continue
+                valkey.set(key, value)
+            conf.read(valkey)
 
     return conf.to_dict()
 
