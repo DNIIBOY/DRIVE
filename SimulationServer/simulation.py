@@ -1,5 +1,5 @@
 from time import sleep, time
-
+from idm import idm
 from car import Car
 from config import SimulationConfig
 from valkey import Valkey
