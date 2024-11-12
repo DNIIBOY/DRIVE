@@ -125,6 +125,7 @@ func get_socket() -> WebSocketPeer:
 func poll() -> void:
     if socket.get_ready_state() != socket.STATE_CLOSED:
         socket.poll()
+        
 
     var state := socket.get_ready_state()
 
@@ -142,6 +143,7 @@ var car_scene = load("res://Nodes/Car.tscn")
 var gradient = Gradient.new()
 @onready var reconnect_button = $Camera2D/CanvasLayer/Control/ReconnectButton
 func _ready() -> void:
+    
     reconnect_button.pressed.connect(self._reconnect)
     gradient.set_color(0, Color(1,0,0,1))
     gradient.set_color(1, Color.BLUE)
@@ -158,8 +160,9 @@ func _ready() -> void:
     connect_to_url("ws://localhost:5000/ws/vis")
 
 func _reconnect() -> void:
+    for car in cars:
+        car.set_inactive()
     connect_to_url("ws://localhost:5000/ws/vis")
-    
     http_manager.get_config()
 
 func _physics_process(_delta: float) -> void:
@@ -185,6 +188,5 @@ func CreateVisualLine():
         for subpoint in range(resolution):
             samplePoint += inverted_resolution
             line.add_point($GeneratedPath.curve.sample(point, samplePoint))
-            
             
             

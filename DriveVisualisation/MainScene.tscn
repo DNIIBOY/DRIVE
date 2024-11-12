@@ -54,9 +54,20 @@ layout_mode = 2
 [node name="HTTP_Setting" parent="Camera2D/CanvasLayer/Control/SettingsMenu/ScrollContainer/HTTP_Settings" instance=ExtResource("3_u0ngf")]
 layout_mode = 2
 
-[node name="Button_Post" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera2D/CanvasLayer/Control/SettingsMenu"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button_Post" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.26
 text = "Patch Changes"
+
+[node name="Button_Set_Default" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Retrieve Default"
 
 [node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 1

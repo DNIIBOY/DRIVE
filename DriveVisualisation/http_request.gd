@@ -1,7 +1,8 @@
 extends Node
 
 @onready var http_settings_container = $"../Camera2D/CanvasLayer/Control/SettingsMenu/ScrollContainer/HTTP_Settings"
-@onready var post_button = $"../Camera2D/CanvasLayer/Control/SettingsMenu/Button_Post"
+@onready var post_button = $"../Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer/Button_Post"
+@onready var back_to_default_button = $"../Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer/Button_Set_Default"
 
 var http_setting_scene = load("res://Nodes/http_setting.tscn")
 var settings_json
@@ -14,6 +15,7 @@ var config_dictionary = {}
 # Called when the node enters the scene tree for the first time.
 func _ready():
     post_button.pressed.connect(self._post)
+    back_to_default_button.pressed.connect(self._retrieve_default)
     http_get.request_completed.connect(_on_get_request_completed)
     http_send.request_completed.connect(_on_send_request_completed)
     
@@ -45,6 +47,8 @@ func _on_send_request_completed(_result, response_code, _headers, _body):
     else:
         print("Code: ", response_code)
           
+func _retrieve_default():
+    pass
 
 func _post():
     for pair in config_dictionary:
