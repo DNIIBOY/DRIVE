@@ -2,8 +2,8 @@ from time import sleep, time
 
 from car import Car
 from config import SimulationConfig
-from idm import idm
 from valkey import Valkey
+from pid_control import pid_calculator
 
 
 class Simulation:
@@ -14,7 +14,7 @@ class Simulation:
         self.tail: Car = None
 
         self.config = SimulationConfig()
-        self.config.refresh(valkey)
+        self.config.read(valkey)
 
         self.create_car()
 
@@ -22,7 +22,7 @@ class Simulation:
         config_refresh_time = time()
         while True:
             if time() - config_refresh_time > 1:
-                self.config.refresh(self.valkey)
+                self.config.read(self.valkey)
                 config_refresh_time = time()
             start_time = time()
             self.update_cars()
@@ -76,7 +76,7 @@ class Simulation:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
             car.reference_speed = max(0, car.reference_speed - car.brake_amount)
-            #car.accel = 1 - (car.brake_amount / 255)
+            # car.accel = 1 - (car.brake_amount / 255)
         else:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
@@ -84,7 +84,7 @@ class Simulation:
                     self.config.initial_speed, car.target_speed + car.max_ref_inc
                 )
 
-            #car.accel = idm(car, self.config)
+            # car.accel = idm(car, self.config)
             car.accel = pid_calculator(car, self.config)
 
         car.speed *= car.accel
