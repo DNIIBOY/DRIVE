@@ -14,14 +14,16 @@ func set_config_name(option_name: String) -> void:
 func set_config_value(value) -> void:
     if value is int:
         type = "int"
+        $SpinBox.value = int(value)
     else:
         type = "float"
-    $SettingInputField.text = str(value)
+        $SpinBox.value = float(value)
+    
     
 func get_config_value():
     if type == "int":
-        return int($SettingInputField.text)
+        return $SpinBox.value
     else:
-        return float($SettingInputField.text)
+        return $SpinBox.value
 
     
