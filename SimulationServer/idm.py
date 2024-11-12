@@ -10,14 +10,14 @@ def idm(car: Car, config: SimulationConfig):
 
     if car.next:
         v = car.speed
-        v0 = car.target_speed + uniform(-30, 30)
-        s0 = config.target_distance + uniform(-0.3, 0.3)
-        s = car.next.position - car.position + uniform(-10, 10)
-        T = 1.5
-        a_max = 1.3 + uniform(-0.1, 0.1)
-        b = 0.3
+        v0 = car.target_speed #+ uniform(-30, 30)
+        s0 = config.target_distance #+ uniform(-0.3, 0.3)
+        s = max(car.next.position - car.position, 0.01) #+ uniform(-10, 10)
+        T = 0.015
+        a_max = 1.3 #+ uniform(-0.1, 0.1)
+        b = 100
         s_stjerne = s0 + (v * T) + (abs(car.next.speed - v) / 2 * math.sqrt(a_max * b))
-
+        
         acceleration = a_max * ((1 - ((v / v0) ** 4) - (s_stjerne / s) ** 2))
 
     return acceleration

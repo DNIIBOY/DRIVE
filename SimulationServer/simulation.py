@@ -80,7 +80,7 @@ class Simulation:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
             car.reference_speed = max(0, car.reference_speed - car.brake_amount)
-            car.accel = 1 - (car.brake_amount / 255)
+            #car.accel = 1 - (car.brake_amount / 255)
         else:
             # Gradually restore reference speed up to original speed
             if car.reference_speed < car.target_speed:
@@ -88,8 +88,8 @@ class Simulation:
                     self.config.initial_speed, car.target_speed + car.max_ref_inc
                 )
 
-            car.accel = idm(car, self.config)
-            # car.accel = pid_calculator(car, self.config)
+            #car.accel = idm(car, self.config)
+            car.accel = pid_calculator(car, self.config)
 
         car.speed *= car.accel
         car.speed = min(car.speed, car.target_speed)
