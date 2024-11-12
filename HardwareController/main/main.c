@@ -60,7 +60,7 @@ void lcd_task(void *param) {
 
 void encoder_task(void *param) {
     int last_CLK_lvl = gpio_get_level(ENCODER_CLK);
-    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param; // Corrected cast
+    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
 
     while (1) {
         CLK_lvl = gpio_get_level(ENCODER_CLK);
@@ -68,9 +68,9 @@ void encoder_task(void *param) {
 
         if (last_CLK_lvl == 0 && CLK_lvl == 1) {
             if (DT_lvl == 0) {
-                value = (1<<14);
-            } else {
                 value = (1<<15);
+            } else {
+                value = (1<<14);
             }
 
             buffer[0] = (value >> 8) & 0xFF;  // High byte
@@ -86,10 +86,14 @@ void encoder_task(void *param) {
 
 
 void braker_task(void *param) {
-  int pressure_value = adc1_get_raw(ADC1_CHANNEL_0);
+  int pressure_value;
   int brake_pressure_return_value = 0;
+
+  esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
+  
   while (1) {
     pressure_value = adc1_get_raw(ADC1_CHANNEL_0);
+    ESP_LOGI("main: ", "Value: %d", pressure_value);
     if (pressure_value <= 2000) {
       float temp = ((float)pressure_value - 500) / 1500;
       if (temp < 0) {
@@ -100,6 +104,9 @@ void braker_task(void *param) {
     } else {
       brake_pressure_return_value = 0;
     }
+    value = brake_pressure_return_value;
+    buffer[0] = value; 
+    esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
@@ -128,6 +135,6 @@ void app_main(void) {
 
     // Send a test message
     xTaskCreate(&encoder_task, "Encoder Task", 4096, (void *) client, 4, NULL);
-    xTaskCreate(&braker_task, "Demo Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&braker_task, "Demo Task", 2048, (void *) client, 4, NULL);
 }
 
