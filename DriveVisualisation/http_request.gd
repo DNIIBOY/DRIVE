@@ -11,6 +11,7 @@ var config_dictionary = {}
 
 @onready var http_get = $HTTPGet
 @onready var http_send = $HTTPSend
+@onready var http_retrieve = $HTTPRetrieveDefault
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,6 +19,7 @@ func _ready():
     back_to_default_button.pressed.connect(self._retrieve_default)
     http_get.request_completed.connect(_on_get_request_completed)
     http_send.request_completed.connect(_on_send_request_completed)
+    http_retrieve.request_completed.connect(_retrieve_completed)
     
     get_config()
     
@@ -48,7 +50,13 @@ func _on_send_request_completed(_result, response_code, _headers, _body):
         print("Code: ", response_code)
           
 func _retrieve_default():
-    pass
+    http_retrieve.request(
+        "http://127.0.0.1:5000/config", [],
+        HTTPClient.METHOD_DELETE
+    )
+
+func _retrieve_completed(_result, _response_code, _headers, _body):
+    get_config()
 
 func _post():
     for pair in config_dictionary:

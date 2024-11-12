@@ -19,6 +19,8 @@ script = ExtResource("2_h8mqm")
 
 [node name="HTTPSend" type="HTTPRequest" parent="HTTP_Manager"]
 
+[node name="HTTPRetrieveDefault" type="HTTPRequest" parent="HTTP_Manager"]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_dtk33")
 
