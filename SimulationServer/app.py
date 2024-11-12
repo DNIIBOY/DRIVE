@@ -1,10 +1,11 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from valkey import Valkey
 from flask_sock import Sock
 from simple_websocket.ws import Server
 import gevent
 from threading import Thread
 from simulation import Simulation
+from config import SimulationConfig
 
 valkey = Valkey(host="localhost", port=6379, db=0)
 sock = Sock()
@@ -24,6 +25,24 @@ Thread(target=simulate_val_update, daemon=True).start()
 @app.route("/")
 def index():
     return send_from_directory("static", "index.html")
+
+
+@app.route("/config", methods=["GET", "PATCH"])
+def config():
+    conf = SimulationConfig()
+
+    if request.method == "GET":
+        conf.read(valkey)
+
+    elif request.method == "PATCH":
+        data = request.json
+        for key, value in data.items():
+            if key.startswith("_"):
+                continue
+            setattr(conf, key, value)
+        conf.save(valkey)
+
+    return conf.to_dict()
 
 
 @sock.route("/ws/vis")

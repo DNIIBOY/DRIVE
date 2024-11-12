@@ -1,32 +1,29 @@
-import random
 from time import sleep, time
 
 from car import Car
 from config import SimulationConfig
 from idm import idm
-from pid_control import pid_calculator
 from valkey import Valkey
 
 
 class Simulation:
     def __init__(self, valkey: Valkey) -> None:
+        self._id = 0
         self.valkey = valkey
         self.head: Car = None
         self.tail: Car = None
-        self.config = self._read_config()
-        self._id = 0
+
+        self.config = SimulationConfig()
+        self.config.refresh(valkey)
+
         self.create_car()
 
-    def _read_config(self) -> SimulationConfig:
-        config = SimulationConfig()
-        for key, val in config.__dict__.items():
-            val = self.valkey.get(key)
-            if val is not None:
-                setattr(config, key, val)
-        return config
-
     def main_loop(self) -> None:
+        config_refresh_time = time()
         while True:
+            if time() - config_refresh_time > 1:
+                self.config.refresh(self.valkey)
+                config_refresh_time = time()
             start_time = time()
             self.update_cars()
             self.valkey.set("cars", self.serialize_cars())
@@ -74,7 +71,6 @@ class Simulation:
 
         self.valkey.set("head", self.head.id)
         self.valkey.set("tail", self.tail.id)
-
 
     def update_car(self, car: Car) -> None:
         if car.brake_amount:
