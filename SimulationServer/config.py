@@ -7,10 +7,10 @@ class SimulationConfig:
     visual_speed_factor: int = 10
     initial_speed: int = 300
     speed_limit: int = 333
-    spawn_distance: int = 250 #* visual_speed_factor
-    kill_distance: int = 65565 * visual_speed_factor
+    base_kill_distance: int = 65565
 
-    target_distance: int = 100 #* visual_speed_factor
+    spawn_distance: int = 250
+    target_distance: int = 100
     speed_limit_deviation: int = 0
 
     update_interval: float = 0.05
