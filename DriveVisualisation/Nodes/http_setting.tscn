@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cm1sbrfpvt18u"]
+
+[ext_resource type="Script" path="res://Nodes/http_conf.gd" id="1_q4x5g"]
+
+[node name="HTTP_Setting" type="VBoxContainer"]
+custom_minimum_size = Vector2(100, 60)
+script = ExtResource("1_q4x5g")
+
+[node name="SettingNameBackground" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(20, 25)
+layout_mode = 2
+color = Color(0.314316, 0.314316, 0.314316, 1)
+
+[node name="SettingNameLabel" type="Label" parent="SettingNameBackground"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -24.0
+offset_right = 24.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 15
+text = "Speed"
+
+[node name="SettingInputField" type="LineEdit" parent="."]
+layout_mode = 2

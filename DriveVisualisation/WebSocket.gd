@@ -21,6 +21,8 @@ var focusedCar = 0
 var isFocusing = false
 @onready var camera = $Camera2D
 
+
+
 func _input(event):
     if event.is_action_pressed("focus"):
             if isFocusing == false and active_cars.has(focusedCar):
@@ -169,15 +171,6 @@ func CreateVisualLine():
     line.width = 35
     var samplePoint = 0.0
     
-    """ #Code beneath is for the old path
-    var inverted_resolution = 1.0 / resolution
-    line.add_point($Path2D.curve.sample(0, 0))
-    for point in range($Path2D.curve.get_baked_points().size()):
-        samplePoint = 0.0
-        for subpoint in range(resolution):
-            samplePoint += inverted_resolution
-            line.add_point($Path2D.curve.sample(point, samplePoint))
-    """
     var inverted_resolution = 1.0 / resolution
     line.add_point($GeneratedPath.curve.sample(0, 0))
     for point in range($GeneratedPath.curve.get_baked_points().size()):
