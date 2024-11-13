@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dsj5w4levglbr"]
+
+[node name="RoadSettingElement" type="VBoxContainer"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+color = Color(0.313726, 0.313726, 0.313726, 1)
+
+[node name="Label" type="Label" parent="ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -23.5
+offset_top = -11.5
+offset_right = 23.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Width"
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 2
