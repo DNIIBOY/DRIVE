@@ -23,6 +23,46 @@ script = ExtResource("2_h8mqm")
 
 [node name="HTTPRetrieveDefault" type="HTTPRequest" parent="HTTP_Manager"]
 
+[node name="Window" type="Window" parent="HTTP_Manager"]
+title = "Save config"
+position = Vector2i(405, 190)
+size = Vector2i(270, 105)
+visible = false
+
+[node name="MarginContainer" type="MarginContainer" parent="HTTP_Manager/Window"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 41.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HTTP_Manager/Window/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="prefix" type="Label" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "res://"
+
+[node name="LineEdit" type="LineEdit" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "config"
+placeholder_text = "path..."
+
+[node name="filename" type="Label" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = ".json"
+
+[node name="SaveButton" type="Button" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Save"
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_dtk33")
 
@@ -40,11 +80,11 @@ offset_bottom = 648.0
 
 [node name="RoadSettings" type="Window" parent="Camera2D/CanvasLayer/Control"]
 title = "Road Settings"
-position = Vector2i(815, 390)
-size = Vector2i(300, 225)
+position = Vector2i(815, 322)
+size = Vector2i(300, 285)
 visible = false
 min_size = Vector2i(200, 225)
-max_size = Vector2i(300, 225)
+max_size = Vector2i(300, 985)
 script = ExtResource("5_es6id")
 
 [node name="MarginContainer" type="MarginContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings"]
@@ -125,6 +165,16 @@ size_flags_horizontal = 3
 text = "Straighten road"
 icon_alignment = 1
 
+[node name="RoadSettingElement" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="Label" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement/ColorRect" index="0"]
+text = "Straight Road Length"
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement" index="1"]
+max_value = 999999.0
+value = 1000.0
+
 [node name="Button" type="Button" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Bake!"
@@ -195,3 +245,4 @@ script = ExtResource("4_faryb")
 [editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2"]
 [editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/InOutRoadSettingElement"]
 [editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement"]
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement"]
