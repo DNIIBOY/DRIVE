@@ -24,7 +24,7 @@ func _update_values():
     road_turn_diameter = road_turn_radius *2
     road_turns = input_road_turns.value
     inoutsize = input_curve_factor.value
-    is_straight = input_is_straight.toggled
+    is_straight = input_is_straight.button_pressed
     straight_road_length = input_straight_road_length.value
     
     curve.clear_points()

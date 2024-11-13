@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=11 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
 [ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
 [ext_resource type="Script" path="res://http_request.gd" id="2_h8mqm"]
 [ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
+[ext_resource type="Script" path="res://FileDialogue.gd" id="3_moa7p"]
 [ext_resource type="PackedScene" uid="uid://cm1sbrfpvt18u" path="res://Nodes/http_setting.tscn" id="3_u0ngf"]
 [ext_resource type="Script" path="res://generated_path.gd" id="4_faryb"]
 [ext_resource type="PackedScene" uid="uid://dsj5w4levglbr" path="res://Nodes/RoadSetting.tscn" id="5_3phmc"]
@@ -25,9 +26,10 @@ script = ExtResource("2_h8mqm")
 
 [node name="Window" type="Window" parent="HTTP_Manager"]
 title = "Save config"
-position = Vector2i(405, 190)
+initial_position = 1
 size = Vector2i(270, 105)
 visible = false
+script = ExtResource("3_moa7p")
 
 [node name="MarginContainer" type="MarginContainer" parent="HTTP_Manager/Window"]
 anchors_preset = 10
@@ -207,7 +209,6 @@ size_flags_vertical = 3
 [node name="Button_Post" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 4.0
 text = "Patch Changes"
 
 [node name="Button_Set_Default" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
@@ -219,6 +220,11 @@ text = "Retrieve Default"
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Road Settings"
+
+[node name="ButtonSaveLoad" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = " Export config "
 
 [node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 1
