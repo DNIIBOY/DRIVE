@@ -1,5 +1,28 @@
 # Simulation Server
 
+## Running the server
+This is on Linux. If you are using Windows, click [here](https://learn.microsoft.com/en-us/linux/install).
+
+### Activate venv
+```bash
+source venv/bin/activate
+```
+### Start the valkey container
+```bash
+docker compose up -d
+```
+
+### Start Flask server
+```bash
+python3 app.py
+```
+
+### Open UFW
+```bash
+sudo ufw allow 5000/tcp
+```
+
+
 ## Websocket formats
 
 ### Output to visualisation
