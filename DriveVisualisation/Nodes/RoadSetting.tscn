@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dsj5w4levglbr"]
 
 [node name="RoadSettingElement" type="VBoxContainer"]
+size_flags_horizontal = 3
 
 [node name="ColorRect" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(0, 30)
