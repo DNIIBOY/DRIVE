@@ -42,6 +42,7 @@ offset_bottom = 648.0
 title = "Road Settings"
 position = Vector2i(815, 390)
 size = Vector2i(300, 225)
+visible = false
 min_size = Vector2i(200, 225)
 max_size = Vector2i(300, 225)
 script = ExtResource("5_es6id")
