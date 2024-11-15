@@ -15,7 +15,8 @@
 #include "websocket_handler.h"
 #include "i2c_handler.h"
 #include "HD44780.h"
-#include "driver/adc.h"  // Legacy ADC include
+#include "driver/adc.h"
+#include "esp_timer.h"
 
 #define LCD_ADDR 0x27
 #define SDA_PIN 7
@@ -37,9 +38,16 @@ uint8_t buffer[2];
 
 // Interrupt service routine (ISR) for encoder rotation
 static void IRAM_ATTR encoder_isr_handler(void *arg) {
-    int dt_lvl = gpio_get_level(ENCODER_DT);
-    uint16_t direction = (dt_lvl == 0) ? (1 << 15) : (1 << 14);  // Determine rotation direction
-    xQueueSendFromISR(gpio_evt_queue, &direction, NULL);          // Send direction to queue
+    static int64_t last_interrupt_time = 0;
+    int64_t current_time = esp_timer_get_time() / 200;
+
+    if ((current_time - last_interrupt_time) > 1000) {  // Check if debounce time has elapsed
+        last_interrupt_time = current_time;  // Update the last interrupt time
+
+        int dt_lvl = gpio_get_level(ENCODER_DT);
+        uint16_t direction = (dt_lvl == 0) ? (1 << 15) : (1 << 14);  // Determine rotation direction
+        xQueueSendFromISR(gpio_evt_queue, &direction, NULL);         // Send direction to queue
+    }
 }
 
 // Initialize NVS
@@ -115,7 +123,7 @@ void app_main(void) {
     gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
 
     // Enable interrupt on rising edge for CLK pin
-    gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_POSEDGE);
+    gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_NEGEDGE);
 
     // Create a queue to handle encoder events
     gpio_evt_queue = xQueueCreate(10, sizeof(uint16_t));
