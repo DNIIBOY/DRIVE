@@ -15,7 +15,7 @@ class SimulationConfig:
 
     update_interval: float = 0.05
     car_length: int = 15
-    car_max_accel: float = 10
+    car_max_accel: float = 80
 
     def read(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():

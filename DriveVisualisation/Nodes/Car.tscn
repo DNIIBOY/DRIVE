@@ -8,5 +8,5 @@ physics_interpolation_mode = 2
 script = ExtResource("1_pdam6")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.01, 0.01)
+scale = Vector2(0.03, 0.03)
 texture = ExtResource("1_53oc8")
