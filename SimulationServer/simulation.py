@@ -73,7 +73,7 @@ class Simulation:
         self.valkey.set("tail", self.tail.id)
 
     def update_car(self, car: Car) -> None:
-        if car.brake_amount and car.brake_amount > 0:
+        if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
             #car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
             #car.accel = 1 - (car.brake_amount / 255)
