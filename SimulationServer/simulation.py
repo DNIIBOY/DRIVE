@@ -87,10 +87,11 @@ class Simulation:
         car.accel = idm(car, self.config)
         #car.accel = pid_calculator(car, self.config)
 
-        car.speed *= car.accel
-        car.speed = min(car.speed, car.target_speed)
-        car.speed = max(0.1, car.speed)
-        car.position += car.speed
+        
+        car.speed += car.accel
+        #car.speed = min(car.speed, car.target_speed)
+        car.speed = max(0, car.speed)
+        car.position += car.speed * SimulationConfig.update_interval
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
