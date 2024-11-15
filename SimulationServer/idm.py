@@ -11,14 +11,14 @@ def idm(car: Car, config: SimulationConfig):
 
     if car.next:
         if time() > car.time_to_next_reaction:
-            v = car.speed
-            v0 = car.reference_speed  # + uniform(-15, 15)
-            s0 = config.target_distance  # + uniform(-30, 30)
-            s = max(car.next.position - car.position, 0.01)
-            T = 5
-            a_max = config.car_max_accel
+            v = car.speed # Aktuelle hastighed
+            v0 = car.reference_speed  # Ønskede hastighed
+            s0 = config.target_distance  # Ønskede afstand
+            s = max(car.next.position - car.position, 0.01) # Aktuelle afstand
+            T = 5 # "Time Headway", den ønskede afstand til forankørende bil i sekunder
+            a_max = config.car_max_accel # Max acceleration
             b = 20
-            s_stjerne = s0 + (v * T) + (abs(car.next.speed - v) / 2 * math.sqrt(a_max * b))
+            s_stjerne = s0 + (v * T) + (abs(car.next.speed - v) / 2 * math.sqrt(a_max * b)) # Komfortabel deceleration
 
             acceleration = a_max * ((1 - ((v / v0) ** 4) - (s_stjerne / s) ** 2))
             car.time_to_next_reaction = time()
