@@ -20,6 +20,7 @@ func _ready():
     http_get.request_completed.connect(_on_get_request_completed)
     http_send.request_completed.connect(_on_send_request_completed)
     http_retrieve.request_completed.connect(_retrieve_completed)
+    save_to_json_button.pressed.connect(_save_as_JSON)
     
     get_config()
     
@@ -58,6 +59,17 @@ func _retrieve_default():
 func _retrieve_completed(_result, _response_code, _headers, _body):
     get_config()
 
+
+@onready var save_to_json_button = $Window/MarginContainer/VBoxContainer/SaveButton
+@onready var save_to_json_path_input = $Window/MarginContainer/VBoxContainer/HBoxContainer/LineEdit
+func _save_as_JSON():
+    for pair in config_dictionary:
+        settings_json[pair] = config_dictionary[pair].get_config_value()
+    
+    var path = "res://"+save_to_json_path_input.text+".json"
+    var file = FileAccess.open(path, FileAccess.WRITE)
+    file.store_string(JSON.stringify(settings_json))
+    
 func _post():
     for pair in config_dictionary:
         settings_json[pair] = config_dictionary[pair].get_config_value()

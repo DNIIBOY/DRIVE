@@ -10,7 +10,7 @@ def show_packet(packet: bytes) -> None:
 
 
 def main():
-    with connect("ws://192.168.4.5/ws/hw/1") as ws:
+    with connect("ws://localhost:5000/ws/hw/1") as ws:
         pack = None
         latest = pack
         while True:

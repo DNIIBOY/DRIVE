@@ -1,11 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://bs72cx50h6oyv"]
+[gd_scene load_steps=11 format=3 uid="uid://bs72cx50h6oyv"]
 
 [ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
 [ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
 [ext_resource type="Script" path="res://http_request.gd" id="2_h8mqm"]
 [ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
+[ext_resource type="Script" path="res://FileDialogue.gd" id="3_moa7p"]
 [ext_resource type="PackedScene" uid="uid://cm1sbrfpvt18u" path="res://Nodes/http_setting.tscn" id="3_u0ngf"]
 [ext_resource type="Script" path="res://generated_path.gd" id="4_faryb"]
+[ext_resource type="PackedScene" uid="uid://dsj5w4levglbr" path="res://Nodes/RoadSetting.tscn" id="5_3phmc"]
+[ext_resource type="Script" path="res://road_setting_window.gd" id="5_es6id"]
 
 [sub_resource type="Curve2D" id="Curve2D_pyq3i"]
 
@@ -21,6 +24,47 @@ script = ExtResource("2_h8mqm")
 
 [node name="HTTPRetrieveDefault" type="HTTPRequest" parent="HTTP_Manager"]
 
+[node name="Window" type="Window" parent="HTTP_Manager"]
+title = "Save config"
+initial_position = 1
+size = Vector2i(270, 105)
+visible = false
+script = ExtResource("3_moa7p")
+
+[node name="MarginContainer" type="MarginContainer" parent="HTTP_Manager/Window"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 41.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HTTP_Manager/Window/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="prefix" type="Label" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "res://"
+
+[node name="LineEdit" type="LineEdit" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "config"
+placeholder_text = "path..."
+
+[node name="filename" type="Label" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = ".json"
+
+[node name="SaveButton" type="Button" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Save"
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_dtk33")
 
@@ -35,6 +79,107 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1152.0
 offset_bottom = 648.0
+
+[node name="RoadSettings" type="Window" parent="Camera2D/CanvasLayer/Control"]
+title = "Road Settings"
+position = Vector2i(815, 322)
+size = Vector2i(300, 285)
+visible = false
+min_size = Vector2i(200, 225)
+max_size = Vector2i(300, 985)
+script = ExtResource("5_es6id")
+
+[node name="MarginContainer" type="MarginContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RoadSettingContainer" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WidthRoadSettingElement" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer/WidthRoadSettingElement" index="1"]
+max_value = 100000.0
+value = 800.0
+
+[node name="RoadSettingContainer2" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RadiusSettingElement2" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="Label" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2/ColorRect" index="0"]
+text = "Radius"
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2" index="1"]
+max_value = 1000.0
+value = 30.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="InOutRoadSettingElement" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="Label" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/InOutRoadSettingElement/ColorRect" index="0"]
+text = "Curve factor"
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/InOutRoadSettingElement" index="1"]
+max_value = 9999.0
+value = 50.0
+
+[node name="TurnsRoadSettingElement" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="Label" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement/ColorRect" index="0"]
+text = "Turns
+"
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement" index="1"]
+max_value = 30.0
+value = 3.0
+
+[node name="HSeparator" type="HSeparator" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckButton" type="CheckButton" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Straighten road"
+icon_alignment = 1
+
+[node name="RoadSettingElement" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer" instance=ExtResource("5_3phmc")]
+layout_mode = 2
+
+[node name="Label" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement/ColorRect" index="0"]
+text = "Straight Road Length"
+
+[node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement" index="1"]
+max_value = 999999.0
+value = 1000.0
+
+[node name="Button" type="Button" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Bake!"
 
 [node name="SettingsMenu" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 1
@@ -64,13 +209,22 @@ size_flags_vertical = 3
 [node name="Button_Post" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 4.26
 text = "Patch Changes"
 
 [node name="Button_Set_Default" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Retrieve Default"
+
+[node name="Button_open_roadsettings" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Road Settings"
+
+[node name="ButtonSaveLoad" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = " Export config "
 
 [node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 1
@@ -92,3 +246,9 @@ texture_mode = 1
 [node name="GeneratedPath" type="Path2D" parent="."]
 curve = SubResource("Curve2D_pyq3i")
 script = ExtResource("4_faryb")
+
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer/WidthRoadSettingElement"]
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2"]
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/InOutRoadSettingElement"]
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement"]
+[editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement"]

@@ -3,4 +3,6 @@
 */venv/
 .venv/
 
+/DriveVisualisation/*.json
+
 .godot

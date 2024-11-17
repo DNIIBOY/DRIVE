@@ -16,7 +16,7 @@ def idm(car: Car, config: SimulationConfig):
             s0 = config.target_distance  # + uniform(-30, 30)
             s = max(car.next.position - car.position, 0.01)
             T = 5
-            a_max = 1.3 + uniform(-0.1, 0.1)
+            a_max = config.car_max_accel
             b = 20
             s_stjerne = s0 + (v * T) + (abs(car.next.speed - v) / 2 * math.sqrt(a_max * b))
 

@@ -22,8 +22,6 @@ var isFocusing = false
 @onready var camera = $Camera2D
 @onready var http_manager = $HTTP_Manager
 
-
-
 func _input(event):
     if event.is_action_pressed("focus"):
             if isFocusing == false and active_cars.has(focusedCar):
@@ -143,7 +141,7 @@ var car_scene = load("res://Nodes/Car.tscn")
 var gradient = Gradient.new()
 @onready var reconnect_button = $Camera2D/CanvasLayer/Control/ReconnectButton
 func _ready() -> void:
-    
+    $GeneratedPath.baked_road.connect(_recreate_visual_line)
     reconnect_button.pressed.connect(self._reconnect)
     gradient.set_color(0, Color(1,0,0,1))
     gradient.set_color(1, Color.BLUE)
@@ -172,10 +170,13 @@ func _physics_process(_delta: float) -> void:
     #if(isFocusing):
     #    $Camera2D.global_position = cars[focusedCar].global_position
     #    $Camera2D.offset = Vector2(0,0)
+func _recreate_visual_line():
+    CreateVisualLine()
     
 func CreateVisualLine():
     var resolution = 30
     var line := $Line2D
+    line.clear_points()
     #add_child(line)
     line.default_color = Color.DIM_GRAY
     line.width = 35
