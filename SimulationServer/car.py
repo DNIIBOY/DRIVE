@@ -74,9 +74,6 @@ class Car:
         accel = int(self.accel + 8)
         accel = min(15, max(0, accel))
 
-        if self.id == 1:
-            print(accel)
-
         rep_int |= accel << 18  # Set the acceleration in the 19th to 22th bit
         return rep_int.to_bytes(4, byteorder="big")
 
