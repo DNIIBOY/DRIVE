@@ -20,7 +20,7 @@ class Car:
 
         self.config = config
 
-        self.accel = 1
+        self.accel = 0
         self.brake_amount = 0
         self._position = 0
         self.speed = self.config.initial_speed
