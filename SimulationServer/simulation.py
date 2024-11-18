@@ -77,7 +77,7 @@ class Simulation:
             # Decrease reference speed by brake_amount, but not below 0
             # car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
             # car.accel = 1 - (car.brake_amount / 255)
-            acceleration = car.brake_amount / 255 * 60
+            acceleration = car.brake_amount / 255 * 60 * 0.1
             car.speed = max(0, car.speed - acceleration)
 
         else:

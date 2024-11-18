@@ -5,7 +5,7 @@ from config import SimulationConfig
 
 
 def idm(car: Car, config: SimulationConfig):
-    #acceleration = 0
+    # acceleration = 0
 
     # if car.next:
     #     if time() > car.time_to_next_reaction:
@@ -27,11 +27,11 @@ def idm(car: Car, config: SimulationConfig):
     v = car.speed  # Aktuelle hastighed
     v0 = 277  # car.reference_speed  # Ønskede hastighed
     a_max = config.car_max_accel  # Max acceleration
-    
+
     if car.next:
         delta_v = car.next.speed - car.speed
         s0 = config.target_distance  # Ønskede minimum afstand
-        s = max(car.next.position - car.position, 0.01) + config.car_length  # Aktuelle afstand
+        s = max(car.next.position - car.position, 0.01)  # + config.car_length  # Aktuelle afstand
         T = 0.5  # "Time Headway", den ønskede afstand til forankørende bil i sekunder
         b = 20  # Komfortabel bremseværdi
 
