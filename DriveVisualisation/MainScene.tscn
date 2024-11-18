@@ -156,7 +156,7 @@ text = "Turns
 
 [node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement" index="1"]
 max_value = 30.0
-value = 3.0
+value = 12.0
 
 [node name="HSeparator" type="HSeparator" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2

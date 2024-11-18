@@ -3,7 +3,7 @@ extends Path2D
 var road_width = 800
 var road_turn_radius = 30
 var road_turn_diameter = road_turn_radius * 2
-var road_turns = 3
+var road_turns = 12
 var offset = Vector2(0,0)
 var inoutsize = 50
 var is_straight = false
@@ -76,6 +76,6 @@ func bake_road():
         
         # The final straight line, going left to right
         curve.add_point(Vector2(road_width + road_turn_diameter, road_turn_diameter * (road_turns*2)))
-
+    baked_road.emit()
     print("The length of the road is ", curve.get_baked_length(), " pixels")
     

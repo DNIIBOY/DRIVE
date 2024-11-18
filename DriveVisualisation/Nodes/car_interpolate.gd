@@ -5,6 +5,16 @@ var target_progress_ratio = 0.0
 var interpolate = 0.0
 var interpolation_coefficient = 2.3
 
+var car_length_pixel = 394
+var car_length_real = 40
+
+func set_car_size(road_pixel_per_dm):
+    var desired_pixel_length = road_pixel_per_dm * car_length_real
+    var desiredScale = desired_pixel_length / car_length_pixel
+    $Sprite2D.scale = Vector2(desiredScale, desiredScale)
+    
+    
+
 var active = false
 
 func _ready() -> void:

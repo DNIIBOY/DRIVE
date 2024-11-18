@@ -141,18 +141,18 @@ var car_scene = load("res://Nodes/Car.tscn")
 var gradient = Gradient.new()
 @onready var reconnect_button = $Camera2D/CanvasLayer/Control/ReconnectButton
 func _ready() -> void:
-    $GeneratedPath.baked_road.connect(_recreate_visual_line)
+    $GeneratedPath.baked_road.connect(_bake_visuals)
     reconnect_button.pressed.connect(self._reconnect)
     gradient.set_color(0, Color(1,0,0,1))
     gradient.set_color(1, Color.BLUE)
     gradient.add_point(0.5, Color(0,1,0,1))
         
-    CreateVisualLine()
+    
     cars.resize(1024)
     for i in range(1024):
         cars[i] = car_scene.instantiate()
         $GeneratedPath.add_child(cars[i])
-        
+    _bake_visuals()
         
     connect("message_received", Callable(self, "_on_message_received"))
     connect_to_url("ws://localhost:5000/ws/vis")
@@ -166,20 +166,19 @@ func _reconnect() -> void:
 func _physics_process(_delta: float) -> void:
     poll()
 
-#func _process(_delta: float) -> void:
-    #if(isFocusing):
-    #    $Camera2D.global_position = cars[focusedCar].global_position
-    #    $Camera2D.offset = Vector2(0,0)
-func _recreate_visual_line():
-    CreateVisualLine()
-    
-func CreateVisualLine():
+var road_width_dm = 50
+func _bake_visuals():
+    var road_pixel_per_dm = $GeneratedPath.curve.get_baked_length() * INV_65535
+    for car in cars:
+        car.set_car_size(road_pixel_per_dm)
     var resolution = 30
     var line := $Line2D
     line.clear_points()
     #add_child(line)
     line.default_color = Color.DIM_GRAY
-    line.width = 35
+    
+    var desired_pixel_length = road_pixel_per_dm * road_width_dm
+    line.width = desired_pixel_length
     var samplePoint = 0.0
     
     var inverted_resolution = 1.0 / resolution
