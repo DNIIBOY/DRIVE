@@ -4,13 +4,12 @@ from valkey import Valkey
 
 @dataclass
 class SimulationConfig:
-    
     initial_speed: int = 277
     speed_limit: int = initial_speed * 2
     kill_distance: int = 65535
 
     spawn_distance: int = 500
-    target_distance: int = 10 + 15 # 15 er pga car_length ikke er implementeret
+    target_distance: int = 10 + 15  # 15 er pga car_length ikke er implementeret
     speed_limit_deviation: int = 0
 
     update_interval: float = 0.05

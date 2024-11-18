@@ -100,7 +100,7 @@ def hardware_socket(ws: Server, hw_id: int):
             car_id = tail
             valkey.set(f"hw{hw_id}_car", car_id)
 
-        val = (rec_speed << 12) | car_speed
+        val = (max(0, rec_speed) << 12) | max(0, car_speed)
         ws.send(val.to_bytes(4, byteorder="big"))
         gevent.sleep(0.2)
 
