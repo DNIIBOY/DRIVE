@@ -13,8 +13,8 @@
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
-uint_16_t current_speed;
-uint_16_t recommended_speed;
+uint16_t current_speed;
+uint16_t recommended_speed;
 
 char lcdbuffer_line_1[16];
 char lcdbuffer_line_2[16];
@@ -39,11 +39,11 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
             ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0b%lu", event->data_len, recieved_data);
             current_speed = recieved_data & 0xFFF;
             lcd_set_cursor(0, 0);
-            sprintf(lcdbuffer_line_1, "CS: %d", current_speed)
+            sprintf(lcdbuffer_line_1, "CS: %d", current_speed);
             lcd_write_str(lcdbuffer_line_1);
             recommended_speed = (recieved_data >> 12) & 0xFFF;
             lcd_set_cursor(0, 1);
-            sprintf(lcdbuffer_line_1, "RS: %d", current_speed)
+            sprintf(lcdbuffer_line_1, "RS: %d", current_speed);
             lcd_write_str(lcdbuffer_line_2);
             break;
         default:
