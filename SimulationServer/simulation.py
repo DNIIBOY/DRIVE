@@ -90,7 +90,7 @@ class Simulation:
             car.accel = idm(car, self.config)
             # car.accel = pid_calculator(car, self.config)
 
-            car.speed += car.accel
+            car.speed += car.accel * self.config.update_interval
             # car.speed = min(car.speed, car.target_speed)
             car.speed = max(0, car.speed)
         car.position += car.speed * SimulationConfig.update_interval
