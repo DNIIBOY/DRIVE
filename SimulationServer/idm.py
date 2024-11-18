@@ -5,25 +5,6 @@ from config import SimulationConfig
 
 
 def idm(car: Car, config: SimulationConfig):
-    # acceleration = 0
-
-    # if car.next:
-    #     if time() > car.time_to_next_reaction:
-    #         v = car.speed # Aktuelle hastighed
-    #         v0 = car.reference_speed  # Ønskede hastighed
-    #         s0 = config.target_distance  # Ønskede minimum afstand
-    #         s = max(car.next.position - car.position, 0.01) # Aktuelle afstand
-    #         T = 5 # "Time Headway", den ønskede afstand til forankørende bil i sekunder
-    #         a_max = config.car_max_accel # Max acceleration
-    #         b = 20 # Komfortabel bremseværdi
-    #         s_stjerne = s0 + (v * T) + (abs(car.next.speed - v) / 2 * math.sqrt(a_max * b)) # Hastighedsbetinget afstand
-
-    #         acceleration = a_max * ((1 - ((v / v0) ** 4) - (s_stjerne / s) ** 2)) * config.update_interval
-    #         car.time_to_next_reaction = time()
-    #         if abs(car.accel - acceleration) > 20:
-    #             car.time_to_next_reaction += 0.2
-    #     else:
-    #         acceleration = car.accel
     v = car.speed  # Aktuelle hastighed
     v0 = 277  # car.reference_speed  # Ønskede hastighed
     a_max = config.car_max_accel  # Max acceleration
@@ -34,23 +15,24 @@ def idm(car: Car, config: SimulationConfig):
         s = max(car.next.position - car.position, 0.01)  # + config.car_length  # Aktuelle afstand
         T = 0.5  # "Time Headway", den ønskede afstand til forankørende bil i sekunder
         b = 20  # Komfortabel bremseværdi
+        
+        distance_perception_deviation = np.random.normal(0, 10) # En normalfordeling til percieved distance
+        s_percieved = s + distance_perception_deviation
 
         accel_formular_term_1 = (v / v0)**4
         s_star = s0 + T * v + (v * delta_v) / (2 * math.sqrt(a_max * b))
-        accel_formular_term_2 = s_star / s
+        accel_formular_term_2 = s_star / s_percieved
         acceleration = a_max * (1 - accel_formular_term_1 - accel_formular_term_2**2)
     else:
-        acceleration = a_max * (1 - (v / v0)**2)
+        acceleration = a_max * (1 - (v / v0)**2) # Hvad er det her?
 
     return acceleration * config.update_interval
+
+
+    #  # Når target_distance bliver højere varierer accel mere. I starten lige nu bremser alle biler, hvilket ikke giver mening. 
+    # Vi skal have kigget på spawn og på hvilke variabler der ikke bliver brugt som feks speed_limit og speed_limit_deviation 
+
 
     # Vores system skal KLARE de stokatiske udfordringer
     # Fastlæg behov.
     # Gå tilbage, interessantanalyse, problemanalyse (Til seminar)
-
-    # Reaktionstid? counter % 3 == 0 eller time?
-    # If elapsed time > 10:
-    #    idm
-    #    elapsed time = 0
-    # else:
-    #    pass
