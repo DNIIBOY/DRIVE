@@ -18,7 +18,7 @@
 #include "driver/adc.h"
 #include "esp_timer.h"
 
-#define WEBSOCKET_URI "ws://192.168.4.4:5000/ws/hw/1"  // Flask server IP and port
+#define WEBSOCKET_URI "ws://192.168.4.2:5000/ws/hw/1"  // Flask server IP and port
 
 #define ENCODER_DT 19
 #define ENCODER_CLK 18
@@ -40,7 +40,7 @@ static void IRAM_ATTR encoder_isr_handler(void *arg) {
         last_interrupt_time = current_time;  // Update the last interrupt time
 
         int dt_lvl = gpio_get_level(ENCODER_DT);
-        uint16_t direction = (dt_lvl == 0) ? (1 << 15) : (1 << 14);  // Determine rotation direction
+        uint16_t direction = (dt_lvl == 0) ? (1 << 14) : (1 << 15);  // Determine rotation direction
         xQueueSendFromISR(gpio_evt_queue, &direction, NULL);         // Send direction to queue
     }
 }
@@ -86,7 +86,7 @@ void braker_task(void *param) {
         pressure_value = adc1_get_raw(ADC_CHANNEL);
 
         // Check if pressure is within the threshold to process further
-        if (pressure_value <= 3000) {
+        if (pressure_value <= 2000) {
             // Calculate the brake pressure as an integer instead of float for efficiency
             int temp = pressure_value - 500;
             temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative

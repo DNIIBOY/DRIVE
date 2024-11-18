@@ -16,9 +16,8 @@
 uint16_t current_speed;
 uint16_t recommended_speed;
 
-char lcdbuffer_line_1[16];
-char lcdbuffer_line_2[16];
-
+char lcdbuffer_line_1[6];
+char lcdbuffer_line_2[6];
 
 //static EventGroupHandle_t s_wifi_event_group;
 
@@ -30,20 +29,36 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI("WebSocket_handler", "Connected");
             lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
+            lcd_set_cursor(0, 0);
+            lcd_write_str("Current:     kmt");
+
+            lcd_set_cursor(0, 1);
+            lcd_write_str("Advised:     kmt");
             break;
+
         case WEBSOCKET_EVENT_DISCONNECTED:
             ESP_LOGI("WebSocket_handler", "Disconnected");
             break;
+
         case WEBSOCKET_EVENT_DATA:
-            uint32_t recieved_data = event->data_ptr;
-            ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0b%lu", event->data_len, recieved_data);
-            current_speed = recieved_data & 0xFFF;
-            lcd_set_cursor(0, 0);
-            sprintf(lcdbuffer_line_1, "CS: %d", current_speed);
+            unsigned int value = 0;
+            unsigned char* data = (unsigned char*)event->data_ptr;
+
+            for (int i = 0; i < event->data_len; i++) {
+                value = (value << 8) | data[i];  // Combine bytes into an integer
+            }
+
+            ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0x%08X", event->data_len, value);
+            current_speed = (value & 0xFFF) * 0.36;
+            recommended_speed = ((value >> 12) & 0xFFF) * 0.36;
+
+            sprintf(lcdbuffer_line_1, "%03d", current_speed);  // Ensure 3 digits
+            sprintf(lcdbuffer_line_2, "%03d", recommended_speed);  // Ensure 3 digits
+
+            lcd_set_cursor(9, 0);
             lcd_write_str(lcdbuffer_line_1);
-            recommended_speed = (recieved_data >> 12) & 0xFFF;
-            lcd_set_cursor(0, 1);
-            sprintf(lcdbuffer_line_1, "RS: %d", current_speed);
+
+            lcd_set_cursor(9, 1);
             lcd_write_str(lcdbuffer_line_2);
             break;
         default:
