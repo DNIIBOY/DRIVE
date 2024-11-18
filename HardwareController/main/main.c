@@ -18,11 +18,6 @@
 #include "driver/adc.h"
 #include "esp_timer.h"
 
-#define LCD_ADDR 0x27
-#define SDA_PIN 7
-#define SCL_PIN 6
-#define LCD_COLS 16
-#define LCD_ROWS 2
 #define WEBSOCKET_URI "ws://192.168.4.4:5000/ws/hw/1"  // Flask server IP and port
 
 #define ENCODER_DT 19
@@ -91,13 +86,11 @@ void braker_task(void *param) {
         pressure_value = adc1_get_raw(ADC_CHANNEL);
 
         // Check if pressure is within the threshold to process further
-        if (pressure_value <= 2000) {
+        if (pressure_value <= 3000) {
             // Calculate the brake pressure as an integer instead of float for efficiency
             int temp = pressure_value - 500;
             temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative
-            brake_pressure_return_value = 255 - ((temp * 255) / 1500);  // Scale between 0 and 255
-
-            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
+            brake_pressure_return_value = 255 - ((temp * 255) / 2500);  // Scale between 0 and 255
         } else {
             brake_pressure_return_value = 0;
         }
@@ -108,13 +101,13 @@ void braker_task(void *param) {
             buffer[0] = brake_value;
             esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
             last_brake_pressure_return_value = brake_pressure_return_value;
+            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
         }
 
         // Adjust delay as needed to prevent excessive polling
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
-
 
 // Main application
 void app_main(void) {
