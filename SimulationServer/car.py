@@ -25,7 +25,8 @@ class Car:
         self._position = 0
         self.speed = self.config.initial_speed
 
-        self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation, self.config.speed_limit_deviation)
+        self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation,
+                                               self.config.speed_limit_deviation)
         self.reference_speed = self.target_speed + self.speed_limit_diff
 
         self.max_ref_inc = self.config.car_max_accel
@@ -69,6 +70,14 @@ class Car:
         rep_int |= (self.id << 22)  # Set the id in the upper 10 bits
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit
         rep_int |= (self.hw2_target << 17)  # Set the hw2_target in the 18th bit
+
+        accel = int(self.accel + 8)
+        accel = min(15, max(0, accel))
+
+        if self.id == 1:
+            print(accel)
+
+        rep_int |= accel << 18  # Set the acceleration in the 19th to 22th bit
         return rep_int.to_bytes(4, byteorder="big")
 
 

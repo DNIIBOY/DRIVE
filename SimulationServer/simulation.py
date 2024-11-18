@@ -75,10 +75,10 @@ class Simulation:
     def update_car(self, car: Car) -> None:
         if car.brake_amount:
             # Decrease reference speed by brake_amount, but not below 0
-            #car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
-            #car.accel = 1 - (car.brake_amount / 255)
+            # car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
+            # car.accel = 1 - (car.brake_amount / 255)
             acceleration = car.brake_amount / 255 * 60
-            car.speed -= acceleration
+            car.speed = max(0, car.speed - acceleration)
 
         else:
             # Gradually restore reference speed up to original speed
@@ -88,11 +88,10 @@ class Simulation:
                 ) """
 
             car.accel = idm(car, self.config)
-            #car.accel = pid_calculator(car, self.config)
+            # car.accel = pid_calculator(car, self.config)
 
-            
             car.speed += car.accel
-            #car.speed = min(car.speed, car.target_speed)
+            # car.speed = min(car.speed, car.target_speed)
             car.speed = max(0, car.speed)
         car.position += car.speed * SimulationConfig.update_interval
 
