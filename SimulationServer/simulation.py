@@ -1,4 +1,5 @@
 from time import sleep, time
+import timeit
 from idm import idm
 from car import Car
 from config import SimulationConfig

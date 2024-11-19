@@ -16,23 +16,23 @@ def idm(car: Car, config: SimulationConfig):
         s0 = config.target_distance  # Ønskede minimum afstand
         s = max(car.next.position - car.position - config.car_length, 0.01)
 
-        T = config.time_headway  # "Time Headway", den ønskede afstand til forankørende bil i sekunder
+        # "Time Headway", den ønskede afstand til forankørende bil i sekunder
+        T = config.time_headway
         b = config.comfortable_breaking_value  # Komfortabel bremseværdi
 
-        distance_perception_deviation = np.random.normal(
-            0, config.percieved_distance_spread)  # En normalfordeling til percieved distance
+        # Normalfordelt afstandsbedømmelse
+        distance_perception_deviation = np.random.normal(0, config.percieved_distance_spread)
         s_percieved = max(s + distance_perception_deviation, 0.01)
 
         accel_formular_term_1 = (v / v0) ** 4
-        s_star = (s0 + T * v
-                  + max((v * delta_v) / (2 * math.sqrt(max(a_max, 1) * max(b, 1))), 0)
-                  )
 
-        accel_formular_term_2 = (
-            s_star / s_percieved
-        ) ** 4  # Reducer exponent for at få mindre aggressiv bremse
-        acceleration = a_max * \
-            (1 - accel_formular_term_1 - accel_formular_term_2)
+        braking_factor = math.sqrt(a_max * b)
+        dynamic_term = (v * delta_v) / (2 * braking_factor)
+        s_star = s0 + T * v + (dynamic_term if dynamic_term > 0 else 0)
+
+# Reducer exponent for at få mindre aggressiv bremse
+        accel_formular_term_2 = (s_star / s_percieved) ** 4
+        acceleration = a_max * (1 - accel_formular_term_1 - accel_formular_term_2)
     else:
         acceleration = a_max * (1 - (v / v0) ** 2)  # Hvad er det her?
 
