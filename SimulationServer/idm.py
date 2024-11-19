@@ -7,7 +7,7 @@ from config import SimulationConfig
 
 def idm(car: Car, config: SimulationConfig):
     v = car.speed  # Aktuelle hastighed
-    v0 = 277  # car.reference_speed  # Ønskede hastighed
+    v0 = np.random.normal(config.speed_limit, config.speed_limit_deviation)   # car.reference_speed  # Ønskede hastighed
     a_max = config.car_max_accel  # Max acceleration
 
     if car.next:
@@ -15,12 +15,10 @@ def idm(car: Car, config: SimulationConfig):
         s0 = config.target_distance  # Ønskede minimum afstand
         s = max(car.next.position - car.position - config.car_length, 0.01)
 
-        T = 0.5  # "Time Headway", den ønskede afstand til forankørende bil i sekunder
-        b = 20  # Komfortabel bremseværdi
+        T = config.time_headway  # "Time Headway", den ønskede afstand til forankørende bil i sekunder
+        b = config.comfortable_breaking_value  # Komfortabel bremseværdi
 
-        distance_perception_deviation = np.random.normal(
-            0, 1
-        )  # En normalfordeling til percieved distance
+        distance_perception_deviation = np.random.normal(0, config.percieved_distance_spread)  # En normalfordeling til percieved distance
         s_percieved = max(s + distance_perception_deviation, 0.01)
 
         accel_formular_term_1 = (v / v0) ** 4
