@@ -26,11 +26,7 @@ func _input(event):
     if event.is_action_pressed("focus"):
             if isFocusing == false and active_cars.has(focusedCar):
                 isFocusing = true
-                self.remove_child(camera)
-                camera.set_position(Vector2(0,0))
-                cars[focusedCar].add_child(camera)
-                camera.offset = Vector2(0,0)
-                camera.zoom_set(Vector2(2,2))
+                focus_on_car()
             else:
                 isFocusing = false
                 camera.get_parent().remove_child(camera)
@@ -39,9 +35,18 @@ func _input(event):
                 camera.pan_reset()
                 camera.zoom_reset()
 
+func focus_on_car():
+    if isFocusing:
+        camera.get_parent().remove_child(camera)
+        #self.remove_child(camera)
+        camera.set_position(Vector2(0,0))
+        cars[focusedCar].add_child(camera)
+        camera.offset = Vector2(0,0)
+        camera.zoom_set(Vector2(2,2))
+        
+
 func remap_to_path_coord(value) -> float:
     return value * INV_65535
-
 
 var active_cars = {}
 func _on_message_received(message: Variant) -> void:
@@ -59,10 +64,18 @@ func _on_message_received(message: Variant) -> void:
         
         if is_focused_1 and is_focused_2:
             cars[car_id].modulate = Color.PURPLE
-            focusedCar = car_id
+            if focusedCar != car_id:
+                focusedCar = car_id
+                focus_on_car()
+            
+            
         elif is_focused_1:
             cars[car_id].modulate = Color.SKY_BLUE
-            focusedCar = car_id
+            if focusedCar != car_id:
+                focusedCar = car_id
+                focus_on_car()
+            
+            
         elif is_focused_2:
             cars[car_id].modulate = Color.RED
         else:
