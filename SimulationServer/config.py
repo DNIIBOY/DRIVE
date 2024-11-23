@@ -10,7 +10,7 @@ class SimulationConfig:
     car_length: int = 15
 
     spawn_distance: int = 700
-    target_distance: int = 25
+    target_distance: int = 50
     update_interval: float = 0.05
     car_max_accel: float = 30
 
@@ -18,10 +18,10 @@ class SimulationConfig:
     comfortable_breaking_value: float = 20
 
     speed_limit_deviation: int = 0
-    percieved_distance_spread: float = 1
-    percieved_speed_spread: float = 1
-    def read(self, valkey: Valkey) -> None:
+    percieved_distance_spread: float = 0.01 # Teori siger 0.1
+    percieved_speed_spread: float = 0.01 # teori siger 0.1
 
+    def read(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():
             if key.startswith("_"):
                 continue
