@@ -1,0 +1,22 @@
+Output: Gerber X2 Files
+Type  : GerberX2
+From  : Variant [[No Variations]] of Project [Car_Controller.PrjPcb]
+   Generated File[ControllerPCB_Copper_Signal_Top.gbr]
+   Generated File[ControllerPCB_Copper_Signal_Bot.gbr]
+   Generated File[ControllerPCB_Legend_Top.gbr]
+   Generated File[ControllerPCB_Legend_Bot.gbr]
+   Generated File[ControllerPCB_Soldermask_Top.gbr]
+   Generated File[ControllerPCB_Soldermask_Bot.gbr]
+   Generated File[ControllerPCB_Paste_Top.gbr]
+   Generated File[ControllerPCB_Paste_Bot.gbr]
+   Generated File[ControllerPCB_Profile.gbr]
+   Generated File[ControllerPCB_NPTH_Drill.gbr]
+   Generated File[ControllerPCB_PTH_Drill.gbr]
+   Generated File[ControllerPCB.EXTREP]
+   Generated File[ControllerPCB.REP]
+
+
+Files Generated   : 13
+Documents Printed : 0
+
+Finished Output Generation At 10.43.37 On 20/11/2024
