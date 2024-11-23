@@ -20,6 +20,11 @@ def idm(car: Car, config: SimulationConfig):
         T = config.time_headway
         b = config.comfortable_breaking_value  # Komfortabel bremseværdi
 
+        # Stokastisk relativ hastighed
+        speed_perception_error = np.random.normal(0, config.percieved_speed_spread)
+        delta_v_percieved = delta_v + speed_perception_error
+
+
         # Normalfordelt afstandsbedømmelse
         distance_perception_deviation = np.random.normal(0, config.percieved_distance_spread)
         s_percieved = max(s + distance_perception_deviation, 0.01)
@@ -27,7 +32,7 @@ def idm(car: Car, config: SimulationConfig):
         accel_formular_term_1 = (v / v0) ** 4
 
         braking_factor = math.sqrt(a_max * b)
-        dynamic_term = (v * delta_v) / (2 * braking_factor)
+        dynamic_term = (v * delta_v_percieved) / (2 * braking_factor)
         s_star = s0 + T * v + (dynamic_term if dynamic_term > 0 else 0)
 
 # Reducer exponent for at få mindre aggressiv bremse

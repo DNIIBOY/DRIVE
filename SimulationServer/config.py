@@ -19,8 +19,9 @@ class SimulationConfig:
 
     speed_limit_deviation: int = 0
     percieved_distance_spread: float = 1
-
+    percieved_speed_spread: float = 1
     def read(self, valkey: Valkey) -> None:
+
         for key, value in self.__dict__.items():
             if key.startswith("_"):
                 continue
