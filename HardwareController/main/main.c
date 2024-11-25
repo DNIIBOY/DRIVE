@@ -33,10 +33,10 @@ uint8_t buffer[2];
 
 // Interrupt service routine (ISR) for encoder rotation
 static void IRAM_ATTR encoder_isr_handler(void *arg) {
-    static int64_t last_interrupt_time = 0;
-    int64_t current_time = esp_timer_get_time() / 200;
+    static uint32_t last_interrupt_time = 0;
+    uint32_t current_time = esp_timer_get_time() / 1000;
 
-    if ((current_time - last_interrupt_time) > 1000) {  // Check if debounce time has elapsed
+    if ((current_time - last_interrupt_time) > 30) {  // Check if debounce time has elapsed
         last_interrupt_time = current_time;  // Update the last interrupt time
 
         int dt_lvl = gpio_get_level(ENCODER_DT);
@@ -90,7 +90,7 @@ void braker_task(void *param) {
             // Calculate the brake pressure as an integer instead of float for efficiency
             int temp = pressure_value - 500;
             temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative
-            brake_pressure_return_value = 255 - ((temp * 255) / 2500);  // Scale between 0 and 255
+            brake_pressure_return_value = 255 - ((temp * 255) / 1500);  // Scale between 0 and 255
         } else {
             brake_pressure_return_value = 0;
         }
@@ -116,7 +116,11 @@ void app_main(void) {
     gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
 
     // Enable interrupt on rising edge for CLK pin
-    gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_NEGEDGE);
+    gpio_set_pull_mode(ENCODER_CLK, GPIO_PULLDOWN_ENABLE);
+    gpio_set_pull_mode(ENCODER_DT, GPIO_PULLDOWN_ENABLE);
+
+    gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_POSEDGE);
+
 
     // Create a queue to handle encoder events
     gpio_evt_queue = xQueueCreate(10, sizeof(uint16_t));
