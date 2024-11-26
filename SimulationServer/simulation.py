@@ -5,6 +5,7 @@ from car import Car
 from config import SimulationConfig
 from valkey import Valkey
 from pid_control import pid_calculator
+from stopwave import StopWave
 
 
 class Simulation:
@@ -16,6 +17,8 @@ class Simulation:
 
         self.config = SimulationConfig()
         self.config.read(valkey)
+
+        self.stopwaves: list[StopWave] = []
 
         self.create_car()
 
@@ -32,13 +35,30 @@ class Simulation:
             sleep(self.config.update_interval - elapsed_time)
 
     def update_cars(self) -> None:
-        car = self.head
-
         hw1_car = self.valkey.get("hw1_car")
         hw2_car = self.valkey.get("hw2_car")
         hw1_car = int(hw1_car.decode()) if hw1_car else None
         hw2_car = int(hw2_car.decode()) if hw2_car else None
 
+        self.stopwaves = []
+        car = self.head
+        while car:
+            if car.speed > self.config.stop_wave_speed:
+                car = car.prev
+                continue
+            if not car.next:
+                car = car.prev
+                continue
+            if car.next.speed > self.config.stop_wave_speed:
+                car = car.prev
+                continue
+            self.stopwaves.append(StopWave.from_start(car, self.config.stop_wave_speed))
+            car = self.stopwaves[-1].stop.prev
+
+        if self.stopwaves:
+            print(self.stopwaves)
+
+        car = self.head
         while car:
             if car.position >= self.config.kill_distance:
                 self.destroy_car(car)
@@ -94,6 +114,15 @@ class Simulation:
             car.speed += car.accel * self.config.update_interval
             # car.speed = min(car.speed, car.target_speed)
             car.speed = max(0, car.speed)
+
+        car.is_stopwaving = False
+        car.seeing_traffic = False
+        for wave in self.stopwaves:
+            if wave.in_range(car):
+                car.seeing_traffic = True
+            if car in wave:
+                car.is_stopwaving = True
+
         car.position += car.speed * SimulationConfig.update_interval
 
     def serialize_cars(self) -> bytes:

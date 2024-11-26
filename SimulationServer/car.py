@@ -11,6 +11,8 @@ class Car:
         id: int | None = None,
     ) -> None:
         self.id: int = id % 1024 if id is not None else 0
+        self.is_stopwaving = False
+        self.seeing_traffic = False
 
         self.hw1_target = False
         self.hw2_target = False
@@ -64,6 +66,9 @@ class Car:
         if prev_car:
             prev_car._next = self
 
+    def __hash__(self) -> int:
+        return hash(self.id)
+
     def __bytes__(self) -> bytes:
         rep_int = int(self.position)
         rep_int &= (0xFFFF)  # Clear the upper 16 bits
@@ -71,8 +76,16 @@ class Car:
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit
         rep_int |= (self.hw2_target << 17)  # Set the hw2_target in the 18th bit
 
-        accel = int(self.accel + 8)
-        accel = min(15, max(0, accel))
+        # accel = int(self.accel + 8)
+        # accel = min(15, max(0, accel))
+
+        accel = 8
+
+        if self.seeing_traffic:
+            accel = 15
+
+        if self.is_stopwaving:
+            accel = 0
 
         rep_int |= accel << 18  # Set the acceleration in the 19th to 22th bit
         return rep_int.to_bytes(4, byteorder="big")

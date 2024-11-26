@@ -6,6 +6,8 @@ from valkey import Valkey
 class SimulationConfig:
     initial_speed: int = 277
     speed_limit: int = 277
+    stop_wave_factor: float = 0.3
+
     kill_distance: int = 65535
     car_length: int = 15
 
@@ -18,8 +20,12 @@ class SimulationConfig:
     comfortable_breaking_value: float = 20
 
     speed_limit_deviation: int = 0
-    percieved_distance_spread: float = 0.01 # Teori siger 0.1
-    percieved_speed_spread: float = 0.01 # teori siger 0.1
+    percieved_distance_spread: float = 0.01  # Teori siger 0.1
+    percieved_speed_spread: float = 0.01  # teori siger 0.1
+
+    @property
+    def stop_wave_speed(self) -> float:
+        return self.speed_limit * self.stop_wave_factor
 
     def read(self, valkey: Valkey) -> None:
         for key, value in self.__dict__.items():
