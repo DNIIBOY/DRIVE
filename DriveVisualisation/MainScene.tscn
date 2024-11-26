@@ -79,6 +79,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1152.0
 offset_bottom = 648.0
+mouse_filter = 1
 
 [node name="RoadSettings" type="Window" parent="Camera2D/CanvasLayer/Control"]
 title = "Road Settings"

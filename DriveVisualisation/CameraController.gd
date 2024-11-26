@@ -32,7 +32,15 @@ func _input(event: InputEvent) -> void:
     #elif event.is_action("pan_down"):
         #pan_vertical(pan_value)
     
+    """if event.is_action_pressed("click"):
+        previous_mouse_coord = get_viewport().get_mouse_position()
+        mouse_is_down = true
+    elif event.is_action_released("click"):
+        mouse_is_down = false"""
+        
+func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed("click"):
+        print("Click!")
         previous_mouse_coord = get_viewport().get_mouse_position()
         mouse_is_down = true
     elif event.is_action_released("click"):
