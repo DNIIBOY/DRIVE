@@ -1,11 +1,9 @@
-from time import sleep, time
-import timeit
-from idm import idm
 from car import Car
 from config import SimulationConfig
-from valkey import Valkey
-from pid_control import pid_calculator
+from idm import idm
 from stopwave import StopWave
+from time import sleep, time
+from valkey import Valkey
 
 
 class Simulation:
@@ -142,7 +140,6 @@ class Simulation:
 
         car.next = self.tail
         self.tail = car
-        car.speed = self.config.speed_limit
 
     def destroy_car(self, car: Car) -> None:
         if car.prev:
