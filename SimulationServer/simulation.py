@@ -55,9 +55,6 @@ class Simulation:
             self.stopwaves.append(StopWave.from_start(car, self.config.stop_wave_speed))
             car = self.stopwaves[-1].stop.prev
 
-        #if self.stopwaves:
-            #print(self.stopwaves)
-
         car = self.head
         while car:
             if car.position >= self.config.kill_distance:
@@ -87,7 +84,10 @@ class Simulation:
             self.update_car(car)
             car = car.prev
 
-        if (self.tail.position + self.config.car_length) > self.config.spawn_distance:
+        v = self.config.speed_limit
+        dynamic_term = (v * (v - self.tail.speed)) / (2 * self.config.braking_factor)
+        s_star = self.config.target_distance + self.config.time_headway * v + (dynamic_term if dynamic_term > 0 else 0)
+        if self.tail.position + self.config.car_length > s_star:
             self.create_car()
 
         self.valkey.set("head", self.head.id)
@@ -103,10 +103,11 @@ class Simulation:
 
         else:
             # Gradually restore reference speed up to original speed
-            """ if car.reference_speed < car.target_speed:
-                car.reference_speed = min(
-                    self.config.initial_speed, car.target_speed + car.max_ref_inc
-                ) """
+
+            # if car.reference_speed < car.target_speed:
+            #     car.reference_speed = min(
+            #         self.config.initial_speed, car.target_speed + car.max_ref_inc
+            #     )
 
             car.accel = idm(car, self.config)
             # car.accel = pid_calculator(car, self.config)
@@ -123,7 +124,7 @@ class Simulation:
             if car in wave:
                 car.is_stopwaving = True
 
-        car.position += car.speed * SimulationConfig.update_interval
+        car.position += car.speed * self.config.update_interval
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -141,6 +142,7 @@ class Simulation:
 
         car.next = self.tail
         self.tail = car
+        car.speed = self.config.speed_limit
 
     def destroy_car(self, car: Car) -> None:
         if car.prev:

@@ -10,6 +10,7 @@ class Car:
         id: int | None = None,
     ) -> None:
         self.id: int = id % 1024 if id is not None else 0
+
         self.is_stopwaving = False
         self.seeing_traffic = False
 
@@ -24,7 +25,7 @@ class Car:
         self.accel = 0
         self.brake_amount = 0
         self._position = 0
-        self.speed = self.config.initial_speed
+        self.speed = config.speed_limit
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation,
                                                self.config.speed_limit_deviation)
