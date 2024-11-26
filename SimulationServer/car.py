@@ -3,7 +3,6 @@ from config import SimulationConfig
 import random
 from time import time
 
-
 class Car:
     def __init__(
         self,

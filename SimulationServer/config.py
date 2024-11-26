@@ -22,6 +22,7 @@ class SimulationConfig:
     speed_limit_deviation: int = 0
     percieved_distance_spread: float = 0.01  # Teori siger 0.1
     percieved_speed_spread: float = 0.01  # teori siger 0.1
+    percieved_cut_off : int = 200
 
     @property
     def stop_wave_speed(self) -> float:

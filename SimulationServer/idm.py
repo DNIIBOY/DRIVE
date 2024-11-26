@@ -22,11 +22,15 @@ def idm(car: Car, config: SimulationConfig):
         b = config.comfortable_breaking_value  # Komfortabel bremseværdi
 
         # Stokastisk relativ hastighed
-        delta_v_percieved = np.random.normal(delta_v, s * config.percieved_speed_spread) # Normal value 0.1
 
         # Normalfordelt afstandsbedømmelse
-        estimated_gap = max(np.random.normal(s, s * config.percieved_distance_spread), 0.01) # Normal value 0.1
-
+        if s > config.percieved_cut_off: 
+            estimated_gap = max(np.random.normal(s, s * config.percieved_distance_spread), 0.01) # Normal value 0.1
+            delta_v_percieved = np.random.normal(delta_v, s * config.percieved_speed_spread) # Normal value 0.1
+        else:
+            estimated_gap = s
+            delta_v_percieved = delta_v
+        print(s)
         accel_formular_term_1 = (v / v0) ** 4
 
         braking_factor = math.sqrt(a_max * b)

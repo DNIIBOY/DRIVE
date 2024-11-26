@@ -55,8 +55,8 @@ class Simulation:
             self.stopwaves.append(StopWave.from_start(car, self.config.stop_wave_speed))
             car = self.stopwaves[-1].stop.prev
 
-        if self.stopwaves:
-            print(self.stopwaves)
+        #if self.stopwaves:
+            #print(self.stopwaves)
 
         car = self.head
         while car:
