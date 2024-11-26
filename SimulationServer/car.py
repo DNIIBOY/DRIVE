@@ -2,6 +2,11 @@ from __future__ import annotations
 from config import SimulationConfig
 import random
 from time import time
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from stopwave import StopWave
+
 
 class Car:
     def __init__(
@@ -11,8 +16,8 @@ class Car:
     ) -> None:
         self.id: int = id % 1024 if id is not None else 0
 
-        self.is_stopwaving = False
-        self.seeing_traffic = False
+        self.in_stopwave = False
+        self.detected_stopwave: StopWave = None
 
         self.hw1_target = False
         self.hw2_target = False
@@ -26,6 +31,7 @@ class Car:
         self.brake_amount = 0
         self._position = 0
         self.speed = config.speed_limit
+        self.recommended_speed = 0
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation,
                                                self.config.speed_limit_deviation)
@@ -76,18 +82,18 @@ class Car:
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit
         rep_int |= (self.hw2_target << 17)  # Set the hw2_target in the 18th bit
 
-        # accel = int(self.accel + 8)
-        # accel = min(15, max(0, accel))
+        # color = int(self.accel + 8)
+        # color = min(15, max(0, accel))
 
-        accel = 8
+        color = 8
 
-        if self.seeing_traffic:
-            accel = 15
+        if self.detected_stopwave:
+            color = 15
 
-        if self.is_stopwaving:
-            accel = 0
+        if self.in_stopwave:
+            color = 0
 
-        rep_int |= accel << 18  # Set the acceleration in the 19th to 22th bit
+        rep_int |= color << 18  # Set the color in the 19th to 22th bit
         return rep_int.to_bytes(4, byteorder="big")
 
 

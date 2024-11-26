@@ -64,7 +64,6 @@ class Simulation:
                 car.hw1_target = True
                 hw1_brake = self.valkey.get("hw1_brake")
                 car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
-                self.valkey.set("hw1_speed", int(car.speed))
             else:
                 car.hw1_target = False
 
@@ -72,7 +71,6 @@ class Simulation:
                 car.hw2_target = True
                 hw2_brake = self.valkey.get("hw2_brake")
                 car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
-                self.valkey.set("hw2_speed", int(car.speed))
             else:
                 car.hw2_target = False
 
@@ -80,13 +78,22 @@ class Simulation:
                 car.brake_amount = 0
 
             self.update_car(car)
+            if car.id == hw1_car:
+                self.valkey.set("hw1_rec_speed", int(car.recommended_speed))
+                self.valkey.set("hw1_speed", int(car.speed))
+            if car.id == hw2_car:
+                self.valkey.set("hw2_rec_speed", int(car.recommended_speed))
+                self.valkey.set("hw2_speed", int(car.speed))
+
             car = car.prev
 
         v = self.config.speed_limit
         dynamic_term = (v * (v - self.tail.speed)) / (2 * self.config.braking_factor)
-        s_star = self.config.target_distance + self.config.time_headway * v + (dynamic_term if dynamic_term > 0 else 0)
+        s_star = self.config.target_distance + self.config.time_headway * v + max(0, dynamic_term)
         if self.tail.position + self.config.car_length > s_star:
             self.create_car()
+            # Offset because we don't have infinite updates / sec
+            self.tail.position = max(0, s_star - self.tail.next.position - self.config.car_length)
 
         self.valkey.set("head", self.head.id)
         self.valkey.set("tail", self.tail.id)
@@ -114,15 +121,25 @@ class Simulation:
             # car.speed = min(car.speed, car.target_speed)
             car.speed = max(0, car.speed)
 
-        car.is_stopwaving = False
-        car.seeing_traffic = False
-        for wave in self.stopwaves:
+        car.in_stopwave = False
+        car.detected_stopwave = None
+        for wave in self.stopwaves:  # Stopwaves are ordered where first is closest to end of the road
             if wave.in_range(car):
-                car.seeing_traffic = True
+                car.detected_stopwave = wave  # Last one is the nearest
             if car in wave:
-                car.is_stopwaving = True
+                car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
+        car.recommended_speed = self.get_recommended_speed(car)
+
+    def get_recommended_speed(self, car: Car) -> int:
+        if car.in_stopwave:
+            return 0
+
+        if not car.detected_stopwave:
+            return car.target_speed
+
+        return car.detected_stopwave.stop.speed
 
     def serialize_cars(self) -> bytes:
         rep = bytes()

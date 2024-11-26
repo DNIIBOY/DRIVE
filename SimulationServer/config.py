@@ -24,7 +24,6 @@ class SimulationConfig:
     kill_distance: int = 65535
     car_length: int = 15
 
-    spawn_distance: int = 700
     target_distance: int = 50
     update_interval: float = 0.05
     car_max_accel: float = 30

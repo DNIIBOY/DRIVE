@@ -31,7 +31,7 @@ def idm(car: Car, config: SimulationConfig):
         accel_formular_term_1 = (v / v0) ** 4
 
         dynamic_term = (v * delta_v_percieved) / (2 * config.braking_factor)
-        s_star = s0 + T * v + (dynamic_term if dynamic_term > 0 else 0)
+        s_star = s0 + T * v + max(0, dynamic_term)
 # Reducer exponent for at få mindre aggressiv bremse
         accel_formular_term_2 = (s_star / estimated_gap) ** 2
         acceleration = a_max * (1 - accel_formular_term_1 - accel_formular_term_2)
