@@ -1,0 +1,462 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html">
+<style type="text/css">
+		h1, h2, h3, h4, h5, h6 {
+			font-family : segoe ui;
+			color : black;
+			background-color : #EDE7D9;
+			padding: 0.3em;
+		}
+
+		h1 {
+			font-size: 1.2em;
+		}		
+
+		h2 {
+			font-size: 1.2em;
+		}
+
+		body {
+			font-family : segoe ui;
+		}
+
+		td, th {
+			padding: 0.5em;
+			text-align : left;
+			width: 10em;
+		}
+		th {
+			background-color : #EEEEEE;
+
+		}
+		th.column1, td.column1 {
+			text-align: left;
+			width : auto;
+		}
+		table {
+			width : 100%;
+			font-size: 0.9em;
+		}
+
+		.DRC_summary_header {
+			padding-bottom : 0.1em;
+			border : 0px solid black;
+			width: 100%;
+			align: left;
+		}
+
+		.DRC_summary_header_col1,
+		.DRC_summary_header_col2, 
+		.DRC_summary_header_col3 {
+			color : black;
+			font-size:100%;
+			padding : 0em;
+			padding-top : 0.2em;
+			padding-bottom 0.2em;
+			border : 0px solid black;
+			vertical-align: top;
+			text-align: left;
+		}
+
+		.DRC_summary_header_col1 {
+			font-weight: bold;
+			width: 9em;
+		}
+
+		.DRC_summary_header_col2 {
+			width: 0.1em;
+		
+		}
+
+		.DRC_summary_header_col3 {
+			width : auto;
+		}
+
+		.header_holder {
+		    Width = 100%;
+		    border = 0px solid green;
+		    padding = 0;
+		}
+
+
+		.front_matter, .front_matter_column1, .front_matter_column2, .front_matter_column3
+		{
+			left : 0;
+			top : 0;
+			padding: 0em;
+			padding-top : 0.1em;
+			border : 0px solid black;
+			width : 100%;
+			vertical-align: top;
+			text-align: left;
+		}
+
+		.front_matter_column1 {
+			width : 8em;
+			font-weight: bold;
+		}
+
+		.front_matter_column2 {
+			width: 0.1em;
+		}
+
+		.front_matter_column3 {
+			width : auto;
+		}
+
+		.total_column1, .total_column {
+			font-weight : bold;
+		}
+		.total_column1 {
+			text-align : left;
+		}
+		.warning, .error {
+			color : red;
+			font-weight : bold;
+		}
+		tr.onmouseout_odd {
+			background-color : #white;
+		}
+		tr.onmouseout_even { 
+			background-color : #FAFAFA;
+		}
+		tr.onmouseover_odd, tr.onmouseover_even { 
+			background-color : #EEEEEE;
+		} 
+		a:link, a:visited, .q a:link,.q a:active,.q {
+			color: #21489e; 
+		}
+		a:link.callback, a:visited.callback { 
+			color: #21489e;
+		}
+		a:link.customize, a:visited.customize {
+			color: #C0C0C0;
+			position: absolute; 
+			right: 10px;
+		}	
+		p.contents_level1 {
+			font-weight : bold;
+			font-size : 110%;
+			margin : 0.5em;
+		}
+		p.contents_level2 {
+			position : relative;
+			left : 20px;
+			margin : 0.5em;
+		}
+	</style><script type="text/javascript">
+		function coordToMils(coord) {
+			var number = coord / 10000;
+			
+			if (number != number.toFixed(3))
+				number = number.toFixed(3);
+
+			return number + 'mil'
+		}
+
+		function coordToMM(coord) {
+			var number = 0.0254 * coord / 10000;
+			
+			if (number != number.toFixed(4))
+				number = number.toFixed(4);
+			
+			return number + 'mm'
+		}
+	
+		function convertCoord(coordNode, units) {
+			for (var i = 0; i < coordNode.childNodes.length; i++) {
+				coordNode.removeChild(coordNode.childNodes[i]);
+			}
+
+			var coord = coordNode.getAttribute('value');
+			if (coord != null) {
+				if (units == 'mm') {
+					textNode = document.createTextNode(coordToMM(coord));
+					coordNode.appendChild(textNode);
+				} else if (units == 'mil') {
+					textNode = document.createTextNode(coordToMils(coord));		
+					coordNode.appendChild(textNode);	
+				}
+			}
+		}
+	
+		function convertUnits(unitNode, units) {
+			for (var i = 0; i < unitNode.childNodes.length; i++) {
+				unitNode.removeChild(unitNode.childNodes[i]);		
+			}
+		
+			textNode = document.createTextNode(units); 
+			unitNode.appendChild(textNode);
+		}
+	
+		function changeUnits(radio_input, units) {
+			if (radio_input.checked) {
+			
+				var elements = document.getElementsByName('coordinate');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertCoord(elements[i], units);
+					}
+				}
+	
+				var elements = document.getElementsByName('units');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertUnits(elements[i], units);
+					}
+				}
+			}
+		}
+	</script><title>Design Rule Verification Report</title>
+</head>
+<body onload=""><img ALT="Altium" src="
+			file://C:\Users\Public\Documents\Altium\AD24\Templates\AD_logo.png
+		"><h1>Design Rule Verification Report</h1>
+<table class="header_holder">
+<td class="column1">
+<table class="front_matter">
+<tr class="front_matter">
+<td class="front_matter_column1">Date:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">27-11-2024</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">23:54:39</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Elapsed Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">00:00:00</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Filename:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3"><a href="file:///D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc" class="file"><acronym title="D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc">D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc</acronym></a></td>
+</tr>
+</table>
+</td>
+<td class="column2">
+<table class="DRC_summary_header">
+<tr>
+<td class="DRC_summary_header_col1">Warnings:</td>
+<td class="DRC_summary_header_col2"></td>
+<td class="DRC_summary_header_col3">0</td></tr>
+<tr>
+<td class="DRC_summary_header_col1">Rule Violations:</td>
+<td class="DRC_summary_header_col2"></td>
+<td class="DRC_summary_header_col3" style="color : red">38</td></tr>
+</table>
+</td>
+</table><a name="IDVQUTFZDPQJEDKTT51K4TEYWHRPZIORAFO4NK2GIRZUCU5H1YC33M"><h2>Summary</h2></a><table>
+<tr>
+<th class="column1">Warnings</th>
+<th class="column2">Count</th>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">0</td>
+</tr>
+</table><br><table>
+<tr>
+<th class="column1">Rule Violations</th>
+<th class="column2">Count</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDHL42K2NISAGQOUHQCHPDTK3SMIN3IP1BZLWR1SDSDHJ2MBIUQGBC">Clearance Constraint (Gap=0.254mm) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#ID5CKSMVR4ZVCIDLE4QKN41TCR1NISNRNERUMHRHPMH4BIWLRNYJEE">Short-Circuit Constraint (Allowed=No) (All),(All)</a></td>
+<td class="column2">6</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDRZ0EPP1ZSS1DIAVW1PB4UC5OOPYE2CXUN5NEFIFXNLLQTPKRKQBG">Un-Routed Net Constraint ( (All) )</a></td>
+<td class="column2">2</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDADUVCPQM2UQKIUCTTCYNR0MUYPYS5OHHOUIBTIB14XMNINL4GVYP">Modified Polygon (Allow modified: No), (Allow shelved: No)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDTSOKI1VVAWJLGJ15CVRPFZ34VID4FHFTSOH0PAIWJP0RRTRDT2ZK">Width Constraint (Min=0.305mm) (Max=3.048mm) (Preferred=0.508mm) (All)</a></td>
+<td class="column2">2</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDBXN0E1IWR5CNG3VM003ILKWGIESGM0XQS1P4D3IIJCMRW51B0URN">Routing Topology Rule(Topology=Shortest) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDRSPJZZZCFCHQUDCXAYMD5FWPC1UNEKBUREIMPGQ3IPTHNLUCUCM">Power Plane Connect Rule(Relief Connect )(Expansion=0.508mm) (Conductor Width=0.305mm) (Air Gap=0.254mm) (Entries=4) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#ID3Y4TUTQEE4S23TOGMG3STB1YISSO1Y1IVM4OIC2C1PSFEQ1NNRJ">Hole Size Constraint (Min=0.7mm) (Max=3mm) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#ID2XS3EFI5EUNWOXCNVKAYNGIBCUNQMIAERMGXRCK5TNESIQ41MAG">Hole To Hole Clearance (Gap=0.254mm) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDG5C3UQED0KRRHTY2PXMXK5YRSCOSZ2HXKAIZOZMFLIREWZXNI0U">Minimum Solder Mask Sliver (Gap=0.125mm) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDVS0A0RJ1REZQOTO1OQ0RPXCIZMM0U0XEVAMJBQMGFPOVLGUKDGLF">Silk To Solder Mask (Clearance=0.1mm) (IsPad),(All)</a></td>
+<td class="column2">27</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDSV3DZLUAZ2FFOQH2SVCF2CUUJKZIYIAFV5BWCYMMQURNEV0N1QVK">Silk to Silk (Clearance=0.12mm) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDBQASAIDYIFORLSNLKSXZY0V0TFCGZWPASAQGGSLJW3VFG0J4LYFL">Net Antennae (Tolerance=0mm) (All)</a></td>
+<td class="column2">1</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDGIHI5KNTJ0V4NE1XDQSURRDRGCWEGFAXIAHYQXGZX3EJVTHVTI2J">Height Constraint (Min=0mm) (Max=25.4mm) (Prefered=12.7mm) (Disabled)(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">38</td>
+</tr>
+</table><br><a name="ID5CKSMVR4ZVCIDLE4QKN41TCR1NISNRNERUMHRHPMH4BIWLRNYJEE"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Short-Circuit Constraint (Allowed=No) (All),(All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad -MH1(90.23mm,66.96mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad -MH2(92.77mm,66.96mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad U3-(103.5mm,124.5mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad U3-(103.5mm,93.5mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad U3-(28.5mm,124.5mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=125795.18mil|Location2.X=-125795.18mil|Location1.Y=125795.18mil|Location2.Y=-125795.18mil|Absolute=True">Short-Circuit Constraint: Between Pad U3-(28.5mm,93.5mm) on Multi-Layer And Polygon Region (142 hole(s)) Bottom Layer Location : [X = 0mm][Y = 0mm]</acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="IDRZ0EPP1ZSS1DIAVW1PB4UC5OOPYE2CXUN5NEFIFXNLLQTPKRKQBG"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Un-Routed Net Constraint ( (All) )</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1748.953mil|Location2.X=2151.575mil|Location1.Y=2907.48mil|Location2.Y=3270.732mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1748.953mil|Location2.X=2151.575mil|Location1.Y=2907.48mil|Location2.Y=3270.732mil|Absolute=True">Un-Routed Net Constraint: Net GND Between Pad -C1(45.5mm,82mm) on Multi-Layer And Pad -1(54mm,74.5mm) on Multi-Layer </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1297.583mil|Location2.X=1964.567mil|Location1.Y=4644.095mil|Location2.Y=4942.575mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1297.583mil|Location2.X=1964.567mil|Location1.Y=4644.095mil|Location2.Y=4942.575mil|Absolute=True">Un-Routed Net Constraint: Net GND Between Pad U3-1(34mm,124.5mm) on Multi-Layer And Pad U1-8(48.7mm,118.36mm) on Bottom Layer </acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="IDTSOKI1VVAWJLGJ15CVRPFZ34VID4FHFTSOH0PAIWJP0RRTRDT2ZK"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Width Constraint (Min=0.305mm) (Max=3.048mm) (Preferred=0.508mm) (All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1431.295mil|Location2.X=1452.734mil|Location1.Y=4894.287mil|Location2.Y=4908.355mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1431.295mil|Location2.X=1452.734mil|Location1.Y=4894.287mil|Location2.Y=4908.355mil|Absolute=True">Width Constraint: Track (36.5mm,124.46mm)(36.54mm,124.5mm) on Bottom Layer Actual Width = 0.254mm, Target Width = 0.305mm</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1828.146mil|Location2.X=1849.585mil|Location1.Y=4891.138mil|Location2.Y=4905.206mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1828.146mil|Location2.X=1849.585mil|Location1.Y=4891.138mil|Location2.Y=4905.206mil|Absolute=True">Width Constraint: Track (46.5mm,124.3mm)(46.7mm,124.5mm) on Bottom Layer Actual Width = 0.254mm, Target Width = 0.305mm</acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="IDVS0A0RJ1REZQOTO1OQ0RPXCIZMM0U0XEVAMJBQMGFPOVLGUKDGLF"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Silk To Solder Mask (Clearance=0.1mm) (IsPad),(All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4066.975mil|Location2.X=4072.162mil|Location1.Y=2444.008mil|Location2.Y=2449.195mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4066.975mil|Location2.X=4072.162mil|Location1.Y=2444.008mil|Location2.Y=2449.195mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.096mm &lt; 0.1mm) Between Arc (103.461mm,59.047mm) on Top Overlay And Pad -2(103.359mm,63.081mm) on Multi-Layer [Top Overlay] to [Top Solder] clearance [0.096mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4391.191mil|Location2.X=4396.378mil|Location1.Y=2440.173mil|Location2.Y=2445.36mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4391.191mil|Location2.X=4396.378mil|Location1.Y=2440.173mil|Location2.Y=2445.36mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.061mm &lt; 0.1mm) Between Arc (111.602mm,58.966mm) on Top Overlay And Pad -2(111.602mm,62.966mm) on Multi-Layer [Top Overlay] to [Top Solder] clearance [0.061mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4695.446mil|Location2.X=4700.633mil|Location1.Y=2440.172mil|Location2.Y=2445.359mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4695.446mil|Location2.X=4700.633mil|Location1.Y=2440.172mil|Location2.Y=2445.359mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.061mm &lt; 0.1mm) Between Arc (119.33mm,58.966mm) on Top Overlay And Pad -2(119.33mm,62.966mm) on Multi-Layer [Top Overlay] to [Top Solder] clearance [0.061mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4999.152mil|Location2.X=5004.339mil|Location1.Y=2443.36mil|Location2.Y=2448.547mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4999.152mil|Location2.X=5004.339mil|Location1.Y=2443.36mil|Location2.Y=2448.547mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.061mm &lt; 0.1mm) Between Arc (127.027mm,59.047mm) on Top Overlay And Pad -2(127.045mm,63.047mm) on Multi-Layer [Top Overlay] to [Top Solder] clearance [0.061mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5294.879mil|Location2.X=5298.503mil|Location1.Y=2434.489mil|Location2.Y=2438.114mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5294.879mil|Location2.X=5298.503mil|Location1.Y=2434.489mil|Location2.Y=2438.114mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Arc (134.982mm,58.966mm) on Top Overlay And Pad -2(134.982mm,62.736mm) on Multi-Layer [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3627.328mil|Location2.X=3632.515mil|Location1.Y=3369.355mil|Location2.Y=3374.542mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3627.328mil|Location2.X=3632.515mil|Location1.Y=3369.355mil|Location2.Y=3374.542mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.075mm &lt; 0.1mm) Between Pad -1(92.96mm,86.535mm) on Multi-Layer And Track (92.2mm,83.005mm)(92.2mm,85.51mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.075mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3627.328mil|Location2.X=3632.515mil|Location1.Y=3439.237mil|Location2.Y=3444.424mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3627.328mil|Location2.X=3632.515mil|Location1.Y=3439.237mil|Location2.Y=3444.424mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.075mm &lt; 0.1mm) Between Pad -1(92.96mm,86.535mm) on Multi-Layer And Track (92.2mm,87.56mm)(92.2mm,89.995mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.075mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4051.682mil|Location2.X=4055.307mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4051.682mil|Location2.X=4055.307mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(103.359mm,63.081mm) on Multi-Layer And Track (102.953mm,63.005mm)(103.207mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4081.441mil|Location2.X=4085.066mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4081.441mil|Location2.X=4085.066mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(103.359mm,63.081mm) on Multi-Layer And Track (103.207mm,63.005mm)(103.715mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4071.441mil|Location2.X=4075.066mil|Location1.Y=2458.698mil|Location2.Y=2462.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4071.441mil|Location2.X=4075.066mil|Location1.Y=2458.698mil|Location2.Y=2462.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(103.359mm,63.081mm) on Multi-Layer And Track (103.461mm,62.497mm)(103.461mm,63.513mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4083.159mil|Location2.X=4086.783mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4083.159mil|Location2.X=4086.783mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(103.359mm,63.081mm) on Multi-Layer And Track (103.715mm,63.005mm)(103.969mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4371.972mil|Location2.X=4375.596mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4371.972mil|Location2.X=4375.596mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(111.602mm,62.966mm) on Multi-Layer And Track (111.094mm,62.924mm)(111.348mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4375.966mil|Location2.X=4381.153mil|Location1.Y=2474.04mil|Location2.Y=2479.227mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4375.966mil|Location2.X=4381.153mil|Location1.Y=2474.04mil|Location2.Y=2479.227mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.068mm &lt; 0.1mm) Between Pad -2(111.602mm,62.966mm) on Multi-Layer And Track (111.348mm,62.924mm)(111.856mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.068mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4391.972mil|Location2.X=4395.596mil|Location1.Y=2455.509mil|Location2.Y=2459.134mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4391.972mil|Location2.X=4395.596mil|Location1.Y=2455.509mil|Location2.Y=2459.134mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(111.602mm,62.966mm) on Multi-Layer And Track (111.602mm,62.416mm)(111.602mm,63.432mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4408.149mil|Location2.X=4411.774mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4408.149mil|Location2.X=4411.774mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(111.602mm,62.966mm) on Multi-Layer And Track (111.856mm,62.924mm)(112.11mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4676.227mil|Location2.X=4679.852mil|Location1.Y=2475.509mil|Location2.Y=2479.133mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4676.227mil|Location2.X=4679.852mil|Location1.Y=2475.509mil|Location2.Y=2479.133mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(119.33mm,62.966mm) on Multi-Layer And Track (118.822mm,62.924mm)(119.076mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4680.221mil|Location2.X=4685.408mil|Location1.Y=2474.04mil|Location2.Y=2479.227mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4680.221mil|Location2.X=4685.408mil|Location1.Y=2474.04mil|Location2.Y=2479.227mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.068mm &lt; 0.1mm) Between Pad -2(119.33mm,62.966mm) on Multi-Layer And Track (119.076mm,62.924mm)(119.584mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.068mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4696.227mil|Location2.X=4699.852mil|Location1.Y=2455.509mil|Location2.Y=2459.133mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4696.227mil|Location2.X=4699.852mil|Location1.Y=2455.509mil|Location2.Y=2459.133mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(119.33mm,62.966mm) on Multi-Layer And Track (119.33mm,62.416mm)(119.33mm,63.432mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4712.405mil|Location2.X=4716.029mil|Location1.Y=2475.509mil|Location2.Y=2479.133mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4712.405mil|Location2.X=4716.029mil|Location1.Y=2475.509mil|Location2.Y=2479.133mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(119.33mm,62.966mm) on Multi-Layer And Track (119.584mm,62.924mm)(119.838mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4979.239mil|Location2.X=4982.864mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4979.239mil|Location2.X=4982.864mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(127.045mm,63.047mm) on Multi-Layer And Track (126.519mm,63.005mm)(126.773mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4983.578mil|Location2.X=4988.765mil|Location1.Y=2477.274mil|Location2.Y=2482.461mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4983.578mil|Location2.X=4988.765mil|Location1.Y=2477.274mil|Location2.Y=2482.461mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.05mm &lt; 0.1mm) Between Pad -2(127.045mm,63.047mm) on Multi-Layer And Track (126.773mm,63.005mm)(127.281mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.05mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4999.239mil|Location2.X=5002.864mil|Location1.Y=2458.698mil|Location2.Y=2462.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4999.239mil|Location2.X=5002.864mil|Location1.Y=2458.698mil|Location2.Y=2462.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(127.045mm,63.047mm) on Multi-Layer And Track (127.027mm,62.497mm)(127.027mm,63.513mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5016.118mil|Location2.X=5019.742mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5016.118mil|Location2.X=5019.742mil|Location1.Y=2478.698mil|Location2.Y=2482.323mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(127.045mm,63.047mm) on Multi-Layer And Track (127.281mm,63.005mm)(127.535mm,63.005mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5292.435mil|Location2.X=5296.06mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5292.435mil|Location2.X=5296.06mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(134.982mm,62.736mm) on Multi-Layer And Track (134.474mm,62.924mm)(134.728mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5298.39mil|Location2.X=5305.242mil|Location1.Y=2477.233mil|Location2.Y=2484.359mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5298.39mil|Location2.X=5305.242mil|Location1.Y=2477.233mil|Location2.Y=2484.359mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (0.009mm &lt; 0.1mm) Between Pad -2(134.982mm,62.736mm) on Multi-Layer And Track (134.728mm,62.924mm)(135.236mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.009mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5312.435mil|Location2.X=5316.06mil|Location1.Y=2484.601mil|Location2.Y=2488.226mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5312.435mil|Location2.X=5316.06mil|Location1.Y=2484.601mil|Location2.Y=2488.226mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(134.982mm,62.736mm) on Multi-Layer And Track (134.982mm,62.416mm)(134.982mm,63.432mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5328.613mil|Location2.X=5332.238mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5328.613mil|Location2.X=5332.238mil|Location1.Y=2475.509mil|Location2.Y=2479.134mil|Absolute=True">Silk To Solder Mask Clearance Constraint: (Collision &lt; 0.1mm) Between Pad -2(134.982mm,62.736mm) on Multi-Layer And Track (135.236mm,62.924mm)(135.49mm,62.924mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]</acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="IDBQASAIDYIFORLSNLKSXZY0V0TFCGZWPASAQGGSLJW3VFG0J4LYFL"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Net Antennae (Tolerance=0mm) (All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3768.764mil|Location2.X=3803.237mil|Location1.Y=3393.39mil|Location2.Y=3445.54mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\GitHub\DRIVE\HardwareController\Car_Controller\PCB1.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3768.764mil|Location2.X=3803.237mil|Location1.Y=3393.39mil|Location2.Y=3445.54mil|Absolute=True">Net Antennae: Track (92.96mm,86.535mm)(96.069mm,86.535mm) on Bottom Layer </acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br></body>
+</html>
