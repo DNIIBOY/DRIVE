@@ -32,6 +32,8 @@ class Car:
         self._position = 0
         self.speed = config.speed_limit
         self.recommended_speed = 0
+        self.estimated_gap = None
+        self.delta_v_percieved = None
 
         self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation,
                                                self.config.speed_limit_deviation)
