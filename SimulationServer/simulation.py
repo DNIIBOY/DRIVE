@@ -87,12 +87,15 @@ class Simulation:
 
             car = car.prev
 
+        v_chase = self.tail.speed
         v = self.config.speed_limit
-        dynamic_term = (v * (v - self.tail.speed)) / (2 * self.config.braking_factor)
-        s_star = self.config.target_distance + self.config.time_headway * v + max(0, dynamic_term)
+        dynamic_term = (v * (v - max(self.tail.speed, 10))) / (2 * self.config.braking_factor)
+        s_star = self.config.car_length + self.config.target_distance + max(0, v * self.config.time_headway + dynamic_term)
         if self.tail.position + self.config.car_length > s_star:
+            #print(f"V is {v}, self.tail.speed is {self.tail.speed}, s_star is {s_star}. Dynamic tem is {dynamic_term}")
             self.create_car()
             # Offset because we don't have infinite updates / sec
+            #self.tail.speed = v_chase
             self.tail.position = max(0, s_star - self.tail.next.position - self.config.car_length)
 
         self.valkey.set("head", self.head.id)
@@ -103,7 +106,7 @@ class Simulation:
             # Decrease reference speed by brake_amount, but not below 0
             # car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
             # car.accel = 1 - (car.brake_amount / 255)
-            acceleration = car.brake_amount / 255 * 60 * 0.1
+            acceleration = car.brake_amount / 255 * 60 * 0.3
             car.speed = max(0, car.speed - acceleration)
 
         else:
