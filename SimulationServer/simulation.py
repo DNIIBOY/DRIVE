@@ -24,6 +24,12 @@ class Simulation:
         config_refresh_time = time()
         while True:
             if time() - config_refresh_time > 1:
+                reset = self.valkey.get("reset")
+                reset = int(reset.decode()) if reset is not None else 0
+                if reset:
+                    self.clear()
+                    self.populate()
+                    self.valkey.set("reset", 0)
                 self.config.read(self.valkey)
                 config_refresh_time = time()
             start_time = time()
@@ -146,7 +152,7 @@ class Simulation:
         if self.config.drive_activated == 0:
             return self.config.time_headway
         
-        return self.config.time_headway * 2
+        return self.config.time_headway * 4
 
     def get_recommended_speed(self, car: Car) -> int:
         if car.in_stopwave:
@@ -193,6 +199,32 @@ class Simulation:
         if car is self.tail:
             self.tail = car.next
         del car
+
+    def clear(self) -> None:
+        car = self.head
+        self.head = self.tail = None
+        while car:
+            next_car = car.prev
+            del car
+            car = next_car
+        self._id = 0
+
+    def populate(self) -> None:
+        self.create_car()
+        spawn_position = self.config.kill_distance
+        self.tail.position = spawn_position
+
+        s_star = self.config.car_length + self.config.target_distance + max(0, self.config.speed_limit * self.config.time_headway)
+        spawn_position -= s_star
+
+        while spawn_position >= 0:
+            self.create_car()
+            self.tail.position = spawn_position
+            spawn_position -= s_star
+            
+        
+
+
 
 
 def main():

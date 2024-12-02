@@ -50,6 +50,10 @@ def config():
 
     return conf.to_dict()
 
+@app.route("/reset", methods=["POST"])
+def reset():
+    valkey.set("reset", 1)
+    return "OK"
 
 @sock.route("/ws/vis")
 def visulation_socket(ws: Server):
