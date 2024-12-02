@@ -61,7 +61,7 @@ void encoder_task(void *param) {
             buffer[1] = direction & 0xFF;         // Low byte
 
             esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
-            ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
+            //ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
         }
     }
 }
@@ -95,7 +95,7 @@ void braker_task(void *param) {
             buffer[0] = brake_value;
             esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
             last_brake_pressure_return_value = brake_pressure_return_value;
-            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
+            //ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
         }
 
         // Adjust delay as needed to prevent excessive polling

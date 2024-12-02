@@ -8,8 +8,11 @@
 #define WIFI_FAIL_BIT BIT1
 
 #define LCD_ADDR 0x27
-#define SDA_PIN 7
-#define SCL_PIN 6
+#define SDA_LCD_PIN 7
+#define SCL_LCD_PIN 6
+#define SDA_LED_PIN 
+#define SCL_LED_PIN 
+
 #define LCD_COLS 16
 #define LCD_ROWS 2
 
@@ -28,7 +31,7 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
     switch (event_id) {
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI("WebSocket_handler", "Connected");
-            lcd_init(LCD_ADDR, SDA_PIN, SCL_PIN, LCD_COLS, LCD_ROWS);
+            lcd_init(LCD_ADDR, SDA_LCD_PIN, SCL_LCD_PIN, LCD_COLS, LCD_ROWS);
             lcd_set_cursor(0, 0);
             lcd_write_str("Current:     kmt");
 
@@ -48,9 +51,10 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
                 value = (value << 8) | data[i];  // Combine bytes into an integer
             }
 
-            ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0x%08X", event->data_len, value);
+            //ESP_LOGI("WebSocket_handler", "Data received: length=%d, data=0x%08X", event->data_len, value);
             current_speed = (value & 0xFFF) * 0.36;
             recommended_speed = ((value >> 12) & 0xFFF) * 0.36;
+            LED_data = (value >> 24) & 0xFF;
 
             sprintf(lcdbuffer_line_1, "%03d", current_speed);  // Ensure 3 digits
             sprintf(lcdbuffer_line_2, "%03d", recommended_speed);  // Ensure 3 digits
@@ -60,6 +64,9 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
 
             lcd_set_cursor(9, 1);
             lcd_write_str(lcdbuffer_line_2);
+
+            
+
             break;
         default:
             break;
