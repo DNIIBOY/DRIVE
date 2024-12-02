@@ -13,6 +13,13 @@ var config_dictionary = {}
 @onready var http_send = $HTTPSend
 @onready var http_retrieve = $HTTPRetrieveDefault
 
+func populate():
+    http_send.request("http://127.0.0.1:5000/reset", [], HTTPClient.METHOD_POST)
+    
+        
+
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
     post_button.pressed.connect(self._post)
@@ -23,7 +30,7 @@ func _ready():
     save_to_json_button.pressed.connect(_save_as_JSON)
     
     get_config()
-    
+
 func get_config():
     http_get.request("http://127.0.0.1:5000/config")
     
