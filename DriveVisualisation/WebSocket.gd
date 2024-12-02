@@ -34,6 +34,8 @@ func _input(event):
                 camera.set_position(Vector2(0,0))
                 camera.pan_reset()
                 camera.zoom_reset()
+    if event.is_action_pressed("populate"):
+        $HTTP_Manager.populate()
 
 func focus_on_car():
     if isFocusing:
