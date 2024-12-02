@@ -31,9 +31,7 @@ class SimulationConfig:
     time_headway: float = 1.5
     comfortable_breaking_value: float = 20
 
-    speed_limit_deviation: int = 0
-    percieved_distance_spread: float = 0.01  # Teori siger 0.1
-    percieved_speed_spread: float = 0.01  # teori siger 0.1
+    drive_activated: int = 1
 
     @property
     def stop_wave_speed(self) -> float:

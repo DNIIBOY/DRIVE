@@ -106,7 +106,7 @@ class Simulation:
             # Decrease reference speed by brake_amount, but not below 0
             # car.reference_speed = max(0.1, car.reference_speed - car.brake_amount)
             # car.accel = 1 - (car.brake_amount / 255)
-            acceleration = car.brake_amount / 255 * 60 * 0.3
+            acceleration = car.brake_amount / 255 * 60 * self.config.update_interval
             car.speed = max(0, car.speed - acceleration)
 
         else:
@@ -133,16 +133,38 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        car.recommended_speed = self.get_recommended_speed(car)
+        #car.recommended_speed = self.get_recommended_speed(car)
+        car.time_headway = self.get_recommended_headway(car)
+
+    def get_recommended_headway(self, car: Car) -> int:
+        if car.in_stopwave:
+            return self.config.time_headway
+
+        if not car.detected_stopwave:
+            return self.config.time_headway
+        
+        if self.config.drive_activated == 0:
+            return self.config.time_headway
+        
+        return self.config.time_headway * 2
 
     def get_recommended_speed(self, car: Car) -> int:
         if car.in_stopwave:
-            return 0
+            return self.config.speed_limit
 
         if not car.detected_stopwave:
-            return car.target_speed
+            return self.config.speed_limit
+        
+        #target_speed = self.config.speed_limit
 
-        return car.detected_stopwave.stop.speed
+        detection_range = car.detected_stopwave.stop.position - self.config.speed_limit * 10 
+
+        #delta_pos = car.detected_stopwave.stop.position - car.position
+
+        recommended_speed = (detection_range / car.position) * self.config.speed_limit
+        #recommended_speed = car.speed - (target_speed * (1 - (self.config.speed_limit / car.speed)))
+
+        return max(self.config.speed_limit * 0.4, recommended_speed)
 
     def serialize_cars(self) -> bytes:
         rep = bytes()

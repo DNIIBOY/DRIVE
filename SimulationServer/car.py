@@ -31,14 +31,8 @@ class Car:
         self.brake_amount = 0
         self._position = 0
         self.speed = config.speed_limit
-        self.recommended_speed = 0
-
-        self.speed_limit_diff = random.uniform(-self.config.speed_limit_deviation,
-                                               self.config.speed_limit_deviation)
-        self.reference_speed = self.target_speed + self.speed_limit_diff
-
-        self.max_ref_inc = self.config.car_max_accel
-        self.time_to_next_reaction = time()
+        self.recommended_speed = self.config.speed_limit
+        self.time_headway = self.config.time_headway
 
     @property
     def position(self) -> float:

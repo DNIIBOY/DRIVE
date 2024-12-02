@@ -33,10 +33,13 @@ class StopWave:
         return cls(start, car)  # Car will always be the last car
 
     def in_range(self, car: Car) -> bool:
+        """
+        Detects stopwave
+        """
         if car.position > self.start.position:
             return False
 
-        return car.position + car.speed * 10 > self.stop.position
+        return car.position + 10000 > self.stop.position
 
     @property
     def length(self) -> float:
