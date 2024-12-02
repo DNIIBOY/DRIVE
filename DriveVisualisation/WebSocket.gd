@@ -36,6 +36,8 @@ func _input(event):
                 camera.zoom_reset()
     if event.is_action_pressed("populate"):
         $HTTP_Manager.populate()
+    if event.is_action_pressed("collect_data"):
+        $HTTP_Manager.collect()
 
 func focus_on_car():
     if isFocusing:

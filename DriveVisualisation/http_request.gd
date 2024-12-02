@@ -16,8 +16,8 @@ var config_dictionary = {}
 func populate():
     http_send.request("http://127.0.0.1:5000/reset", [], HTTPClient.METHOD_POST)
     
-        
-
+func collect():
+    http_send.request("http://127.0.0.1:5000/collect_data", [], HTTPClient.METHOD_POST)
 
 
 # Called when the node enters the scene tree for the first time.

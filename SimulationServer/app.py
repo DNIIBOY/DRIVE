@@ -50,10 +50,18 @@ def config():
 
     return conf.to_dict()
 
+
 @app.route("/reset", methods=["POST"])
 def reset():
     valkey.set("reset", 1)
     return "OK"
+
+
+@app.route("/collect_data", methods=["POST"])
+def collect_data():
+    valkey.set("collect_data", 1)
+    return "OK"
+
 
 @sock.route("/ws/vis")
 def visulation_socket(ws: Server):
