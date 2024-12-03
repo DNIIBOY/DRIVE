@@ -188,8 +188,7 @@ class Simulation:
 
         distance_to_car_in_front = car.next.position - car.position
 
-        recommended_speed = distance_to_car_in_front / self.config.time_headway
-
+        recommended_speed = distance_to_car_in_front / (self.config.time_headway * 4)
 
         return recommended_speed
 
