@@ -1,6 +1,7 @@
 from car import Car
 from config import SimulationConfig
 from idm import idm
+import json
 from stopwave import StopWave
 from time import sleep, time
 from valkey import Valkey
@@ -17,6 +18,9 @@ class Simulation:
         self.config.read(valkey)
 
         self.stopwaves: list[StopWave] = []
+        self.is_collecting_data = False
+        self.collected_samples = 0
+        self.data: dict[dict] = {}
 
         self.create_car()
 
@@ -30,11 +34,29 @@ class Simulation:
                     self.clear()
                     self.populate()
                     self.valkey.set("reset", 0)
+
+                collect_data = self.valkey.get("collect_data")
+                collect_data = int(collect_data.decode()) if collect_data is not None else 0
+                if collect_data and not self.is_collecting_data:
+                    self.start_data_collection()
                 self.config.read(self.valkey)
                 config_refresh_time = time()
             start_time = time()
             self.update_cars()
             self.valkey.set("cars", self.serialize_cars())
+
+            if self.is_collecting_data and self.collected_samples >= self.config.data_collection_brake_samples:
+                car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+                print("STOPPING")
+                car.brake_amount = 0
+
+            if self.is_collecting_data:
+                print(f"Collected {self.collected_samples} samples")
+                if self.collected_samples >= self.config.data_collection_samples:
+                    self.stop_data_collection()
+                else:
+                    self.collect_data()
+
             elapsed_time = time() - start_time
             sleep(self.config.update_interval - elapsed_time)
 
@@ -66,22 +88,23 @@ class Simulation:
                 car = car.prev
                 continue
 
-            if car.id == hw1_car:
-                car.hw1_target = True
-                hw1_brake = self.valkey.get("hw1_brake")
-                car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
-            else:
-                car.hw1_target = False
+            if not self.is_collecting_data:
+                if car.id == hw1_car:
+                    car.hw1_target = True
+                    hw1_brake = self.valkey.get("hw1_brake")
+                    car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
+                else:
+                    car.hw1_target = False
 
-            if car.id == hw2_car:
-                car.hw2_target = True
-                hw2_brake = self.valkey.get("hw2_brake")
-                car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
-            else:
-                car.hw2_target = False
+                if car.id == hw2_car:
+                    car.hw2_target = True
+                    hw2_brake = self.valkey.get("hw2_brake")
+                    car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
+                else:
+                    car.hw2_target = False
 
-            if car.id not in (hw1_car, hw2_car):
-                car.brake_amount = 0
+                if car.id not in (hw1_car, hw2_car):
+                    car.brake_amount = 0
 
             self.update_car(car)
             if car.id == hw1_car:
@@ -93,15 +116,14 @@ class Simulation:
 
             car = car.prev
 
-        v_chase = self.tail.speed
         v = self.config.speed_limit
         dynamic_term = (v * (v - max(self.tail.speed, 10))) / (2 * self.config.braking_factor)
-        s_star = self.config.car_length + self.config.target_distance + max(0, v * self.config.time_headway + dynamic_term)
+        s_star = self.config.car_length + self.config.target_distance + \
+            max(0, v * self.config.time_headway + dynamic_term)
         if self.tail.position + self.config.car_length > s_star:
-            #print(f"V is {v}, self.tail.speed is {self.tail.speed}, s_star is {s_star}. Dynamic tem is {dynamic_term}")
+            # print(f"V is {v}, self.tail.speed is {self.tail.speed}, s_star is {s_star}. Dynamic tem is {dynamic_term}")
             self.create_car()
             # Offset because we don't have infinite updates / sec
-            #self.tail.speed = v_chase
             self.tail.position = max(0, s_star - self.tail.next.position - self.config.car_length)
 
         self.valkey.set("head", self.head.id)
@@ -139,7 +161,7 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        #car.recommended_speed = self.get_recommended_speed(car)
+        # car.recommended_speed = self.get_recommended_speed(car)
         car.time_headway = self.get_recommended_headway(car)
 
     def get_recommended_headway(self, car: Car) -> int:
@@ -148,10 +170,10 @@ class Simulation:
 
         if not car.detected_stopwave:
             return self.config.time_headway
-        
+
         if self.config.drive_activated == 0:
             return self.config.time_headway
-        
+
         return self.config.time_headway * 4
 
     def get_recommended_speed(self, car: Car) -> int:
@@ -160,17 +182,18 @@ class Simulation:
 
         if not car.detected_stopwave:
             return self.config.speed_limit
-        
-        #target_speed = self.config.speed_limit
 
-        detection_range = car.detected_stopwave.stop.position - self.config.speed_limit * 10 
-
-        #delta_pos = car.detected_stopwave.stop.position - car.position
-
+        detection_range = car.detected_stopwave.stop.position - self.config.speed_limit * 10
         recommended_speed = (detection_range / car.position) * self.config.speed_limit
-        #recommended_speed = car.speed - (target_speed * (1 - (self.config.speed_limit / car.speed)))
-
         return max(self.config.speed_limit * 0.4, recommended_speed)
+
+    def get_car_by_id(self, car_id: int) -> Car | None:
+        car = self.head
+        while car:
+            if car.id == car_id:
+                return car
+            car = car.prev
+        return None
 
     def serialize_cars(self) -> bytes:
         rep = bytes()
@@ -214,17 +237,66 @@ class Simulation:
         spawn_position = self.config.kill_distance
         self.tail.position = spawn_position
 
-        s_star = self.config.car_length + self.config.target_distance + max(0, self.config.speed_limit * self.config.time_headway)
+        s_star = self.config.car_length + self.config.target_distance + \
+            max(0, self.config.speed_limit * self.config.time_headway)
         spawn_position -= s_star
 
         while spawn_position >= 0:
             self.create_car()
             self.tail.position = spawn_position
             spawn_position -= s_star
-            
-        
 
+    def start_data_collection(self) -> None:
+        self.clear()
+        self.populate()
+        self.data = {
+            i: {
+                "id": i,
+                "position": [],
+                "speed": [],
+                "accel": [],
+            }
+            for i in range(
+                self.config.data_collection_braking_car_id,
+                self.config.data_collection_braking_car_id +
+                self.config.data_collection_count*self.config.data_collection_step,
+                self.config.data_collection_step
+            )
+        }
+        self.is_collecting_data = True
+        self.valkey.set("collect_data", 0)
+        car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+        car.brake_amount = self.config.data_collection_brake_pressure
+        print(car)
+        car.hw1_target = True
+        car.hw2_target = True
 
+    def stop_data_collection(self) -> None:
+        self.is_collecting_data = False
+        with open("data.json", "w") as f:
+            json.dump(self.data, f)
+        self.collected_samples = 0
+
+    def collect_data(self) -> None:
+        target_ids = set(range(
+            self.config.data_collection_braking_car_id,
+            self.config.data_collection_braking_car_id +
+            self.config.data_collection_count*self.config.data_collection_step,
+            self.config.data_collection_step
+        ))
+        car = self.head
+        while car:
+            if car.id not in target_ids:
+                car = car.prev
+                continue
+            print(car)
+            self.data[car.id]["position"].append(car.position)
+            self.data[car.id]["speed"].append(car.speed)
+            self.data[car.id]["accel"].append(car.accel)
+            target_ids.discard(car.id)
+            car = car.prev
+
+        self.collected_samples += 1
 
 
 def main():

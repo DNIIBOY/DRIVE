@@ -1,11 +1,11 @@
 extends Path2D
 
-var road_width = 800
-var road_turn_radius = 30
+var road_width = 1100
+var road_turn_radius = 12
 var road_turn_diameter = road_turn_radius * 2
 var road_turns = 12
 var offset = Vector2(0,0)
-var inoutsize = 50
+var inoutsize = 20
 var is_straight = false
 var straight_road_length = 1000
 signal baked_road
