@@ -62,9 +62,9 @@ class DataPlotter:
 
 
 def main():
-    cars = load_data("data.json")
-    for car in cars.values():
-        plt.plot(car["speed"])
+    drive_cars = load_data("data.json")
+    for car, data in drive_cars.items():
+        plt.plot(data["position"], label=car)
     plt.show()
 
 

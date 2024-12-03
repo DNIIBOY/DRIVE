@@ -34,10 +34,12 @@ class SimulationConfig:
     adoption_rate: float = 0.1
 
     drive_activated: int = 1
+    real_time: int = 1
 
     data_collection_brake_offset: int = 250
     data_collection_brake_pressure: int = 150
-    data_collection_brake_samples: int = 150
+    data_collection_brake_samples: int = 100
+    data_collection_brake_samples: int = 120
     data_collection_braking_car_id: int = 130
     data_collection_count: int = 10
     data_collection_samples: int = 3500

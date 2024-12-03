@@ -61,7 +61,8 @@ class Simulation:
                     self.collect_data()
 
             elapsed_time = time() - start_time
-            sleep(self.config.update_interval - elapsed_time)
+            if self.config.real_time:
+                sleep(self.config.update_interval - elapsed_time)
 
     def update_cars(self) -> None:
         hw1_car = self.valkey.get("hw1_car")
@@ -271,6 +272,7 @@ class Simulation:
                 "position": [],
                 "speed": [],
                 "accel": [],
+                "gap": [],
             }
             for i in range(
                 self.config.data_collection_braking_car_id,
@@ -308,6 +310,7 @@ class Simulation:
             self.data[car.id]["position"].append(car.position)
             self.data[car.id]["speed"].append(car.speed)
             self.data[car.id]["accel"].append(car.accel)
+            self.data[car.id]["gap"].append(car.next.position - car.position)
             target_ids.discard(car.id)
             car = car.prev
 
