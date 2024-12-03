@@ -45,13 +45,16 @@ class Simulation:
             self.update_cars()
             self.valkey.set("cars", self.serialize_cars())
 
-            if self.is_collecting_data and self.collected_samples >= self.config.data_collection_brake_samples:
-                car = self.get_car_by_id(self.config.data_collection_braking_car_id)
-                print("STOPPING")
-                car.brake_amount = 0
-
             if self.is_collecting_data:
-                print(f"Collected {self.collected_samples} samples")
+                if self.collected_samples == self.config.data_collection_brake_offset:
+                    car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+                    car.brake_amount = self.config.data_collection_brake_pressure
+
+                if self.collected_samples == self.config.data_collection_brake_samples\
+                        + self.config.data_collection_brake_offset:
+                    car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+                    car.brake_amount = 0
+
                 if self.collected_samples >= self.config.data_collection_samples:
                     self.stop_data_collection()
                 else:
@@ -266,8 +269,7 @@ class Simulation:
         self.is_collecting_data = True
         self.valkey.set("collect_data", 0)
         car = self.get_car_by_id(self.config.data_collection_braking_car_id)
-        car.brake_amount = self.config.data_collection_brake_pressure
-        print(car)
+        car.brake_amount = 0
         car.hw1_target = True
         car.hw2_target = True
 
@@ -278,6 +280,7 @@ class Simulation:
         self.collected_samples = 0
 
     def collect_data(self) -> None:
+        print(f"Collecting data: {((self.collected_samples+1)/self.config.data_collection_samples)*100:2f}%")
         target_ids = set(range(
             self.config.data_collection_braking_car_id,
             self.config.data_collection_braking_car_id +
@@ -289,7 +292,6 @@ class Simulation:
             if car.id not in target_ids:
                 car = car.prev
                 continue
-            print(car)
             self.data[car.id]["position"].append(car.position)
             self.data[car.id]["speed"].append(car.speed)
             self.data[car.id]["accel"].append(car.accel)

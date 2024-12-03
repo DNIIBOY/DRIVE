@@ -22,23 +22,24 @@ class SimulationConfig:
     stop_wave_factor: float = 0.3
 
     kill_distance: int = 65535
-    car_length: int = 15
+    car_length: int = 25
 
     target_distance: int = 50
     update_interval: float = 0.05
-    car_max_accel: float = 30
+    car_max_accel: float = 10
 
-    time_headway: float = 1.5
-    comfortable_breaking_value: float = 20
+    time_headway: float = 1
+    comfortable_breaking_value: float = 15
 
     drive_activated: int = 1
 
-    data_collection_samples: int = 500
+    data_collection_brake_offset: int = 250
+    data_collection_brake_pressure: int = 150
+    data_collection_brake_samples: int = 150
+    data_collection_braking_car_id: int = 130
+    data_collection_count: int = 10
+    data_collection_samples: int = 3500
     data_collection_step: int = 5
-    data_collection_count: int = 5
-    data_collection_braking_car_id: int = 60
-    data_collection_brake_pressure: int = 255
-    data_collection_brake_samples: int = 200
 
     @property
     def stop_wave_speed(self) -> float:
