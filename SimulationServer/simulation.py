@@ -38,41 +38,25 @@ class Simulation:
                 collect_data = self.valkey.get("collect_data")
                 collect_data = int(collect_data.decode()) if collect_data is not None else 0
                 if collect_data and not self.is_collecting_data:
-                    self.clear()
-                    self.populate()
-                    self.data = {
-                        i: {
-                            "id": i,
-                            "position": [],
-                            "speed": [],
-                            "accel": [],
-                        }
-                        for i in range(
-                            self.config.data_collection_braking_car_id,
-                            self.config.data_collection_braking_car_id +
-                            self.config.data_collection_count*self.config.data_collection_step,
-                            self.config.data_collection_step
-                        )
-                    }
-                    self.is_collecting_data = True
-                    self.valkey.set("collect_data", 0)
-                    self.valkey.set("hw1_car", self.config.data_collection_braking_car_id)
-                    self.valkey.set("hw2_car", self.config.data_collection_braking_car_id)
-
+                    self.start_data_collection()
                 self.config.read(self.valkey)
                 config_refresh_time = time()
             start_time = time()
             self.update_cars()
             self.valkey.set("cars", self.serialize_cars())
+
+            if self.is_collecting_data and self.collected_samples >= self.config.data_collection_brake_samples:
+                car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+                print("STOPPING")
+                car.brake_amount = 0
+
             if self.is_collecting_data:
-                print(f"Collected samples: {self.collected_samples}")
+                print(f"Collected {self.collected_samples} samples")
                 if self.collected_samples >= self.config.data_collection_samples:
-                    self.is_collecting_data = False
-                    with open("data.json", "w") as f:
-                        json.dump(self.data, f)
-                    self.collected_samples = 0
+                    self.stop_data_collection()
                 else:
                     self.collect_data()
+
             elapsed_time = time() - start_time
             sleep(self.config.update_interval - elapsed_time)
 
@@ -104,22 +88,23 @@ class Simulation:
                 car = car.prev
                 continue
 
-            if car.id == hw1_car:
-                car.hw1_target = True
-                hw1_brake = self.valkey.get("hw1_brake")
-                car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
-            else:
-                car.hw1_target = False
+            if not self.is_collecting_data:
+                if car.id == hw1_car:
+                    car.hw1_target = True
+                    hw1_brake = self.valkey.get("hw1_brake")
+                    car.brake_amount = int(hw1_brake.decode()) if hw1_brake else 0
+                else:
+                    car.hw1_target = False
 
-            if car.id == hw2_car:
-                car.hw2_target = True
-                hw2_brake = self.valkey.get("hw2_brake")
-                car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
-            else:
-                car.hw2_target = False
+                if car.id == hw2_car:
+                    car.hw2_target = True
+                    hw2_brake = self.valkey.get("hw2_brake")
+                    car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
+                else:
+                    car.hw2_target = False
 
-            if car.id not in (hw1_car, hw2_car):
-                car.brake_amount = 0
+                if car.id not in (hw1_car, hw2_car):
+                    car.brake_amount = 0
 
             self.update_car(car)
             if car.id == hw1_car:
@@ -202,6 +187,14 @@ class Simulation:
         recommended_speed = (detection_range / car.position) * self.config.speed_limit
         return max(self.config.speed_limit * 0.4, recommended_speed)
 
+    def get_car_by_id(self, car_id: int) -> Car | None:
+        car = self.head
+        while car:
+            if car.id == car_id:
+                return car
+            car = car.prev
+        return None
+
     def serialize_cars(self) -> bytes:
         rep = bytes()
         car = self.head
@@ -253,6 +246,37 @@ class Simulation:
             self.tail.position = spawn_position
             spawn_position -= s_star
 
+    def start_data_collection(self) -> None:
+        self.clear()
+        self.populate()
+        self.data = {
+            i: {
+                "id": i,
+                "position": [],
+                "speed": [],
+                "accel": [],
+            }
+            for i in range(
+                self.config.data_collection_braking_car_id,
+                self.config.data_collection_braking_car_id +
+                self.config.data_collection_count*self.config.data_collection_step,
+                self.config.data_collection_step
+            )
+        }
+        self.is_collecting_data = True
+        self.valkey.set("collect_data", 0)
+        car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+        car.brake_amount = self.config.data_collection_brake_pressure
+        print(car)
+        car.hw1_target = True
+        car.hw2_target = True
+
+    def stop_data_collection(self) -> None:
+        self.is_collecting_data = False
+        with open("data.json", "w") as f:
+            json.dump(self.data, f)
+        self.collected_samples = 0
+
     def collect_data(self) -> None:
         target_ids = set(range(
             self.config.data_collection_braking_car_id,
@@ -265,6 +289,7 @@ class Simulation:
             if car.id not in target_ids:
                 car = car.prev
                 continue
+            print(car)
             self.data[car.id]["position"].append(car.position)
             self.data[car.id]["speed"].append(car.speed)
             self.data[car.id]["accel"].append(car.accel)

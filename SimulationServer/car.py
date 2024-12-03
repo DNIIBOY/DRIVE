@@ -1,7 +1,5 @@
 from __future__ import annotations
 from config import SimulationConfig
-import random
-from time import time
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -43,10 +41,6 @@ class Car:
         self._position = min(value, self.config.kill_distance)
 
     @property
-    def target_speed(self) -> int:
-        return self.config.speed_limit + self.speed_limit_diff
-
-    @property
     def next(self) -> Car:
         return self._next
 
@@ -65,6 +59,9 @@ class Car:
         self._prev = prev_car
         if prev_car:
             prev_car._next = self
+
+    def __repr__(self) -> str:
+        return f"Car({self.id}), position: {self.position}, speed: {self.speed}, accel: {self.accel}, brake: {self.brake_amount}"
 
     def __hash__(self) -> int:
         return hash(self.id)
