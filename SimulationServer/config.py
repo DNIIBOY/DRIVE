@@ -31,6 +31,8 @@ class SimulationConfig:
     time_headway: float = 1
     comfortable_breaking_value: float = 15
 
+    adoption_rate: float = 0.1
+
     drive_activated: int = 1
 
     data_collection_brake_offset: int = 250

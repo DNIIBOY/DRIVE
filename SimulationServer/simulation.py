@@ -5,7 +5,7 @@ import json
 from stopwave import StopWave
 from time import sleep, time
 from valkey import Valkey
-
+import random
 
 class Simulation:
     def __init__(self, valkey: Valkey) -> None:
@@ -164,10 +164,10 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        if self.config.drive_activated == 2:
+        if self.config.drive_activated == 2 and car.is_smart:
             car.time_headway = self.config.time_headway
             car.recommended_speed = self.get_recommended_speed(car)
-        elif self.config.drive_activated == 1:
+        elif self.config.drive_activated == 1 and car.is_smart:
             car.recommended_speed = self.config.speed_limit
             car.time_headway = self.get_recommended_headway(car)
         else:
@@ -224,6 +224,9 @@ class Simulation:
 
         car.next = self.tail
         self.tail = car
+
+        if random.random() < self.config.adoption_rate:
+            car.is_smart = True
 
     def destroy_car(self, car: Car) -> None:
         if car.prev:

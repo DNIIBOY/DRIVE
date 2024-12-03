@@ -25,6 +25,8 @@ class Car:
 
         self.config = config
 
+        self.is_smart = False
+
         self.accel = 0
         self.brake_amount = 0
         self._position = 0
