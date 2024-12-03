@@ -164,8 +164,8 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        # car.recommended_speed = self.get_recommended_speed(car)
-        car.time_headway = self.get_recommended_headway(car)
+        car.recommended_speed = self.get_recommended_speed(car)
+        # car.time_headway = self.get_recommended_headway(car)
 
     def get_recommended_headway(self, car: Car) -> int:
         if car.in_stopwave:
@@ -186,9 +186,12 @@ class Simulation:
         if not car.detected_stopwave:
             return self.config.speed_limit
 
-        detection_range = car.detected_stopwave.stop.position - self.config.speed_limit * 10
-        recommended_speed = (detection_range / car.position) * self.config.speed_limit
-        return max(self.config.speed_limit * 0.4, recommended_speed)
+        distance_to_car_in_front = car.next.position - car.position
+
+        recommended_speed = distance_to_car_in_front / self.config.time_headway
+
+
+        return recommended_speed
 
     def get_car_by_id(self, car_id: int) -> Car | None:
         car = self.head
