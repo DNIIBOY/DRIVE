@@ -79,7 +79,10 @@ class Simulation:
             if not car.next:
                 car = car.prev
                 continue
-            if car.next.speed > self.config.stop_wave_speed:
+            #if car.next.speed > self.config.stop_wave_speed:
+                #car = car.prev
+                #continue
+            if not car.is_smart:
                 car = car.prev
                 continue
             self.stopwaves.append(StopWave.from_start(car, self.config.stop_wave_speed))

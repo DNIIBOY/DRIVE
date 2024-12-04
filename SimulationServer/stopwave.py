@@ -26,7 +26,7 @@ class StopWave:
 
         car = start
         while car.prev:
-            if car.prev.speed > stop_wave_speed:
+            if car.prev.speed > stop_wave_speed and car.prev.is_smart:
                 return cls(start, car)
             car = car.prev
 
