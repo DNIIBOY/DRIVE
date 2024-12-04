@@ -2,7 +2,6 @@
 #include "esp_log.h"
 
 #include "HD44780.h"
-#include "pcf8574.h"
 
 #define WIFI_MAXIMUM_RETRY 10
 #define WIFI_CONNECTED_BIT BIT0
