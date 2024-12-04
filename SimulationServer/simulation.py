@@ -4,8 +4,10 @@ from idm import idm
 import json
 from stopwave import StopWave
 from time import sleep, time
+from datetime import datetime
 from valkey import Valkey
 import random
+
 
 class Simulation:
     def __init__(self, valkey: Valkey) -> None:
@@ -79,9 +81,9 @@ class Simulation:
             if not car.next:
                 car = car.prev
                 continue
-            #if car.next.speed > self.config.stop_wave_speed:
-                #car = car.prev
-                #continue
+            # if car.next.speed > self.config.stop_wave_speed:
+                # car = car.prev
+                # continue
             if not car.is_smart:
                 car = car.prev
                 continue
@@ -293,7 +295,8 @@ class Simulation:
 
     def stop_data_collection(self) -> None:
         self.is_collecting_data = False
-        with open("data.json", "w") as f:
+        file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
+        with open(file_name, "w") as f:
             json.dump(self.data, f)
         self.collected_samples = 0
 
