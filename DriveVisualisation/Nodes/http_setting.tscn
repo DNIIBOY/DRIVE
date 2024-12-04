@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cm1sbrfpvt18u"]
 
-[ext_resource type="Script" path="res://Nodes/http_conf.gd" id="1_q4x5g"]
+[ext_resource type="Script" path="res://Scripts/ConfigHandler.gd" id="1_q4x5g"]
 
 [node name="HTTP_Setting" type="VBoxContainer"]
 custom_minimum_size = Vector2(100, 60)

@@ -1,22 +1,28 @@
 [gd_scene load_steps=11 format=3 uid="uid://bs72cx50h6oyv"]
 
-[ext_resource type="Script" path="res://WebSocket.gd" id="1_7cvgd"]
-[ext_resource type="Script" path="res://CameraController.gd" id="2_dtk33"]
-[ext_resource type="Script" path="res://http_request.gd" id="2_h8mqm"]
+[ext_resource type="Script" path="res://main.gd" id="1_7cvgd"]
+[ext_resource type="Script" path="res://Scripts/CameraController.gd" id="2_dtk33"]
+[ext_resource type="Script" path="res://HttpManager.gd" id="2_h8mqm"]
 [ext_resource type="Texture2D" uid="uid://bekh35x5i4ge0" path="res://Textures/road.jpeg" id="2_w8alh"]
-[ext_resource type="Script" path="res://FileDialogue.gd" id="3_moa7p"]
+[ext_resource type="Script" path="res://Scripts/ExportFileDialogue.gd" id="3_moa7p"]
 [ext_resource type="PackedScene" uid="uid://cm1sbrfpvt18u" path="res://Nodes/http_setting.tscn" id="3_u0ngf"]
-[ext_resource type="Script" path="res://generated_path.gd" id="4_faryb"]
+[ext_resource type="Script" path="res://Scripts/generated_path.gd" id="4_faryb"]
 [ext_resource type="PackedScene" uid="uid://dsj5w4levglbr" path="res://Nodes/RoadSetting.tscn" id="5_3phmc"]
-[ext_resource type="Script" path="res://road_setting_window.gd" id="5_es6id"]
+[ext_resource type="Script" path="res://Scripts/RoadSettingsWindow.gd" id="5_es6id"]
 
 [sub_resource type="Curve2D" id="Curve2D_pyq3i"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_7cvgd")
 
-[node name="HTTP_Manager" type="Node" parent="."]
+[node name="HTTP_Manager" type="Node" parent="." node_paths=PackedStringArray("http_ui_settings_container", "button_patch_config", "button_retrieve_config", "button_export_to_json", "button_import_from_json", "save_to_json_path_input")]
 script = ExtResource("2_h8mqm")
+http_ui_settings_container = NodePath("../Camera2D/CanvasLayer/Control/SettingsMenu/ScrollContainer/HTTP_Settings")
+button_patch_config = NodePath("../Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer/Button_Post")
+button_retrieve_config = NodePath("../Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer/Button_Set_Default")
+button_export_to_json = NodePath("Window/MarginContainer/VBoxContainer/HBoxContainer2/ExportButton")
+button_import_from_json = NodePath("Window/MarginContainer/VBoxContainer/HBoxContainer2/ImportButton")
+save_to_json_path_input = NodePath("Window/MarginContainer/VBoxContainer/HBoxContainer/LineEdit")
 
 [node name="HTTPGet" type="HTTPRequest" parent="HTTP_Manager"]
 
@@ -24,12 +30,13 @@ script = ExtResource("2_h8mqm")
 
 [node name="HTTPRetrieveDefault" type="HTTPRequest" parent="HTTP_Manager"]
 
-[node name="Window" type="Window" parent="HTTP_Manager"]
-title = "Save config"
+[node name="Window" type="Window" parent="HTTP_Manager" node_paths=PackedStringArray("activate_button")]
+title = "JSON tool"
 initial_position = 1
 size = Vector2i(270, 105)
 visible = false
 script = ExtResource("3_moa7p")
+activate_button = NodePath("../../Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer/ButtonSaveLoad")
 
 [node name="MarginContainer" type="MarginContainer" parent="HTTP_Manager/Window"]
 anchors_preset = 10
@@ -61,12 +68,22 @@ placeholder_text = "path..."
 layout_mode = 2
 text = ".json"
 
-[node name="SaveButton" type="Button" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Save"
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="ExportButton" type="Button" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Export"
+
+[node name="ImportButton" type="Button" parent="HTTP_Manager/Window/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Import"
+
+[node name="Camera2D" type="Camera2D" parent="." node_paths=PackedStringArray("generated_path")]
 script = ExtResource("2_dtk33")
+generated_path = NodePath("../GeneratedPath")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
 layer = 2
@@ -118,7 +135,7 @@ layout_mode = 2
 
 [node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer/WidthRoadSettingElement" index="1"]
 max_value = 100000.0
-value = 800.0
+value = 1100.0
 
 [node name="RoadSettingContainer2" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
@@ -157,7 +174,7 @@ text = "Turns
 
 [node name="SpinBox" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement" index="1"]
 max_value = 30.0
-value = 12.0
+value = 10.0
 
 [node name="HSeparator" type="HSeparator" parent="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -225,7 +242,7 @@ text = "Road Settings"
 [node name="ButtonSaveLoad" type="Button" parent="Camera2D/CanvasLayer/Control/SettingsMenu/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = " Export config "
+text = "JSON import/export"
 
 [node name="ReconnectButton" type="Button" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 1
@@ -244,9 +261,16 @@ show_behind_parent = true
 texture = ExtResource("2_w8alh")
 texture_mode = 1
 
-[node name="GeneratedPath" type="Path2D" parent="."]
+[node name="GeneratedPath" type="Path2D" parent="." node_paths=PackedStringArray("road_width", "road_turn_radius", "road_turns", "inoutsize", "is_straight", "straight_road_length", "input_bake_button")]
 curve = SubResource("Curve2D_pyq3i")
 script = ExtResource("4_faryb")
+road_width = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer/WidthRoadSettingElement/SpinBox")
+road_turn_radius = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2/SpinBox")
+road_turns = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/TurnsRoadSettingElement/SpinBox")
+inoutsize = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer2/InOutRoadSettingElement/SpinBox")
+is_straight = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/CheckButton")
+straight_road_length = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/RoadSettingElement/SpinBox")
+input_bake_button = NodePath("../Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/Button")
 
 [editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer/WidthRoadSettingElement"]
 [editable path="Camera2D/CanvasLayer/Control/RoadSettings/MarginContainer/VBoxContainer/HBoxContainer/RoadSettingContainer2/RadiusSettingElement2"]
