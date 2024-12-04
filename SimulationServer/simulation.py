@@ -195,7 +195,7 @@ class Simulation:
 
         recommended_speed = distance_to_car_in_front / (self.config.time_headway * self.config.headway_factor)
 
-        return recommended_speed
+        return max(recommended_speed, car.speed-self.config.recommend_max_offset)
 
     def get_car_by_id(self, car_id: int) -> Car | None:
         car = self.head

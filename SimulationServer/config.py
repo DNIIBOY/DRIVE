@@ -34,6 +34,8 @@ class SimulationConfig:
     adoption_rate: float = 0.1
     headway_factor: float = 1.0
 
+    recommend_max_offset: int = 15
+
     real_time: int = 1
 
     data_collection_brake_offset: int = 250
