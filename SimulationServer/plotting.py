@@ -6,6 +6,13 @@ from sys import argv
 
 from itertools import cycle
 
+UNITS = {
+    "position": "m",
+    "gap": "m",
+    "speed": "km/h",
+    "accel": "m/s²",
+}
+
 
 def load_data(file_path: str = "data.json") -> pd.DataFrame:
     """
@@ -21,6 +28,16 @@ def load_data(file_path: str = "data.json") -> pd.DataFrame:
     for car, values in data.items():
         for key, value in values.items():
             values[key] = np.array(value)
+            if key in ("position", "gap"):
+                # Convert decimeters to meter
+                values[key] = values[key] / 10
+            if key == "speed":
+                # Convert decimeters per second to km/h
+                values[key] = values[key] * 0.36
+            if key == "accel":
+                # Convert decimeters per second squared to m/s^2
+                values[key] = values[key] / 10
+
         del values["id"]
         cars[car] = pd.DataFrame(values)
     return cars
@@ -30,10 +47,12 @@ class CarPlotter:
     def __init__(
         self,
         cars: dict[str, pd.DataFrame],
+        update_interval: float = 0.05,
     ) -> None:
         self.cars = cars
         self.disabled_ids = set()
         self.take_mean = False
+        self.update_interval = update_interval
 
     def disable_car(self, car: str) -> None:
         assert car in self.cars, f"Car {car} not found"
@@ -56,17 +75,35 @@ class CarPlotter:
     def enabled_cars(self) -> dict[str, pd.DataFrame]:
         return {car: data for car, data in self.cars.items() if car not in self.disabled_ids}
 
+    def _set_plot_style(self, column: str) -> None:
+        measurements = len(list(self.enabled_cars.values())[0])
+        ax = plt.gca()  # Get the current axis
+        time_ticks = np.arange(measurements+1) * self.update_interval  # Calculate time values
+
+        tick_spacing = measurements // 10
+        selected_ticks = np.arange(0, measurements+1, tick_spacing)
+        selected_labels = [int(time_ticks[i]) for i in selected_ticks]
+        ax.set_xticks(selected_ticks)
+        ax.set_xticklabels(selected_labels)
+
+        plt.xlabel("Time [s]")
+        y_unit = UNITS.get(column, "")
+        plt.ylabel(column.title() + f" [{y_unit}]")
+
     def plot(self, column: str = "position") -> None:
         if self.take_mean:
             self._plot_mean(column)
             return
         for car, data in self.enabled_cars.items():
             plt.plot(data[column], label=car)
+        self._set_plot_style(column)
         plt.legend()
 
     def _plot_mean(self, column: str = "position") -> None:
         data = self.mean()
         plt.plot(data[column], label="mean")
+        self._set_plot_style(column)
+        plt.legend()
 
 
 class DoublePlotter(CarPlotter):
@@ -96,6 +133,7 @@ class DoublePlotter(CarPlotter):
             plt.plot(self.cars[car][column], label=f"{car} 1", color=color)
             plt.plot(self.cars_2[car][column], label=f"{car} 2", color=color, linestyle=":", alpha=0.7)
 
+        self._set_plot_style(column)
         plt.legend()
         plt.show()
 
@@ -104,6 +142,8 @@ class DoublePlotter(CarPlotter):
         plt.plot(data[column], color="#1f77b4")
         data = self.mean2()
         plt.plot(data[column], color="#1f77b4", linestyle=":", alpha=0.7)
+
+        self._set_plot_style(column)
         plt.show()
 
 
@@ -115,10 +155,10 @@ class TUI:
         print("DRIVE Plotter")
         if self.plotter.enabled_cars:
             print("Enabled: ")
-            print(", ".join(sorted(self.plotter.enabled_cars.keys())))
+            print(", ".join(map(str, sorted(map(int, self.plotter.enabled_cars.keys())))))
         if self.plotter.disabled_ids:
             print("Disabled: ")
-            print(", ".join(sorted(self.plotter.disabled_ids)))
+            print(", ".join(map(str, sorted(map(int, self.plotter.disabled_ids)))))
 
         print("Mean is", "enabled" if self.plotter.take_mean else "disabled")
         print("Options:")

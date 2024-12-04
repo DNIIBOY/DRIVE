@@ -247,7 +247,7 @@ class Simulation:
 
     def populate(self) -> None:
         self.create_car()
-        spawn_position = self.config.kill_distance
+        spawn_position = 65535  # Hardcode
         self.tail.position = spawn_position
 
         s_star = self.config.car_length + self.config.target_distance + \

@@ -29,18 +29,10 @@ class Car:
 
         self.accel = 0
         self.brake_amount = 0
-        self._position = 0
+        self.position = 0
         self.speed = config.speed_limit
         self.recommended_speed = self.config.speed_limit
         self.time_headway = self.config.time_headway
-
-    @property
-    def position(self) -> float:
-        return self._position
-
-    @position.setter
-    def position(self, value: float) -> None:
-        self._position = min(value, self.config.kill_distance)
 
     @property
     def next(self) -> Car:
