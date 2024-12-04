@@ -4,5 +4,6 @@
 .venv/
 
 /DriveVisualisation/*.json
+/SimulationServer/*.json
 
 .godot
