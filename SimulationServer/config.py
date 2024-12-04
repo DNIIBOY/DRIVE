@@ -32,6 +32,7 @@ class SimulationConfig:
     comfortable_breaking_value: float = 15
 
     adoption_rate: float = 0.1
+    headway_factor: float = 1.0
 
     drive_activated: int = 1
     real_time: int = 1

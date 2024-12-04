@@ -191,7 +191,7 @@ class Simulation:
         if self.config.drive_activated == 0:
             return self.config.time_headway
 
-        return self.config.time_headway * 4
+        return self.config.time_headway * self.config.headway_factor
 
     def get_recommended_speed(self, car: Car) -> int:
         if car.in_stopwave:
@@ -202,7 +202,7 @@ class Simulation:
 
         distance_to_car_in_front = car.next.position - car.position
 
-        recommended_speed = distance_to_car_in_front / (self.config.time_headway * 4)
+        recommended_speed = distance_to_car_in_front / (self.config.time_headway * self.config.headway_factor)
 
         return recommended_speed
 
@@ -295,7 +295,16 @@ class Simulation:
 
     def stop_data_collection(self) -> None:
         self.is_collecting_data = False
-        file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
+        if True == True:
+            from os.path import exists
+            name = 1
+
+            while exists(f"data_{name:.1f}.json"):
+                name += 0.1
+            with open(f"data_{name:.1f}.json", "w") as f:
+                json.dump(self.data, f)
+        else:
+            file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
         with open(file_name, "w") as f:
             json.dump(self.data, f)
         self.collected_samples = 0
