@@ -81,9 +81,6 @@ class Simulation:
             if not car.next:
                 car = car.prev
                 continue
-            # if car.next.speed > self.config.stop_wave_speed:
-                # car = car.prev
-                # continue
             if not car.is_smart:
                 car = car.prev
                 continue
@@ -170,25 +167,19 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        if self.config.drive_activated == 2 and car.is_smart:
+
+        if car.is_smart:
             car.time_headway = self.config.time_headway
             car.recommended_speed = self.get_recommended_speed(car)
-        elif self.config.drive_activated == 1 and car.is_smart:
-            car.recommended_speed = self.config.speed_limit
-            car.time_headway = self.get_recommended_headway(car)
         else:
             car.recommended_speed = self.config.speed_limit
             car.time_headway = self.config.time_headway
-        # car.time_headway = self.get_recommended_headway(car)
 
     def get_recommended_headway(self, car: Car) -> int:
         if car.in_stopwave:
             return self.config.time_headway
 
         if not car.detected_stopwave:
-            return self.config.time_headway
-
-        if self.config.drive_activated == 0:
             return self.config.time_headway
 
         return self.config.time_headway * self.config.headway_factor
@@ -295,16 +286,14 @@ class Simulation:
 
     def stop_data_collection(self) -> None:
         self.is_collecting_data = False
-        if True == True:
-            from os.path import exists
-            name = 1
+        # from os.path import exists
+        # name = 1
 
-            while exists(f"data_{name:.1f}.json"):
-                name += 0.1
-            with open(f"data_{name:.1f}.json", "w") as f:
-                json.dump(self.data, f)
-        else:
-            file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
+        # while exists(f"data_{name:.1f}.json"):
+        #     name += 0.1
+        # with open(f"data_{name:.1f}.json", "w") as f:
+        #     json.dump(self.data, f)
+        file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
         with open(file_name, "w") as f:
             json.dump(self.data, f)
         self.collected_samples = 0
