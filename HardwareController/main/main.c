@@ -57,7 +57,7 @@ void nvs_init(void) {
 
 // Encoder Task
 void encoder_task(void *param) {
-    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
+    //esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
     uint16_t direction;
 
     while (true) {
@@ -66,8 +66,8 @@ void encoder_task(void *param) {
             buffer[0] = (direction >> 8) & 0xFF;  // High byte
             buffer[1] = direction & 0xFF;         // Low byte
 
-            esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
-            //ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
+            //esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
+            ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
         }
     }
 }
@@ -79,18 +79,18 @@ void braker_task(void *param) {
     int last_brake_pressure_return_value = -1;  // Store the previous pressure value to detect changes
     int brake_pressure_return_value = 0;
 
-    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t)param;
+    //esp_websocket_client_handle_t client = (esp_websocket_client_handle_t)param;
 
     while (1) {
         // Get raw ADC value from ADC1 channel 0 (GPIO36)
         pressure_value = adc1_get_raw(ADC_CHANNEL);
 
         // Check if pressure is within the threshold to process further
-        if (pressure_value <= 2000) {
+        if (pressure_value <= 4000) {
             // Calculate the brake pressure as an integer instead of float for efficiency
             int temp = pressure_value - 500;
             temp = temp < 0 ? 0 : temp;  // Clamp to zero if negative
-            brake_pressure_return_value = 255 - ((temp * 255) / 1500);  // Scale between 0 and 255
+            brake_pressure_return_value = 255 - ((temp * 255) / 3500);  // Scale between 0 and 255
         } else {
             brake_pressure_return_value = 0;
         }
@@ -99,9 +99,9 @@ void braker_task(void *param) {
         if (brake_pressure_return_value != last_brake_pressure_return_value) {
             uint8_t brake_value = brake_pressure_return_value;
             buffer[0] = brake_value;
-            esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
+            //esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
             last_brake_pressure_return_value = brake_pressure_return_value;
-            //ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
+            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
         }
 
         // Adjust delay as needed to prevent excessive polling
@@ -164,16 +164,16 @@ void app_main(void) {
     gpio_isr_handler_add(ENCODER_CLK, encoder_isr_handler, NULL);
 
     // Initialize NVS, Wi-Fi, and WebSocket
-    nvs_init();               // Initialize NVS
-    wifi_init_sta();          // Initialize WiFi
-    esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);  // WebSocket client
+    //nvs_init();               // Initialize NVS
+    //wifi_init_sta();          // Initialize WiFi
+    //esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);  // WebSocket client
 
     // Configure ADC for legacy driver
     adc1_config_width(ADC_WIDTH_BIT_12);  // Set ADC resolution to 12 bits
     adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_0);  // Set ADC attenuation
 
     // Create tasks
-    xTaskCreate(&encoder_task, "Encoder Task", 4096, (void *) client, 4, NULL);
-    xTaskCreate(&braker_task, "Brake Task", 2048, (void *) client, 4, NULL);
-    xtaskcreqte(&i2c_task, "I2C Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&encoder_task, "Encoder Task", 4096, NULL, 4, NULL);
+    xTaskCreate(&braker_task, "Brake Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&led_task, "I2C Task", 2048, NULL, 4, NULL);
 }
