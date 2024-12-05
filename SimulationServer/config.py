@@ -18,7 +18,7 @@ def cached_property_depends_on(*args):
 
 @dataclass
 class SimulationConfig:
-    speed_limit: int = 277
+    speed_limit: int = 360
     stop_wave_factor: float = 0.3
 
     kill_distance: int = 65535
@@ -31,20 +31,19 @@ class SimulationConfig:
     time_headway: float = 1
     comfortable_breaking_value: float = 15
 
-    adoption_rate: float = 0.1
-    headway_factor: float = 1.0
+    adoption_rate: float = 1.0
+    headway_factor: float = 4.0
 
     recommend_max_offset: int = 15
 
     real_time: int = 1
 
-    data_collection_brake_offset: int = 250
+    data_collection_brake_offset: int = 300
     data_collection_brake_pressure: int = 150
-    data_collection_brake_samples: int = 100
-    data_collection_brake_samples: int = 120
-    data_collection_braking_car_id: int = 130
+    data_collection_brake_samples: int = 150
+    data_collection_braking_car_id: int = 5
     data_collection_count: int = 10
-    data_collection_samples: int = 3500
+    data_collection_samples: int = 6000
     data_collection_step: int = 5
 
     @property

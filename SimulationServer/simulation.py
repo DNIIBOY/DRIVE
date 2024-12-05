@@ -222,8 +222,7 @@ class Simulation:
         car.next = self.tail
         self.tail = car
 
-        if random.random() < self.config.adoption_rate:
-            car.is_smart = True
+        car.is_smart = random.random() < self.config.adoption_rate
 
     def destroy_car(self, car: Car) -> None:
         if car.prev:
