@@ -66,9 +66,13 @@ class Simulation:
                 else:
                     self.collect_data()
 
-            elapsed_time = time() - start_time
             if self.config.real_time:
-                sleep(self.config.update_interval - elapsed_time)
+                elapsed_time = time() - start_time
+                diff = self.config.update_interval - elapsed_time
+                if diff > 0:
+                    sleep(diff)
+                else:
+                    print("Warning: Update interval exceeded")
 
     def update_cars(self) -> None:
         hw1_car = self.valkey.get("hw1_car")
