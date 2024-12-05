@@ -23,6 +23,8 @@ class Simulation:
         self.is_collecting_data = False
         self.collected_samples = 0
         self.data: dict[dict] = {}
+        self.is_monte_carlo: bool
+        self.current_monte_carlo_step: int = 0
 
         self.create_car()
 
@@ -40,6 +42,8 @@ class Simulation:
                 collect_data = self.valkey.get("collect_data")
                 collect_data = int(collect_data.decode()) if collect_data is not None else 0
                 if collect_data and not self.is_collecting_data:
+                    self.monte_carlo_step = self.config.monte_carlo_samples
+                    self.is_monte_carlo = self.config.monte_carlo_on != 0
                     self.start_data_collection()
                 self.config.read(self.valkey)
                 config_refresh_time = time()
@@ -261,6 +265,7 @@ class Simulation:
     def start_data_collection(self) -> None:
         self.clear()
         self.populate()
+        
         self.data = {
             i: {
                 "id": i,
@@ -284,6 +289,7 @@ class Simulation:
         car.hw2_target = True
 
     def stop_data_collection(self) -> None:
+
         self.is_collecting_data = False
         # from os.path import exists
         # name = 1
@@ -296,6 +302,10 @@ class Simulation:
         with open(file_name, "w") as f:
             json.dump(self.data, f)
         self.collected_samples = 0
+
+        if self.is_monte_carlo and self.monte_carlo_step > 0:
+            self.monte_carlo_step -= 1
+            self.start_data_collection()
 
     def collect_data(self) -> None:
         print(f"Collecting data: {((self.collected_samples+1)/self.config.data_collection_samples)*100:2f}%")
