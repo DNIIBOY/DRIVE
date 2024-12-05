@@ -2,19 +2,10 @@
 #include "esp_log.h"
 
 #include "HD44780.h"
-#include "pcf8574.h"
 
 #define WIFI_MAXIMUM_RETRY 10
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT BIT1
-
-#define LCD_ADDR 0x27
-#define LED_ADDR 0x20
-
-#define SDA_LCD_PIN 7
-#define SCL_LCD_PIN 6
-#define SDA_LED_PIN 15
-#define SCL_LED_PIN 14
 
 #define LCD_COLS 16
 #define LCD_ROWS 2
@@ -25,10 +16,6 @@ uint16_t recommended_speed;
 char lcdbuffer_line_1[6];
 char lcdbuffer_line_2[6];
 
-static void set_leds(uint8_t led_data) {
-    // Write LED data to the I/O expander
-    pcf8574_write(LED_ADDR, led_data);
-}
 
 //static EventGroupHandle_t s_wifi_event_group;
 
@@ -39,14 +26,13 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
     switch (event_id) {
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI("WebSocket_handler", "Connected");
-            lcd_init(LCD_ADDR, SDA_LCD_PIN, SCL_LCD_PIN, LCD_COLS, LCD_ROWS);
+
             lcd_set_cursor(0, 0);
             lcd_write_str("Current:     kmt");
 
             lcd_set_cursor(0, 1);
             lcd_write_str("Advised:     kmt");
 
-            pcf8574_init(LED_ADDR, SDA_LED_PIN, SCL_LED_PIN);
             break;
 
         case WEBSOCKET_EVENT_DISCONNECTED:
@@ -74,9 +60,6 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
 
             lcd_set_cursor(9, 1);
             lcd_write_str(lcdbuffer_line_2);
-
-            set_leds(LED_data);
-
             break;
         default:
             break;

@@ -23,6 +23,12 @@
 #define ENCODER_DT 19
 #define ENCODER_CLK 18
 
+#define LED_1 10
+#define LED_2 21  
+#define LED_3 20
+#define LED_4 8
+#define LED_5 9
+
 static QueueHandle_t gpio_evt_queue = NULL;  // Updated to QueueHandle_t
 static const char *TAG = "main";
 
@@ -103,18 +109,52 @@ void braker_task(void *param) {
     }
 }
 
+void led_task(void *param) {
+    while (1) {
+        // Turn on LED_1 and then turn it off
+        gpio_set_level(LED_1, 1);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // Wait for 500ms
+        gpio_set_level(LED_1, 0);
+
+        // Turn on LED_2 and then turn it off
+        gpio_set_level(LED_2, 1);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // Wait for 500ms
+        gpio_set_level(LED_2, 0);
+
+        // Turn on LED_3 and then turn it off
+        gpio_set_level(LED_3, 1);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // Wait for 500ms
+        gpio_set_level(LED_3, 0);
+
+        // Turn on LED_4 and then turn it off
+        gpio_set_level(LED_4, 1);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // Wait for 500ms
+        gpio_set_level(LED_4, 0);
+
+        // Turn on LED_5 and then turn it off
+        gpio_set_level(LED_5, 1);
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // Wait for 500ms
+        gpio_set_level(LED_5, 0);
+    }
+}
+
 // Main application
 void app_main(void) {
     // Rotary encoder pin configuration
     gpio_set_direction(ENCODER_CLK, GPIO_MODE_INPUT);
     gpio_set_direction(ENCODER_DT, GPIO_MODE_INPUT);
 
+    gpio_set_direction(LED_1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED_2, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED_3, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED_4, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED_5, GPIO_MODE_OUTPUT);
+
     // Enable interrupt on rising edge for CLK pin
     gpio_set_pull_mode(ENCODER_CLK, GPIO_PULLDOWN_ENABLE);
     gpio_set_pull_mode(ENCODER_DT, GPIO_PULLDOWN_ENABLE);
 
     gpio_set_intr_type(ENCODER_CLK, GPIO_INTR_POSEDGE);
-
 
     // Create a queue to handle encoder events
     gpio_evt_queue = xQueueCreate(10, sizeof(uint16_t));
@@ -135,4 +175,5 @@ void app_main(void) {
     // Create tasks
     xTaskCreate(&encoder_task, "Encoder Task", 4096, (void *) client, 4, NULL);
     xTaskCreate(&braker_task, "Brake Task", 2048, (void *) client, 4, NULL);
+    xtaskcreqte(&i2c_task, "I2C Task", 2048, NULL, 4, NULL);
 }
