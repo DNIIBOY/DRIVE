@@ -35,6 +35,7 @@ class SimulationConfig:
     headway_factor: float = 4.0
 
     recommend_max_offset: int = 15
+    recommend_interpolation_size: float = 0.1
 
     real_time: int = 1
 
