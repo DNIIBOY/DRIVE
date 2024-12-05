@@ -303,10 +303,11 @@ class Simulation:
         # name = 1
 
         # while exists(f"data_{name:.1f}.json"):
-        #     name += 0.1
+        #     name += 1
         # with open(f"data_{name:.1f}.json", "w") as f:
         #     json.dump(self.data, f)
-        file_name = f"data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
+
+        file_name = f"data/data_{datetime.now().strftime('%d-%m_%H:%M:%S')}.json"
         with open(file_name, "w") as f:
             json.dump(self.data, f)
         self.collected_samples = 0
