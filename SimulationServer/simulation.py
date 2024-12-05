@@ -266,7 +266,12 @@ class Simulation:
     def start_data_collection(self) -> None:
         self.clear()
         self.populate()
-        
+        target_cars = set(range(
+            self.config.data_collection_braking_car_id,
+            self.config.data_collection_braking_car_id +
+            self.config.data_collection_count*self.config.data_collection_step,
+            self.config.data_collection_step
+        ))
         self.data = {
             i: {
                 "id": i,
@@ -275,13 +280,16 @@ class Simulation:
                 "accel": [],
                 "gap": [],
             }
-            for i in range(
-                self.config.data_collection_braking_car_id,
-                self.config.data_collection_braking_car_id +
-                self.config.data_collection_count*self.config.data_collection_step,
-                self.config.data_collection_step
-            )
+            for i in target_cars
         }
+
+        car = self.head
+        while car and target_cars:
+            if car.id in target_cars:
+                car.hw1_target = True
+                target_cars.discard(car.id)
+            car = car.prev
+
         self.is_collecting_data = True
         self.valkey.set("collect_data", 0)
         car = self.get_car_by_id(self.config.data_collection_braking_car_id)
@@ -290,7 +298,6 @@ class Simulation:
         car.hw2_target = True
 
     def stop_data_collection(self) -> None:
-
         self.is_collecting_data = False
         # from os.path import exists
         # name = 1
