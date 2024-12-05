@@ -44,7 +44,7 @@ class SimulationConfig:
     data_collection_braking_car_id: int = 5
     data_collection_count: int = 10
     data_collection_samples: int = 6000
-    data_collection_step: int = 5
+    data_collection_step: int = 10
 
     @property
     def stop_wave_speed(self) -> float:
