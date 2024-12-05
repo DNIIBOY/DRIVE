@@ -175,13 +175,8 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-
-        if car.is_smart:
-            car.time_headway = self.config.time_headway
-            car.recommended_speed = self.get_recommended_speed(car)
-        else:
-            car.recommended_speed = self.config.speed_limit
-            car.time_headway = self.config.time_headway
+        car.recommended_speed = self.get_recommended_speed(car)
+        
 
     def get_recommended_headway(self, car: Car) -> int:
         if car.in_stopwave:
@@ -193,17 +188,17 @@ class Simulation:
         return self.config.time_headway * self.config.headway_factor
 
     def get_recommended_speed(self, car: Car) -> int:
-        if car.in_stopwave:
-            return self.config.speed_limit
+        if car.in_stopwave or not car.detected_stopwave or not car.is_smart:
+            return car.recommended_speed + (self.config.speed_limit - car.recommended_speed) * self.config.recommend_interpolation_size
 
-        if not car.detected_stopwave:
-            return self.config.speed_limit
-
+        #if not car.detected_stopwave:
+        #    return car.recommended_speed + (self.config.speed_limit - car.recommended_speed) * self.config.recommend_interpolation_size
+        
         distance_to_car_in_front = car.next.position - car.position
-
         recommended_speed = distance_to_car_in_front / (self.config.time_headway * self.config.headway_factor)
-
-        speed_to_send = car.speed + (recommended_speed - car.speed) * self.config.recommend_interpolation_size
+        
+        speed_to_send = car.recommended_speed + (recommended_speed - car.recommended_speed) * self.config.recommend_interpolation_size
+        #speed_to_send = self.config.recommend_interpolation_size * (recommended_speed - car.speed)
 
         return speed_to_send # max(recommended_speed, car.speed-self.config.recommend_max_offset)
 
