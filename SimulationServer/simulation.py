@@ -6,6 +6,7 @@ from stopwave import StopWave
 from time import sleep, time
 from datetime import datetime
 from valkey import Valkey
+from gen_avg_smch import generate_average_jsonfile
 import random
 
 
@@ -25,6 +26,9 @@ class Simulation:
         self.data: dict[dict] = {}
         self.is_monte_carlo: bool
         self.current_monte_carlo_step: int = 0
+
+        self.monte_carlo_step_size = 0.001
+        self.monte_carlo_step_iterations = 10
 
         self.create_car()
 
@@ -249,6 +253,7 @@ class Simulation:
             car = next_car
         self._id = 0
 
+
     def populate(self) -> None:
         self.create_car()
         spawn_position = 65535  # Hardcode
@@ -315,6 +320,14 @@ class Simulation:
         if self.is_monte_carlo and self.monte_carlo_step > 0:
             self.monte_carlo_step -= 1
             self.start_data_collection()
+        elif self.is_monte_carlo and self.monte_carlo_step_iterations > 0:
+            generate_average_jsonfile("adoption_rate", self.valkey.get("adoption_rate"))
+            self.monte_carlo_step = self.config.monte_carlo_samples - 1
+            self.valkey.set("adoption_rate", float(self.valkey.get("adoption_rate")) + self.monte_carlo_step_size)
+            self.monte_carlo_step_iterations -= 1
+            self.start_data_collection()
+        elif self.is_monte_carlo and self.monte_carlo_step_iterations == 0:
+            generate_average_jsonfile("adoption_rate", self.valkey.get("adoption_rate"))
 
     def collect_data(self) -> None:
         print(f"Collecting data: {((self.collected_samples+1)/self.config.data_collection_samples)*100:2f}%")
