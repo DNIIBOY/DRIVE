@@ -27,7 +27,7 @@ char lcdbuffer_line_2[6];
 
 static void set_leds(uint8_t led_data) {
     // Write LED data to the I/O expander
-    pcf8574_write(LED_ADDR, led_data);
+    //pcf8574_write(LED_ADDR, led_data);
 }
 
 //static EventGroupHandle_t s_wifi_event_group;
@@ -46,7 +46,7 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
             lcd_set_cursor(0, 1);
             lcd_write_str("Advised:     kmt");
 
-            pcf8574_init(LED_ADDR, SDA_LED_PIN, SCL_LED_PIN);
+            //pcf8574_init(LED_ADDR, SDA_LED_PIN, SCL_LED_PIN);
             break;
 
         case WEBSOCKET_EVENT_DISCONNECTED:
