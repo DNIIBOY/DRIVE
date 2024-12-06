@@ -63,6 +63,12 @@ def collect_data():
     return "OK"
 
 
+@app.route("/brake_wave", methods=["POST"])
+def brake_wave():
+    valkey.set("brake_wave", 1)
+    return "OK"
+
+
 @sock.route("/ws/vis")
 def visulation_socket(ws: Server):
     while ws.connected:

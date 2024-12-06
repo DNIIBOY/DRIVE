@@ -20,8 +20,13 @@ class Simulation:
         self.config.read(valkey)
 
         self.stopwaves: list[StopWave] = []
+
         self.is_collecting_data = False
+        self.brake_wave = False
+
         self.collected_samples = 0
+        self.brake_wave_samples = 0
+
         self.data: dict[dict] = {}
         self.is_monte_carlo: bool
         self.current_monte_carlo_step: int = 0
@@ -39,28 +44,48 @@ class Simulation:
                     self.populate()
                     self.valkey.set("reset", 0)
 
+                brake_wave = self.valkey.get("brake_wave")
+                brake_wave = int(brake_wave.decode()) if brake_wave is not None else 0
                 collect_data = self.valkey.get("collect_data")
                 collect_data = int(collect_data.decode()) if collect_data is not None else 0
+
+                if brake_wave and not self.brake_wave:
+                    self.valkey.set("brake_wave", 0)
+                    self.brake_wave = True
+                    car = self.get_car_by_id(self.config.data_collection_braking_car_id)
+                    car.hw2_target = True
+                    for _ in range(self.config.hw_1_offset):
+                        car = car.prev
+                    self.valkey.set("hw1_car", car.id)
+
                 if collect_data and not self.is_collecting_data:
                     self.monte_carlo_step = self.config.monte_carlo_samples
                     self.is_monte_carlo = self.config.monte_carlo_on != 0
+                    self.brake_wave = True
                     self.start_data_collection()
+
                 self.config.read(self.valkey)
                 config_refresh_time = time()
             start_time = time()
             self.update_cars()
             self.valkey.set("cars", self.serialize_cars())
 
-            if self.is_collecting_data:
-                if self.collected_samples == self.config.data_collection_brake_offset:
+            if self.brake_wave:
+                if self.brake_wave_samples == self.config.data_collection_brake_offset:
                     car = self.get_car_by_id(self.config.data_collection_braking_car_id)
                     car.brake_amount = self.config.data_collection_brake_pressure
 
-                if self.collected_samples == self.config.data_collection_brake_samples\
+                if self.brake_wave_samples >= self.config.data_collection_brake_samples\
                         + self.config.data_collection_brake_offset:
                     car = self.get_car_by_id(self.config.data_collection_braking_car_id)
                     car.brake_amount = 0
 
+                    self.brake_wave_samples = 0
+                    self.brake_wave = False
+                else:
+                    self.brake_wave_samples += 1
+
+            if self.is_collecting_data:
                 if self.collected_samples >= self.config.data_collection_samples:
                     self.stop_data_collection()
                 else:
@@ -110,15 +135,16 @@ class Simulation:
                 else:
                     car.hw1_target = False
 
-                if car.id == hw2_car:
-                    car.hw2_target = True
-                    hw2_brake = self.valkey.get("hw2_brake")
-                    car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
-                else:
-                    car.hw2_target = False
+                if not self.brake_wave:
+                    if car.id == hw2_car:
+                        car.hw2_target = True
+                        hw2_brake = self.valkey.get("hw2_brake")
+                        car.brake_amount = int(hw2_brake.decode()) if hw2_brake else 0
+                    else:
+                        car.hw2_target = False
 
-                if car.id not in (hw1_car, hw2_car):
-                    car.brake_amount = 0
+                    if car.id not in (hw1_car, hw2_car):
+                        car.brake_amount = 0
 
             self.update_car(car)
             if car.id == hw1_car:
@@ -189,10 +215,7 @@ class Simulation:
         return self.config.time_headway * self.config.headway_factor
 
     def get_recommended_speed(self, car: Car) -> int:
-        if car.in_stopwave:
-            return car.next.speed + 1
-
-        if not car.detected_stopwave or not car.is_smart:
+        if car.in_stopwave or not car.detected_stopwave or not car.is_smart or car.hw1_target:
             return car.recommended_speed + (self.config.speed_limit - car.recommended_speed) * self.config.recommend_interpolation_size
 
         # if not car.detected_stopwave:

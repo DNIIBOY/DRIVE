@@ -41,6 +41,9 @@ func _input(event):
     if event.is_action_pressed("collect_data"):
         #$HTTP_Manager.collect()
         $HTTP_Manager.generic_request("http://127.0.0.1:5000/collect_data", HTTPClient.METHOD_POST)
+    if event.is_action_pressed("brake_wave"):
+        #$HTTP_Manager.collect()
+        $HTTP_Manager.generic_request("http://127.0.0.1:5000/brake_wave", HTTPClient.METHOD_POST)
 
 func focus_on_car():
     if isFocusing:
@@ -84,7 +87,7 @@ func _on_message_received(message: Variant) -> void:
             
             
         elif is_focused_2:
-            cars[car_id].modulate = Color.RED
+            cars[car_id].modulate = Color.HOT_PINK
         else:
             var color = items >> 18
             color = color & 0xF

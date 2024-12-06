@@ -42,6 +42,7 @@ class SimulationConfig:
     monte_carlo_on: int = 0
     monte_carlo_samples: int = 100
 
+    hw_1_offset: int = 10
     data_collection_brake_offset: int = 300
     data_collection_brake_pressure: int = 150
     data_collection_brake_samples: int = 150
