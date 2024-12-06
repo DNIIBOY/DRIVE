@@ -28,7 +28,7 @@ class Simulation:
         self.current_monte_carlo_step: int = 0
 
         self.monte_carlo_step_size = 0.001
-        self.monte_carlo_step_iterations = 10
+        self.monte_carlo_step_iterations = 2
 
         self.create_car()
 
