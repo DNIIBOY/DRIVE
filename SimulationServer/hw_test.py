@@ -3,7 +3,7 @@ from websockets.sync.client import connect
 
 def show_packet(packet: bytes) -> None:
     val = int.from_bytes(packet, byteorder="big")
-    rec_speed = val >> 12
+    rec_speed = (val >> 12) & 0xFFF
     speed = val & 0xFFF
     print("Recommended speed:", rec_speed)
     print("Speed:", speed)

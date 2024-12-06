@@ -54,6 +54,17 @@ class Car:
         if prev_car:
             prev_car._next = self
 
+    @property
+    def brake_urgency(self) -> int:
+        """
+        How far from the recommended speed the car is
+        :return: Int from 0-5, where 0 is no urgency and 5 is the most urgent
+        """
+        if self.speed < self.recommended_speed:
+            return 0
+        diff = self.speed - self.recommended_speed
+        return min(5, int(diff+36) // 36)
+
     def __repr__(self) -> str:
         return f"Car({self.id}), position: {self.position}, speed: {self.speed}, accel: {self.accel}, brake: {self.brake_amount}"
 

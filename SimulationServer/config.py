@@ -28,7 +28,7 @@ class SimulationConfig:
     update_interval: float = 0.05
     car_max_accel: float = 10
 
-    time_headway: float = 1
+    time_headway: float = 1.0
     comfortable_breaking_value: float = 15
 
     adoption_rate: float = 1.0

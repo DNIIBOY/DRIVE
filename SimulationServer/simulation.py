@@ -124,9 +124,11 @@ class Simulation:
             if car.id == hw1_car:
                 self.valkey.set("hw1_rec_speed", int(car.recommended_speed))
                 self.valkey.set("hw1_speed", int(car.speed))
+                self.valkey.set("hw1_urgency", car.brake_urgency)
             if car.id == hw2_car:
                 self.valkey.set("hw2_rec_speed", int(car.recommended_speed))
                 self.valkey.set("hw2_speed", int(car.speed))
+                self.valkey.set("hw2_urgency", int(car.brake_urgency))
 
             car = car.prev
 
@@ -176,7 +178,6 @@ class Simulation:
 
         car.position += car.speed * self.config.update_interval
         car.recommended_speed = self.get_recommended_speed(car)
-        
 
     def get_recommended_headway(self, car: Car) -> int:
         if car.in_stopwave:
@@ -188,19 +189,23 @@ class Simulation:
         return self.config.time_headway * self.config.headway_factor
 
     def get_recommended_speed(self, car: Car) -> int:
-        if car.in_stopwave or not car.detected_stopwave or not car.is_smart:
+        if car.in_stopwave:
+            return car.next.speed + 1
+
+        if not car.detected_stopwave or not car.is_smart:
             return car.recommended_speed + (self.config.speed_limit - car.recommended_speed) * self.config.recommend_interpolation_size
 
-        #if not car.detected_stopwave:
+        # if not car.detected_stopwave:
         #    return car.recommended_speed + (self.config.speed_limit - car.recommended_speed) * self.config.recommend_interpolation_size
-        
+
         distance_to_car_in_front = car.next.position - car.position
         recommended_speed = distance_to_car_in_front / (self.config.time_headway * self.config.headway_factor)
-        
-        speed_to_send = car.recommended_speed + (recommended_speed - car.recommended_speed) * self.config.recommend_interpolation_size
-        #speed_to_send = self.config.recommend_interpolation_size * (recommended_speed - car.speed)
 
-        return speed_to_send # max(recommended_speed, car.speed-self.config.recommend_max_offset)
+        speed_to_send = car.recommended_speed + \
+            (recommended_speed - car.recommended_speed) * self.config.recommend_interpolation_size
+        # speed_to_send = self.config.recommend_interpolation_size * (recommended_speed - car.speed)
+
+        return speed_to_send  # max(recommended_speed, car.speed-self.config.recommend_max_offset)
 
     def get_car_by_id(self, car_id: int) -> Car | None:
         car = self.head
