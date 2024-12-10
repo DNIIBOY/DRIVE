@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 import pandas as pd
 import numpy as np
 import json
@@ -89,13 +90,14 @@ class CarPlotter:
         plt.xlabel("Time [s]")
         y_unit = UNITS.get(column, "")
         plt.ylabel(column.title() + f" [{y_unit}]")
+        plt.tight_layout(pad=1)
 
     def plot(self, column: str = "position") -> None:
         if self.take_mean:
             self._plot_mean(column)
             return
-        for car, data in self.enabled_cars.items():
-            plt.plot(data[column], label=car)
+        for car in sorted(self.enabled_cars.keys(), key=int):
+            plt.plot(self.enabled_cars[car][column], label=car)
         self._set_plot_style(column)
         plt.legend()
 
@@ -128,13 +130,15 @@ class DoublePlotter(CarPlotter):
             return
 
         color_cycle = cycle(plt.rcParams["axes.prop_cycle"].by_key()["color"])
-        for car in self.enabled_cars:
+        for car in sorted(self.enabled_cars.keys(), key=int):
             color = next(color_cycle)
             plt.plot(self.cars[car][column], label=f"{car} 1", color=color)
             plt.plot(self.cars_2[car][column], label=f"{car} 2", color=color, linestyle=":", alpha=0.7)
 
         self._set_plot_style(column)
-        plt.legend()
+        solid_line = Line2D([0], [0], color="black", lw=2, label="With PACE")
+        dotted_line = Line2D([0], [0], color="black", lw=2, linestyle=":", label="Without PACE")
+        plt.legend(handles=[solid_line, dotted_line])
         plt.show()
 
     def _plot_mean(self, column: str = "position") -> None:
@@ -187,10 +191,11 @@ class TUI:
         print(", ".join(options))
         option = input(">>> ").casefold()
         try:
-            self.plotter.plot(mapped_options[option])
+            option = mapped_options[option]
         except KeyError:
             print("Invalid option")
             return self.plot()
+        self.plotter.plot(option)
         plt.show()
         return self.home_screen()
 
