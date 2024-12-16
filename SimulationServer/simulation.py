@@ -27,8 +27,8 @@ class Simulation:
         self.is_monte_carlo: bool
         self.current_monte_carlo_step: int = 0
 
-        self.monte_carlo_step_size = 0.001
-        self.monte_carlo_step_iterations = 2
+        self.monte_carlo_step_size = 0.05
+        self.monte_carlo_step_iterations = 13
 
         self.create_car()
 
@@ -53,7 +53,7 @@ class Simulation:
                 config_refresh_time = time()
             start_time = time()
             self.update_cars()
-            self.valkey.set("cars", self.serialize_cars())
+            #self.valkey.set("cars", self.serialize_cars())
 
             if self.is_collecting_data:
                 if self.collected_samples == self.config.data_collection_brake_offset:
@@ -321,13 +321,13 @@ class Simulation:
             self.monte_carlo_step -= 1
             self.start_data_collection()
         elif self.is_monte_carlo and self.monte_carlo_step_iterations > 0:
-            generate_average_jsonfile("adoption_rate", self.valkey.get("adoption_rate"))
+            generate_average_jsonfile("adoption_rate", f"{float(self.valkey.get('adoption_rate')):.3f}")
             self.monte_carlo_step = self.config.monte_carlo_samples - 1
             self.valkey.set("adoption_rate", float(self.valkey.get("adoption_rate")) + self.monte_carlo_step_size)
             self.monte_carlo_step_iterations -= 1
             self.start_data_collection()
         elif self.is_monte_carlo and self.monte_carlo_step_iterations == 0:
-            generate_average_jsonfile("adoption_rate", self.valkey.get("adoption_rate"))
+            generate_average_jsonfile("adoption_rate", f"{float(self.valkey.get('adoption_rate')):.3f}")
 
     def collect_data(self) -> None:
         print(f"Collecting data: {((self.collected_samples+1)/self.config.data_collection_samples)*100:2f}%")

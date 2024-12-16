@@ -1,5 +1,5 @@
 from pathlib import Path
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as pltz
 from collections import defaultdict
 from statistics import mean
 import pandas as pd
@@ -55,6 +55,7 @@ def generate_average_jsonfile(statistic: str, step: float):
     average_data = calculate_average(all_data)
     step = float(step)
     formatted_step = f"{step:.3f}"
+    print(formatted_step)
     filename = f"avg_{statistic}_{formatted_step}_"
 
     output_file = f"avg_data/{filename}"
@@ -75,6 +76,6 @@ def generate_average_jsonfile(statistic: str, step: float):
        os.remove(file)
 
 if __name__ == "__main__":
-    generate_average_jsonfile("adoption", 0.1)
+    generate_average_jsonfile("headway_factor", 0.1)
 
 
