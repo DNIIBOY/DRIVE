@@ -2,7 +2,7 @@
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <stdio.h>
-
+/*
 i2c_master_dev_handle_t dev_handle;
 
 i2c_master_dev_handle_t pcf8574_init(i2c_master_bus_handle_t bus_handle, i2c_device_config_t dev_cfg,) {
@@ -35,3 +35,4 @@ esp_err_t pcf8574_read_port(i2c_master_dev_handle_t dev_handle, uint8_t *data) {
 
     return ESP_OK;
 }
+*/
