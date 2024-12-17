@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, request
+from flask import Flask, request
 from valkey import Valkey
 from flask_sock import Sock
 from simple_websocket.ws import Server

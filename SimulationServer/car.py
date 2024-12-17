@@ -72,7 +72,7 @@ class Car:
         return hash(self.id)
 
     def __bytes__(self) -> bytes:
-        rep_int = int(self.position)
+        rep_int = int(max(0, self.position))
         rep_int &= (0xFFFF)  # Clear the upper 16 bits
         rep_int |= (self.id << 22)  # Set the id in the upper 10 bits
         rep_int |= (self.hw1_target << 16)  # Set the hw1_target in the 17th bit
@@ -82,7 +82,6 @@ class Car:
         # color = min(15, max(0, accel))
 
         color = 8
-
         if self.detected_stopwave:
             color = 15
 
