@@ -17,23 +17,11 @@
 #include "HD44780.h"
 #include "driver/adc.h"
 #include "esp_timer.h"
-//#include "pcf8574.h"
 
 #define WEBSOCKET_URI "ws://192.168.4.2:5000/ws/hw/1"  // Flask server IP and port
 
 #define ENCODER_DT 19
 #define ENCODER_CLK 18
-
-#define LCD_ADDR 0x27
-#define LED_ADDR 0x20
-
-#define SDA_LCD_PIN 6
-#define SCL_LCD_PIN 7
-#define SDA_LED_PIN 15
-#define SCL_LED_PIN 14
-
-#define LCD_COLS 16
-#define LCD_ROWS 2
 
 static QueueHandle_t gpio_evt_queue = NULL;  // Updated to QueueHandle_t
 static const char *TAG = "main";
@@ -63,7 +51,7 @@ void nvs_init(void) {
 
 // Encoder Task
 void encoder_task(void *param) {
-    //esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
+    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t) param;
     uint16_t direction;
 
     while (true) {
@@ -72,8 +60,8 @@ void encoder_task(void *param) {
             buffer[0] = (direction >> 8) & 0xFF;  // High byte
             buffer[1] = direction & 0xFF;         // Low byte
 
-            //esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
-            ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
+            esp_websocket_client_send_bin(client, (const char*)buffer, sizeof(buffer), portMAX_DELAY);
+            //ESP_LOGI(TAG, "Encoder rotated, sent value: %d", direction);
         }
     }
 }
@@ -85,7 +73,7 @@ void braker_task(void *param) {
     int last_brake_pressure_return_value = -1;  // Store the previous pressure value to detect changes
     int brake_pressure_return_value = 0;
 
-    //esp_websocket_client_handle_t client = (esp_websocket_client_handle_t)param;
+    esp_websocket_client_handle_t client = (esp_websocket_client_handle_t)param;
 
     while (1) {
         // Get raw ADC value from ADC1 channel 0 (GPIO36)
@@ -105,9 +93,9 @@ void braker_task(void *param) {
         if (brake_pressure_return_value != last_brake_pressure_return_value) {
             uint8_t brake_value = brake_pressure_return_value;
             buffer[0] = brake_value;
-            //esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
+            esp_websocket_client_send_bin(client, (const char*)buffer, 1, portMAX_DELAY);
             last_brake_pressure_return_value = brake_pressure_return_value;
-            ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
+            //ESP_LOGI(TAG, "Touchsensor pressure: %d%%", (brake_pressure_return_value * 100) / 255);
         }
 
         // Adjust delay as needed to prevent excessive polling
@@ -135,28 +123,16 @@ void app_main(void) {
     gpio_install_isr_service(0);
     gpio_isr_handler_add(ENCODER_CLK, encoder_isr_handler, NULL);
 
-    //lcd_init(LCD_ADDR, SDA_LCD_PIN, SCL_LCD_PIN, LCD_COLS, LCD_ROWS);
-    i2c_init();
-    i2c_scan();    
-    lcd_set_cursor(0, 0);
-    lcd_write_str("Current:     kmt");
-
-    lcd_set_cursor(0, 1);
-    lcd_write_str("Advised:     kmt");
-
-    //pcf8574_init(LED_ADDR, SDA_LED_PIN, SCL_LED_PIN);
-
-
     // Initialize NVS, Wi-Fi, and WebSocket
-    //nvs_init();               // Initialize NVS
-    //wifi_init_sta();          // Initialize WiFi
-    //esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);  // WebSocket client
+    nvs_init();               // Initialize NVS
+    wifi_init_sta();          // Initialize WiFi
+    esp_websocket_client_handle_t client = websocket_init(WEBSOCKET_URI);  // WebSocket client
 
     // Configure ADC for legacy driver
     adc1_config_width(ADC_WIDTH_BIT_12);  // Set ADC resolution to 12 bits
     adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_0);  // Set ADC attenuation
 
     // Create tasks
-    xTaskCreate(&encoder_task, "Encoder Task", 4096, NULL, 4, NULL);
-    xTaskCreate(&braker_task, "Brake Task", 2048, NULL, 4, NULL);
+    xTaskCreate(&encoder_task, "Encoder Task", 4096, (void *) client, 4, NULL);
+    xTaskCreate(&braker_task, "Brake Task", 2048, (void *) client, 4, NULL);
 }

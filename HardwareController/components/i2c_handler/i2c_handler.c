@@ -2,8 +2,8 @@
 #include "driver/i2c_master.h" // New library that replaces "driver/i2c.h"
 #include "driver/gpio.h"
 
-#define I2C_MASTER_SDA_IO 6          // SDA Pin
-#define I2C_MASTER_SCL_IO 7          // SCL Pin
+#define I2C_MASTER_SDA_IO 4          // SDA Pin
+#define I2C_MASTER_SCL_IO 5          // SCL Pin
 #define I2C_MASTER_FREQ_HZ 100000    // Frequency
 #define I2C_PORT_NUM_0 0            // I2C port number
 
@@ -25,7 +25,7 @@ void i2c_init(void)
 
     ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
 }
-
+/* debug function
 void i2c_scan(void)
 {
     // I2C scanning
@@ -46,3 +46,4 @@ void i2c_scan(void)
     }
     printf("I2C scan complete.\n");
 }
+*/
