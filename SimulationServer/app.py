@@ -22,11 +22,6 @@ def simulate_val_update():
 Thread(target=simulate_val_update, daemon=True).start()
 
 
-@app.route("/")
-def index():
-    return send_from_directory("static", "index.html")
-
-
 @app.route("/config", methods=["GET", "PATCH", "DELETE"])
 def config():
     conf = SimulationConfig()
