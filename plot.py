@@ -23,7 +23,7 @@ stakeholders = [
     (2, 6.6, "Danish Industry", "center", "center"),                # Moderate complicity, moderate influence
     (8, 4, "Danish Road Directorate", "center", "center"),        # Low complicity, high influence
     (6, 3, "Danish Environment Agency", "center", "center"),      # Low complicity, moderate influence
-    (4, 6, "Emergency Services", "center", "center"),             # Low complicity, low influence
+    (4, 4, "Emergency Services", "center", "center"),             # Low complicity, low influence
 ]
 
 # Plot each stakeholder in the matrix
