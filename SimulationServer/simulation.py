@@ -345,7 +345,7 @@ class Simulation:
             self.config.data_collection_step
         ))
         car = self.head
-        while car:
+        while car and target_ids:
             if car.id not in target_ids:
                 car = car.prev
                 continue
