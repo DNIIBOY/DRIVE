@@ -38,13 +38,13 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
 
     switch (event_id) {
         case WEBSOCKET_EVENT_CONNECTED:
-            ESP_LOGI("WebSocket_handler", "Connected");
-            lcd_init(LCD_ADDR, SDA_LCD_PIN, SCL_LCD_PIN, LCD_COLS, LCD_ROWS);
-            lcd_set_cursor(0, 0);
-            lcd_write_str("Current:     kmt");
+            //ESP_LOGI("WebSocket_handler", "Connected");
+            //lcd_init(LCD_ADDR, SDA_LCD_PIN, SCL_LCD_PIN, LCD_COLS, LCD_ROWS);
+            //lcd_set_cursor(0, 0);
+            //lcd_write_str("Current:     kmt");
 
-            lcd_set_cursor(0, 1);
-            lcd_write_str("Advised:     kmt");
+            //lcd_set_cursor(0, 1);
+            //lcd_write_str("Advised:     kmt");
 
             //pcf8574_init(LED_ADDR, SDA_LED_PIN, SCL_LED_PIN);
             break;
@@ -54,7 +54,7 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
             break;
 
         case WEBSOCKET_EVENT_DATA:
-            unsigned int value = 0;
+            /*unsigned int value = 0;
             unsigned char* data = (unsigned char*)event->data_ptr;
 
             for (int i = 0; i < event->data_len; i++) {
@@ -76,7 +76,7 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
             lcd_write_str(lcdbuffer_line_2);
 
             set_leds(LED_data);
-
+            */
             break;
         default:
             break;
