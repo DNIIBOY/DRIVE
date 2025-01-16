@@ -122,7 +122,24 @@ class Simulation:
                 car.in_stopwave = True
 
         car.position += car.speed * self.config.update_interval
-        car.recommended_speed = self.get_recommended_speed(car)
+        car.time_headway = self.get_recommended_headway(car)
+
+        if (car.hw1_target or car.hw2_target):
+            car.human_recommended_speed = self.get_human_recommended_speed(car)
+
+    def get_human_recommended_speed(self, car: Car) -> int:
+        if not car.detected_stopwave:
+            return self.config.speed_limit
+
+        cached_speed = car.speed
+        for _ in range(5):
+            accel = idm(car, self.config)
+            car.speed += accel
+
+        speed_to_send = car.speed
+        car.speed = cached_speed
+
+        return speed_to_send
 
     def get_recommended_headway(self, car: Car) -> int:
         if car.in_stopwave:
@@ -197,11 +214,11 @@ class Simulation:
 
     def save_car_data(self, car: Car) -> None:
         if car.hw1_target:
-            self.valkey.set("hw1_rec_speed", int(car.recommended_speed))
+            self.valkey.set("hw1_rec_speed", int(car.human_recommended_speed))
             self.valkey.set("hw1_speed", int(car.speed))
             self.valkey.set("hw1_urgency", car.brake_urgency)
         if car.hw2_target:
-            self.valkey.set("hw2_rec_speed", int(car.recommended_speed))
+            self.valkey.set("hw2_rec_speed", int(car.human_recommended_speed))
             self.valkey.set("hw2_speed", int(car.speed))
             self.valkey.set("hw2_urgency", int(car.brake_urgency))
 

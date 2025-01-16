@@ -32,6 +32,7 @@ class Car:
         self.position = 0
         self.speed = config.speed_limit
         self.recommended_speed = self.config.speed_limit
+        self.human_recommended_speed = self.config.speed_limit
         self.time_headway = self.config.time_headway
 
     @property
