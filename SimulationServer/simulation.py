@@ -142,10 +142,7 @@ class Simulation:
         return speed_to_send
 
     def get_recommended_headway(self, car: Car) -> int:
-        if car.in_stopwave:
-            return self.config.time_headway
-
-        if not car.detected_stopwave:
+        if car.in_stopwave or not car.detected_stopwave or not car.is_smart or car.hw1_target or car.hw2_target:
             return self.config.time_headway
 
         return self.config.time_headway * self.config.headway_factor
