@@ -2,21 +2,18 @@ from car import Car
 from config import SimulationConfig
 
 
-def idm(car: Car, config: SimulationConfig):
-    v = car.speed  # Current speed
+def idm(car: Car, config: SimulationConfig) -> float:
+    v = car.speed
     v0 = car.recommended_speed
-    a_max = config.car_max_accel  # Max acceleration
+    a_max = config.car_max_accel
 
     if car.next:
         delta_v = car.speed - car.next.speed
-        s0 = config.target_distance + config.car_length  # Minimum distance to next car
+        s0 = config.target_distance + config.car_length
         s = max(car.next.position - car.position - config.car_length, 0.01)
 
-        # "Time Headway", the time it would take to reach the next car at the current speed
         T = car.time_headway
-
         accel_formular_term_1 = (v / v0) ** 4
-
         dynamic_term = (v * delta_v) / (2 * config.braking_factor)
         s_star = s0 + max(0, T * v + dynamic_term)
         accel_formular_term_2 = (s_star / s) ** 2

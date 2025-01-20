@@ -106,9 +106,7 @@ class Simulation:
         if car.brake_amount:
             acceleration = car.brake_amount / 255 * 60 * self.config.update_interval
             car.speed = max(0, car.speed - acceleration)
-
         else:
-            # Gradually restore reference speed up to original speed
             car.accel = idm(car, self.config)
             car.speed += car.accel * self.config.update_interval
             car.speed = max(0, car.speed)
@@ -116,6 +114,8 @@ class Simulation:
         car.in_stopwave = False
         car.detected_stopwave = None
         for wave in self.stopwaves:  # Stopwaves are ordered where first is closest to end of the road
+            if not car.is_smart:
+                continue
             if wave.in_range(car):
                 car.detected_stopwave = wave  # Last one is the nearest
             if car in wave:
@@ -132,17 +132,25 @@ class Simulation:
             return self.config.speed_limit
 
         cached_speed = car.speed
-        for _ in range(5):
+        car.time_headway = self.config.time_headway * self.config.headway_factor
+        for _ in range(1):
             accel = idm(car, self.config)
             car.speed += accel
 
         speed_to_send = car.speed
         car.speed = cached_speed
+        car.time_headway = self.config.time_headway
 
         return speed_to_send
 
     def get_recommended_headway(self, car: Car) -> int:
-        if car.in_stopwave or not car.detected_stopwave or not car.is_smart or car.hw1_target or car.hw2_target:
+        if car.in_stopwave:
+            return self.config.time_headway
+        if not car.detected_stopwave:
+            return self.config.time_headway
+        if car.hw1_target or car.hw2_target:
+            return self.config.time_headway
+        if not car.is_smart:
             return self.config.time_headway
 
         return self.config.time_headway * self.config.headway_factor
@@ -217,7 +225,7 @@ class Simulation:
         if car.hw2_target:
             self.valkey.set("hw2_rec_speed", int(car.human_recommended_speed))
             self.valkey.set("hw2_speed", int(car.speed))
-            self.valkey.set("hw2_urgency", int(car.brake_urgency))
+            self.valkey.set("hw2_urgency", car.brake_urgency)
 
     def update_brake_wave(self) -> None:
         if self.brake_wave_samples == self.config.data_collection_brake_offset:
