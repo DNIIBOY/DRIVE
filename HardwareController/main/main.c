@@ -18,7 +18,7 @@
 #include "driver/adc.h"
 #include "esp_timer.h"
 
-#define WEBSOCKET_URI "ws://192.168.4.4:5000/ws/hw/2"  // Flask server IP and port
+#define WEBSOCKET_URI "ws://192.168.4.4:5000/ws/hw/1"  // Flask server IP and port
 
 #define ENCODER_DT 19
 #define ENCODER_CLK 18
